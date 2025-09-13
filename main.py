@@ -9,6 +9,7 @@ from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
 from app.menus.package import fetch_my_packages, get_packages_by_family
+from app.menus.hot import show_hot_menu
 
 def show_main_menu(number, balance, balance_expired_at):
     clear_screen()
@@ -26,7 +27,7 @@ def show_main_menu(number, balance, balance_expired_at):
     print("Menu:")
     print("1. Login/Ganti akun")
     print("2. Lihat Paket Saya")
-    print("3. Beli Paket XUT")
+    print("3. Beli Paket 🔥 HOT🔥")
     print("4. Beli Paket Berdasarkan Family Code")
     print("5. Beli Paket Berdasarkan Family Code (Enterprise)")
     print("00. Bookmark Paket")
@@ -59,8 +60,7 @@ def main():
                 fetch_my_packages()
                 continue
             elif choice == "3":
-                # XUT 
-                get_packages_by_family("08a3b1e6-8e78-4e45-a540-b40f06871cfe")
+                show_hot_menu()
             elif choice == "4":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
