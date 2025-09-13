@@ -27,7 +27,7 @@ def show_main_menu(number, balance, balance_expired_at):
     print("Menu:")
     print("1. Login/Ganti akun")
     print("2. Lihat Paket Saya")
-    print("3. Beli Paket 🔥 HOT🔥")
+    print("3. Beli Paket 🔥 HOT 🔥")
     print("4. Beli Paket Berdasarkan Family Code")
     print("5. Beli Paket Berdasarkan Family Code (Enterprise)")
     print("00. Bookmark Paket")

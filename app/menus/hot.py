@@ -13,7 +13,7 @@ def show_hot_menu():
     while in_bookmark_menu:
         clear_screen()
         print("--------------------------")
-        print("🔥 Paket Hot🔥")
+        print("🔥 Paket Hot 🔥")
         print("--------------------------")
         
         url = "https://me.mashu.lol/pg-hot.json"
