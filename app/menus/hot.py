@@ -53,7 +53,7 @@ def show_hot_menu():
                     
                     package_options = selected_variant["package_options"]
                     for option in package_options:
-                        if option["name"] == selected_bm["option_name"]:
+                        if option["order"] == selected_bm["order"]:
                             selected_option = option
                             option_code = selected_option["package_option_code"]
                             break

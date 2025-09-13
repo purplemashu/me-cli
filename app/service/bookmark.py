@@ -35,6 +35,9 @@ class Bookmark:
             if "family_name" not in p:  # add missing field
                 p["family_name"] = ""
                 updated = True
+            if "order" not in p:
+                p["order"] = 0
+                updated = True
         if updated:
             self.save_bookmark()  # persist schema upgrade
 
@@ -55,12 +58,13 @@ class Bookmark:
         is_enterprise: bool,
         variant_name: str,
         option_name: str,
+        order: int,
     ) -> bool:
         """Add a bookmark if it does not already exist."""
-        key = (family_code, variant_name, option_name)
+        key = (family_code, variant_name, order)
 
         if any(
-            (p["family_code"], p["variant_name"], p["option_name"]) == key
+            (p["family_code"], p["variant_name"], p["order"]) == key
             for p in self.packages
         ):
             print("Bookmark already exists.")
@@ -73,6 +77,7 @@ class Bookmark:
                 "is_enterprise": is_enterprise,
                 "variant_name": variant_name,
                 "option_name": option_name,
+                "order": order,
             }
         )
         self.save_bookmark()
@@ -84,7 +89,7 @@ class Bookmark:
         family_code: str,
         is_enterprise: bool,
         variant_name: str,
-        option_name: str,
+        order: int,
     ) -> bool:
         """Remove a bookmark if it exists. Returns True if removed."""
         for i, p in enumerate(self.packages):
@@ -92,7 +97,7 @@ class Bookmark:
                 p["family_code"] == family_code
                 and p["is_enterprise"] == is_enterprise
                 and p["variant_name"] == variant_name
-                and p["option_name"] == option_name
+                and p["order"] == order
             ):
                 del self.packages[i]
                 self.save_bookmark()

@@ -38,7 +38,7 @@ def show_bookmark_menu():
                     del_bm["family_code"],
                     del_bm["is_enterprise"],
                     del_bm["variant_name"],
-                    del_bm["option_name"]
+                    del_bm["order"],
                 )
             else:
                 print("Input tidak valid. Silahkan coba lagi.")
@@ -63,7 +63,7 @@ def show_bookmark_menu():
                     
                     package_options = selected_variant["package_options"]
                     for option in package_options:
-                        if option["name"] == selected_bm["option_name"]:
+                        if option["order"] == selected_bm["order"]:
                             selected_option = option
                             option_code = selected_option["package_option_code"]
                             break
