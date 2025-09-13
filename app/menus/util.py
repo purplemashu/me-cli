@@ -1,5 +1,5 @@
 import app.menus.banner as banner
-ascii_art = banner.load("https://me.mashu.lol/mebanner.png", globals())
+ascii_art = banner.load("https://me.mashu.lol/mebanner870.png", globals())
 
 from html.parser import HTMLParser
 import os
@@ -10,7 +10,7 @@ def clear_screen():
     print("Clearing screen...")
     os.system('cls' if os.name == 'nt' else 'clear')
     if ascii_art:
-        ascii_art.to_terminal(columns=50)
+        ascii_art.to_terminal(columns=55)
 
 def pause():
     input("\nPress enter to continue...")
