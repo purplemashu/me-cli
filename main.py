@@ -10,6 +10,7 @@ from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
 from app.menus.package import fetch_my_packages, get_packages_by_family
 from app.menus.hot import show_hot_menu
+from app.service.sentry import enter_sentry_mode
 
 def show_main_menu(number, balance, balance_expired_at):
     clear_screen()
@@ -77,17 +78,16 @@ def main():
                 print("Exiting the application.")
                 sys.exit(0)
             elif choice == "9":
-                # Playground
-                pass
-                # data = get_package(
-                #     AuthInstance.api_key,
-                #     active_user["tokens"],
-                #     "U0NfX8A08oQLUQuLplGhfT_FXQokJ9GFF9kAKRiV5trm6BfbRoxrsizKkWIVNxM0az6lroT92FYXnWmTXRXZOl1Meg",
-                #     ""
-                #     ""
-                #     )
-                # print(json.dumps(data, indent=2))
-                # pause()
+                data = login_info(
+                    AuthInstance.api_key,
+                    active_user["tokens"],
+                    True
+                )
+                print("Login Info:")
+                print(json.dumps(data, indent=2))
+                pause()
+            elif choice == "s":
+                enter_sentry_mode()
             else:
                 print("Invalid choice. Please try again.")
                 pause()
