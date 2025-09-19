@@ -12,4 +12,4 @@ pg*
 refresh-tokens*
 ax.fp
 bookmark.json
-sentry*
+sentry/
