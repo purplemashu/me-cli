@@ -4,19 +4,19 @@ from app.service.auth import AuthInstance
 
 def show_login_menu():
     clear_screen()
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Login ke MyXL")
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("1. Request OTP")
     print("2. Submit OTP")
     print("99. Tutup aplikasi")
-    print("--------------------------")
+    print("-------------------------------------------------------")
     
 def login_prompt(api_key: str):
     clear_screen()
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Login ke MyXL")
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Masukan nomor XL Prabayar (Contoh 6281234567890):")
     phone_number = input("Nomor: ")
 
@@ -60,7 +60,7 @@ def show_account_menu():
     add_user = False
     while in_account_menu:
         clear_screen()
-        print("--------------------------")
+        print("-------------------------------------------------------")
         if AuthInstance.get_active_user() is None or add_user:
             number, refresh_token = login_prompt(AuthInstance.api_key)
             if not refresh_token:

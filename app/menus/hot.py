@@ -15,9 +15,9 @@ def show_hot_menu():
     in_bookmark_menu = True
     while in_bookmark_menu:
         clear_screen()
-        print("--------------------------")
-        print("🔥 Paket Hot 🔥")
-        print("--------------------------")
+        print("=======================================================")
+        print("====================🔥 Paket  Hot 🔥===================")
+        print("=======================================================")
         
         url = "https://me.mashu.lol/pg-hot.json"
         response = requests.get(url, timeout=30)
@@ -30,9 +30,10 @@ def show_hot_menu():
 
         for idx, p in enumerate(hot_packages):
             print(f"{idx + 1}. {p['family_name']} - {p['variant_name']} - {p['option_name']}")
+            print("-------------------------------------------------------")
         
         print("00. Kembali ke menu utama")
-        print("--------------------------")
+        print("-------------------------------------------------------")
         choice = input("Pilih paket (nomor): ")
         if choice == "00":
             in_bookmark_menu = False
@@ -77,9 +78,9 @@ def show_hot_menu2():
     in_bookmark_menu = True
     while in_bookmark_menu:
         clear_screen()
-        print("--------------------------")
-        print("🔥 Paket Hot 2 🔥")
-        print("--------------------------")
+        print("=======================================================")
+        print("===================🔥 Paket  Hot 2 🔥==================")
+        print("=======================================================")
         
         url = "https://me.mashu.lol/pg-hot2.json"
         response = requests.get(url, timeout=30)
@@ -94,7 +95,7 @@ def show_hot_menu2():
             print(f"{idx + 1}. {p['name']}\n   Harga: {p['price']}")
         
         print("00. Kembali ke menu utama")
-        print("--------------------------")
+        print("-------------------------------------------------------")
         choice = input("Pilih paket (nomor): ")
         if choice == "00":
             in_bookmark_menu = False
@@ -135,10 +136,12 @@ def show_hot_menu2():
                 )
             
             clear_screen()
-            print("==========================")
+            print("=======================================================")
             print(f"Name: {selected_package['name']}")
             print(f"Price: {selected_package['price']}")
             print(f"Detail: {selected_package['detail']}")
+            print("=======================================================")
+            
             in_payment_menu = True
             while in_payment_menu:
                 print("Pilih Metode Pembelian:")

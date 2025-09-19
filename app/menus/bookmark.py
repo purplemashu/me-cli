@@ -11,9 +11,9 @@ def show_bookmark_menu():
     in_bookmark_menu = True
     while in_bookmark_menu:
         clear_screen()
-        print("--------------------------")
+        print("-------------------------------------------------------")
         print("Bookmark Paket")
-        print("--------------------------")
+        print("-------------------------------------------------------")
         bookmarks = BookmarkInstance.get_bookmarks()
         if not bookmarks or len(bookmarks) == 0:
             print("Tidak ada bookmark tersimpan.")
@@ -25,7 +25,7 @@ def show_bookmark_menu():
         
         print("00. Kembali ke menu utama")
         print("000. Hapus Bookmark")
-        print("--------------------------")
+        print("-------------------------------------------------------")
         choice = input("Pilih bookmark (nomor): ")
         if choice == "00":
             in_bookmark_menu = False

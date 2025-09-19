@@ -19,12 +19,12 @@ def show_main_menu(number, balance, balance_expired_at):
     expired_at = balance_expired_at
     expired_at_dt = datetime.fromtimestamp(expired_at).strftime("%Y-%m-%d %H:%M:%S")
     
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Informasi Akun")
     print(f"Nomor: {phone_number}")
     print(f"Pulsa: Rp {remaining_balance}")
     print(f"Masa aktif: {expired_at_dt}")
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Menu:")
     print("1. Login/Ganti akun")
     print("2. Lihat Paket Saya")
@@ -34,7 +34,7 @@ def show_main_menu(number, balance, balance_expired_at):
     print("6. Beli Paket Berdasarkan Family Code (Enterprise)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
-    print("--------------------------")
+    print("-------------------------------------------------------")
 
 show_menu = True
 def main():
