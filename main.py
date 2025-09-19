@@ -8,8 +8,8 @@ from app.client.engsel import *
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
-from app.menus.package import fetch_my_packages, get_packages_by_family
-from app.menus.hot import show_hot_menu
+from app.menus.package import fetch_my_packages, get_packages_by_family, show_package_details
+from app.menus.hot import show_hot_menu, show_hot_menu2
 from app.service.sentry import enter_sentry_mode
 
 def show_main_menu(number, balance, balance_expired_at):
@@ -29,8 +29,9 @@ def show_main_menu(number, balance, balance_expired_at):
     print("1. Login/Ganti akun")
     print("2. Lihat Paket Saya")
     print("3. Beli Paket 🔥 HOT 🔥")
-    print("4. Beli Paket Berdasarkan Family Code")
-    print("5. Beli Paket Berdasarkan Family Code (Enterprise)")
+    print("4. Beli Paket 🔥 HOT-2 🔥")
+    print("5. Beli Paket Berdasarkan Family Code")
+    print("6. Beli Paket Berdasarkan Family Code (Enterprise)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("--------------------------")
@@ -63,11 +64,13 @@ def main():
             elif choice == "3":
                 show_hot_menu()
             elif choice == "4":
+                show_hot_menu2()
+            elif choice == "5":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
                     continue
                 get_packages_by_family(family_code)
-            elif choice == "5":
+            elif choice == "6":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
                     continue
@@ -78,14 +81,7 @@ def main():
                 print("Exiting the application.")
                 sys.exit(0)
             elif choice == "9":
-                data = login_info(
-                    AuthInstance.api_key,
-                    active_user["tokens"],
-                    True
-                )
-                print("Login Info:")
-                print(json.dumps(data, indent=2))
-                pause()
+                pass
             elif choice == "s":
                 enter_sentry_mode()
             else:
@@ -104,6 +100,5 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nExiting the application.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        
+    # except Exception as e:
+    #     print(f"An error occurred: {e}")

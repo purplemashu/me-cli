@@ -197,7 +197,7 @@ class Auth:
         
         return self.active_user
     
-    def get_active_tokens(self):
+    def get_active_tokens(self) -> dict | None:
         active_user = self.get_active_user()
         return active_user["tokens"] if active_user else None
     
