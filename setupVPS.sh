@@ -1,4 +1,9 @@
-apt update
+apt update -y && apt upgrade -y
+apt install git -y
+git clone https://github.com/purplemashu/me-cli
+cd me-cli
+apt install -y python3 python3-pip
+apt install -y python3-pil python3-pil.imagetk
 apt install software-properties-common -y
 add-apt-repository ppa:deadsnakes/ppa -y
 apt update
