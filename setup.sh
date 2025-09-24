@@ -3,7 +3,7 @@ pkg update && pkg upgrade -y
 pkg install git -y
 pkg install python -y
 pkg install python-pillow -y
-git clone https://github.com/purplemashu/me-cli
+git clone https://github.com/arivpnstores/me-cli
 cd me-cli
 pip install -r requirements.txt
 python main.py
