@@ -26,7 +26,10 @@ cd me-cli && source venv/bin/activate && python main.py
 7. Input your API key when prompted
 
 # Info
-
+# UPDATE
+```
+git pull --rebase
+```
 ## PS for Certain Indonesian mobile internet service provider
 
 Instead of just delisting the package from the app, ensure the user cannot purchase it.
