@@ -9,5 +9,6 @@ add-apt-repository ppa:deadsnakes/ppa -y
 apt install python3.11 python3.11-venv python3.11-dev -y
 python3.11 -m venv venv
 source venv/bin/activate
+pip install --upgrade pip
 pip install -r requirementsVPS.txt
 python main.py
