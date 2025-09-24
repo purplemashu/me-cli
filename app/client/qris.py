@@ -9,10 +9,12 @@ import requests
 from app.client.engsel import *
 from app.client.encrypt import API_KEY, build_encrypted_field, decrypt_xdata, encryptsign_xdata, java_like_timestamp, get_x_signature_payment, get_x_signature_bounty
 from app.type_dict import PaymentItem
+
 def settlement_qris_v2(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
+    ask_overwrite: bool = True,
 ):  
     token_confirmation = items[0]["token_confirmation"]
     payment_targets = ""
@@ -24,14 +26,15 @@ def settlement_qris_v2(
     amount_int = items[-1]["item_price"]
     
     # Overwrite
-    print(f"Total amount is {amount_int}.\nEnter new amount if you need to overwrite.")
-    amount_str = input("Press enter to ignore & use default amount: ")
-    if amount_str != "":
-        try:
-            amount_int = int(amount_str)
-        except ValueError:
-            print("Invalid overwrite input, using original price.")
-            return None
+    if ask_overwrite:
+        print(f"Total amount is {amount_int}.\nEnter new amount if you need to overwrite.")
+        amount_str = input("Press enter to ignore & use default amount: ")
+        if amount_str != "":
+            try:
+                amount_int = int(amount_str)
+            except ValueError:
+                print("Invalid overwrite input, using original price.")
+                # return None
     
     # Get payment methods
     payment_path = "payments/api/v8/payment-methods-option"
@@ -87,7 +90,7 @@ def settlement_qris_v2(
         "items": items,
         "verification_token": token_payment,
         "payment_method": "QRIS",
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
     }
     
     encrypted_payload = encryptsign_xdata(
@@ -170,11 +173,13 @@ def show_qris_payment_v2(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
+    ask_overwrite: bool = True,
 ):  
     transaction_id = settlement_qris_v2(
         api_key,
         tokens,
-        items
+        items,
+        ask_overwrite
     )
     
     if not transaction_id:
