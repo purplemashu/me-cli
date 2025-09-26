@@ -93,10 +93,10 @@ def main():
                 print("Exiting the application.")
                 sys.exit(0)
             elif choice == "t":
-                res = get_package(
+                res = get_profile(
                     AuthInstance.api_key,
-                    active_user["tokens"],
-                    "U0NfXzQtpSipFJ2CfHQjMJiuld-vuF4HvD1KEhISNal9eMio0qNvL0TYfEqz5GmZHDXRMnjvJtBUHZSIV3FGWHk"
+                    active_user["tokens"]["access_token"],
+                    active_user["tokens"]["id_token"]
                 )
                 print(json.dumps(res, indent=2))
                 input("Press Enter to continue...")
