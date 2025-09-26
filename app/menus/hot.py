@@ -114,7 +114,7 @@ def show_hot_menu2():
                     api_key,
                     tokens,
                     package["family_code"],
-                    package["variant_name"],
+                    package["variant_code"],
                     package["order"],
                     package["is_enterprise"],
                 )
