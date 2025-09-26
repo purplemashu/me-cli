@@ -93,6 +93,13 @@ def main():
                 print("Exiting the application.")
                 sys.exit(0)
             elif choice == "t":
+                res = get_package(
+                    AuthInstance.api_key,
+                    active_user["tokens"],
+                    "U0NfXzQtpSipFJ2CfHQjMJiuld-vuF4HvD1KEhISNal9eMio0qNvL0TYfEqz5GmZHDXRMnjvJtBUHZSIV3FGWHk"
+                )
+                print(json.dumps(res, indent=2))
+                input("Press Enter to continue...")
                 pass
             elif choice == "s":
                 enter_sentry_mode()
