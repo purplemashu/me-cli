@@ -1,6 +1,6 @@
 import requests
 
-from app.client.engsel import get_family, get_package_details
+from app.client.engsel import get_family, get_family_v2, get_package_details
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause
@@ -43,7 +43,7 @@ def show_hot_menu():
             family_code = selected_bm["family_code"]
             is_enterprise = selected_bm["is_enterprise"]
             
-            family_data = get_family(api_key, tokens, family_code, is_enterprise)
+            family_data = get_family_v2(api_key, tokens, family_code, is_enterprise)
             if not family_data:
                 print("Gagal mengambil data family.")
                 pause()

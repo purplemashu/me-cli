@@ -31,9 +31,6 @@ def show_main_menu(number, balance, balance_expired_at):
     print("3. Beli Paket 🔥 HOT 🔥")
     print("4. Beli Paket 🔥 HOT-2 🔥")
     print("5. Beli Paket Berdasarkan Family Code")
-    print("6. Beli Paket Berdasarkan Family Code (Enterprise)")
-    print("7. [TEST] Get family (PRE_TO_PRIOH)")
-    print("8. [TEST] Get family (PRE_TO_PRIOH + Enterprise)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -72,31 +69,16 @@ def main():
                 if family_code == "99":
                     continue
                 get_packages_by_family(family_code)
-            elif choice == "6":
-                family_code = input("Enter family code (or '99' to cancel): ")
-                if family_code == "99":
-                    continue
-                get_packages_by_family(family_code, is_enterprise=True)
-            elif choice == "7":
-                family_code = input("Enter family code (or '99' to cancel): ")
-                if family_code == "99":
-                    continue
-                get_packages_by_family(family_code, is_enterprise=False, migration_type="PRE_TO_PRIOH")
-            elif choice == "8":
-                family_code = input("Enter family code (or '99' to cancel): ")
-                if family_code == "99":
-                    continue
-                get_packages_by_family(family_code, is_enterprise=True, migration_type="PRE_TO_PRIOH")
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
                 print("Exiting the application.")
                 sys.exit(0)
             elif choice == "t":
-                res = get_profile(
+                res = get_package(
                     AuthInstance.api_key,
-                    active_user["tokens"]["access_token"],
-                    active_user["tokens"]["id_token"]
+                    active_user["tokens"],
+                    ""
                 )
                 print(json.dumps(res, indent=2))
                 input("Press Enter to continue...")
