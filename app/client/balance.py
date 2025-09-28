@@ -8,7 +8,7 @@ import uuid
 
 import requests
 from app.client.encrypt import API_KEY, build_encrypted_field, decrypt_xdata, encryptsign_xdata, get_x_signature_payment, java_like_timestamp
-from app.client.engsel import BASE_API_URL, UA, send_api_request
+from app.client.engsel import BASE_API_URL, UA, intercept_page, send_api_request
 from app.type_dict import PaymentItem
 
 
@@ -37,6 +37,8 @@ def settlement_balance(
             except ValueError:
                 print("Invalid overwrite input, using original price.")
                 # return None
+    
+    intercept_page(api_key, tokens, items[0]["item_code"], False)
     
     # Get payment methods
     payment_path = "payments/api/v8/payment-methods-option"

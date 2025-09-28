@@ -239,6 +239,8 @@ def settlement_multipayment_v2(
             print("Invalid overwrite input, using original price.")
             return None
     
+    intercept_page(api_key, tokens, items[0]["item_code"], False)
+    
     # Get payment methods
     payment_path = "payments/api/v8/payment-methods-option"
     payment_payload = {
