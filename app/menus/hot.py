@@ -154,7 +154,9 @@ def show_hot_menu2():
                     show_multipayment_v2(
                         api_key,
                         tokens,
-                        payment_items
+                        payment_items,
+                        "BUY_PACKAGE",
+                        True
                     )
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
@@ -164,7 +166,9 @@ def show_hot_menu2():
                     show_qris_payment_v2(
                         api_key,
                         tokens,
-                        payment_items
+                        payment_items,
+                        "BUY_PACKAGE",
+                        True
                     )
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
