@@ -14,8 +14,7 @@ def settlement_qris_v2(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
-    payment_for: str,
-    ask_overwrite: bool,
+    ask_overwrite: bool = True,
 ):  
     token_confirmation = items[0]["token_confirmation"]
     payment_targets = ""
@@ -71,7 +70,7 @@ def settlement_qris_v2(
         "can_trigger_rating": False,
         "total_discount": 0,
         "coupon": "",
-        "payment_for": payment_for,
+        "payment_for": "BUY_PACKAGE",
         "topup_number": "",
         "is_enterprise": False,
         "autobuy": {
@@ -116,8 +115,7 @@ def settlement_qris_v2(
             ts_to_sign,
             payment_targets,
             token_payment,
-            "QRIS",
-            payment_for
+            "QRIS"
         )
     
     headers = {
@@ -177,14 +175,12 @@ def show_qris_payment_v2(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
-    payment_for: str,
-    ask_overwrite: bool,
+    ask_overwrite: bool = True,
 ):  
     transaction_id = settlement_qris_v2(
         api_key,
         tokens,
         items,
-        payment_for,
         ask_overwrite
     )
     
