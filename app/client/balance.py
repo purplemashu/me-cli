@@ -16,7 +16,8 @@ def settlement_balance(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
-    ask_overwrite: bool = True,
+    payment_for: str,
+    ask_overwrite: bool,
 ):
     token_confirmation = items[0]["token_confirmation"]
     payment_targets = ""
@@ -91,7 +92,7 @@ def settlement_balance(
         "akrab_parent_alias": "",
         "referral_unique_code": "",
         "coupon": "",
-        "payment_for": "BUY_PACKAGE",
+        "payment_for": payment_for,
         "with_upsell": False,
         "topup_number": "",
         "stage_token": "",
@@ -148,7 +149,8 @@ def settlement_balance(
                 ts_to_sign,
                 payment_targets,
                 token_payment,
-                "BALANCE"
+                "BALANCE",
+                payment_for
             )
     
     headers = {

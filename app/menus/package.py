@@ -39,12 +39,15 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
     option_name = package.get("package_option", {}).get("name", "")
     title = f"{family_name} - {variant_name} - {option_name}".strip()
     
+
     # Print details
     print("-------------------------------------------------------")
     print("Detail Paket")
+
     print("-------------------------------------------------------")
     print(f"Nama: {title}")
     print(f"Harga: Rp {price}")
+    print(f"Payment For: {payment_for}")
     print(f"Masa Aktif: {validity}")
     print(f"Point: {package['package_option']['point']}")
     print(f"Plan Type: {package['package_family']['plan_type']}")
@@ -99,6 +102,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             continue
         
         if choice == '1':
+
             purchase_with_balance(api_key, tokens, payment_items)
             input("Silahkan cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True

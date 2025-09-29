@@ -110,7 +110,9 @@ def show_hot_menu2():
                 
                 input_method = input("Pilih metode (nomor): ")
                 if input_method == "1":
+
                     show_multipayment_v2(api_key, tokens, payment_items)
+
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
                     in_hot_menu = False # Exit outer loop as well
