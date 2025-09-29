@@ -16,6 +16,7 @@ def settlement_qris_v2(
     items: list[PaymentItem],
     payment_for: str,
     ask_overwrite: bool,
+    amount_used: str = ""
 ):  
     token_confirmation = items[0]["token_confirmation"]
     payment_targets = ""
@@ -25,6 +26,8 @@ def settlement_qris_v2(
         payment_targets += item["item_code"]
     
     amount_int = items[-1]["item_price"]
+    if amount_used == "first":
+        amount_int = items[0]["item_price"]
     
     # Overwrite
     if ask_overwrite:
@@ -179,13 +182,15 @@ def show_qris_payment_v2(
     items: list[PaymentItem],
     payment_for: str,
     ask_overwrite: bool,
+    amount_used: str = ""
 ):  
     transaction_id = settlement_qris_v2(
         api_key,
         tokens,
         items,
         payment_for,
-        ask_overwrite
+        ask_overwrite,
+        amount_used,
     )
     
     if not transaction_id:

@@ -221,6 +221,7 @@ def settlement_multipayment_v2(
     payment_method,
     payment_for,
     ask_overwrite: bool,
+    amount_used: str = ""
 ):
     token_confirmation = items[0]["token_confirmation"]
     payment_targets = ""
@@ -230,6 +231,8 @@ def settlement_multipayment_v2(
         payment_targets += item["item_code"]
         
     amount_int = items[-1]["item_price"]
+    if amount_used == "first":
+        amount_int = items[0]["item_price"]
     
     # Overwrite
     if ask_overwrite:
@@ -264,8 +267,7 @@ def settlement_multipayment_v2(
     
     token_payment = payment_res["data"]["token_payment"]
     ts_to_sign = payment_res["data"]["timestamp"]
-    
-    
+
 
     # Settlement request
     path = "payments/api/v8/settlement-multipayment/ewallet"
@@ -354,7 +356,7 @@ def settlement_multipayment_v2(
         print("[decrypt err]", e)
         return resp.text
 
-def settlement_multipayment_v3(
+def settlement_multipayment_debug(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
@@ -528,6 +530,7 @@ def show_multipayment_v2(
     items: list[PaymentItem],
     payment_for,
     ask_overwrite: bool,
+    amount_used: str = "",
 ):
     choosing_payment_method = True
     while choosing_payment_method:
@@ -569,7 +572,8 @@ def show_multipayment_v2(
         wallet_number,
         payment_method,
         payment_for,
-        ask_overwrite
+        ask_overwrite,
+        amount_used,
     )
     
     # print(f"Settlement response: {json.dumps(settlement_response, indent=2)}")
