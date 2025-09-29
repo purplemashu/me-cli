@@ -1,29 +1,42 @@
 from dotenv import load_dotenv
-
 load_dotenv() 
 
 import sys
+from datetime import datetime
+
+# Import UI components from app.menus
 from app.menus.util import clear_screen, pause
-from app.client.engsel import *
-from app.service.auth import AuthInstance
-from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
-from app.menus.package import fetch_my_packages, get_packages_by_family, show_package_details
+from app.menus.bookmark import show_bookmark_menu
 from app.menus.hot import show_hot_menu, show_hot_menu2
+from app.menus.package import show_my_packages_menu
+from app.menus.family import get_packages_by_family
+
+# Import core components from app.core
+from app.core.account import get_active_account, get_account_balance
+
+# Other imports
+from app.service.auth import AuthInstance
 from app.service.sentry import enter_sentry_mode
 
 def show_main_menu(number, balance, balance_expired_at):
+    """Displays the main menu with account information."""
     clear_screen()
-    phone_number = number
-    remaining_balance = balance
-    expired_at = balance_expired_at
-    expired_at_dt = datetime.fromtimestamp(expired_at).strftime("%Y-%m-%d %H:%M:%S")
     
+    expired_at_dt_str = "N/A"
+    if balance_expired_at:
+        try:
+            # Convert timestamp to a readable date format
+            expired_at_dt = datetime.fromtimestamp(balance_expired_at)
+            expired_at_dt_str = expired_at_dt.strftime("%Y-%m-%d %H:%M:%S")
+        except (TypeError, ValueError):
+            expired_at_dt_str = str(balance_expired_at)
+
     print("-------------------------------------------------------")
     print("Informasi Akun")
-    print(f"Nomor: {phone_number}")
-    print(f"Pulsa: Rp {remaining_balance}")
-    print(f"Masa aktif: {expired_at_dt}")
+    print(f"Nomor: {number}")
+    print(f"Pulsa: Rp {balance}")
+    print(f"Masa aktif: {expired_at_dt_str}")
     print("-------------------------------------------------------")
     print("Menu:")
     print("1. Login/Ganti akun")
@@ -35,30 +48,27 @@ def show_main_menu(number, balance, balance_expired_at):
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
 
-show_menu = True
 def main():
+    """Main application loop."""
+    AuthInstance.load_tokens()  # Initialize AuthInstance once
     
     while True:
-        active_user = AuthInstance.get_active_user()
+        active_user = get_active_account()
 
-        # Logged in
-        if active_user is not None:
-            balance = get_balance(AuthInstance.api_key, active_user["tokens"]["id_token"])
-            balance_remaining = balance.get("remaining")
-            balance_expired_at = balance.get("expired_at")
+        if active_user:
+            # User is logged in
+            balance_info = get_account_balance()
+            balance_remaining = balance_info.get("remaining") if balance_info else "N/A"
+            balance_expired_at = balance_info.get("expired_at") if balance_info else None
 
             show_main_menu(active_user["number"], balance_remaining, balance_expired_at)
 
             choice = input("Pilih menu: ")
             if choice == "1":
-                selected_user_number = show_account_menu()
-                if selected_user_number:
-                    AuthInstance.set_active_user(selected_user_number)
-                else:
-                    print("No user selected or failed to load user.")
+                show_account_menu()
                 continue
             elif choice == "2":
-                fetch_my_packages()
+                show_my_packages_menu()
                 continue
             elif choice == "3":
                 show_hot_menu()
@@ -66,40 +76,34 @@ def main():
                 show_hot_menu2()
             elif choice == "5":
                 family_code = input("Enter family code (or '99' to cancel): ")
-                if family_code == "99":
-                    continue
-                get_packages_by_family(family_code)
+                if family_code != "99":
+                    get_packages_by_family(family_code)
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
                 print("Exiting the application.")
                 sys.exit(0)
-            elif choice == "t":
-                res = get_package(
-                    AuthInstance.api_key,
-                    active_user["tokens"],
-                    ""
-                )
-                print(json.dumps(res, indent=2))
-                input("Press Enter to continue...")
-                pass
             elif choice == "s":
                 enter_sentry_mode()
             else:
                 print("Invalid choice. Please try again.")
                 pause()
         else:
-            # Not logged in
+            # User is not logged in, force login/account selection
             selected_user_number = show_account_menu()
-            if selected_user_number:
-                AuthInstance.set_active_user(selected_user_number)
-            else:
-                print("No user selected or failed to load user.")
+            if not selected_user_number:
+                # This occurs if the user cancels the login/selection process
+                # and there are no accounts available.
+                print("Tidak ada akun yang dipilih. Aplikasi akan ditutup.")
+                sys.exit(0)
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
         print("\nExiting the application.")
-    # except Exception as e:
-    #     print(f"An error occurred: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        # Optionally log the full traceback here for debugging
+        import traceback
+        traceback.print_exc()
