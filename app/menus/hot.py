@@ -93,6 +93,7 @@ def show_hot_menu2():
 
         for idx, p in enumerate(hot_packages):
             print(f"{idx + 1}. {p['name']}\n   Harga: {p['price']}")
+            print("-------------------------------------------------------")
         
         print("00. Kembali ke menu utama")
         print("-------------------------------------------------------")
