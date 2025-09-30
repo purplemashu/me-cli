@@ -6,6 +6,7 @@ from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause
 from app.client.ewallet import show_multipayment_v2
 from app.client.qris import show_qris_payment_v2
+from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 
 def show_hot_menu():
@@ -165,6 +166,18 @@ def show_hot_menu2():
                     return None
                 elif input_method == "2":
                     show_qris_payment_v2(
+                        api_key,
+                        tokens,
+                        payment_items,
+                        "BUY_PACKAGE",
+                        True
+                    )
+                    input("Tekan enter untuk kembali...")
+                    in_payment_menu = False
+                    in_bookmark_menu = False
+                    return None
+                elif input_method == "3":
+                    settlement_balance(
                         api_key,
                         tokens,
                         payment_items,
