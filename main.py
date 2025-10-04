@@ -12,17 +12,15 @@ from app.menus.package import fetch_my_packages, get_packages_by_family, show_pa
 from app.menus.hot import show_hot_menu, show_hot_menu2
 from app.service.sentry import enter_sentry_mode
 
-def show_main_menu(number, balance, balance_expired_at):
+def show_main_menu(profile):
     clear_screen()
-    phone_number = number
-    remaining_balance = balance
-    expired_at = balance_expired_at
-    expired_at_dt = datetime.fromtimestamp(expired_at).strftime("%Y-%m-%d %H:%M:%S")
+    expired_at_dt = datetime.fromtimestamp(profile["balance_expired_at"]).strftime("%Y-%m-%d %H:%M:%S")
     
     print("-------------------------------------------------------")
     print("Informasi Akun")
-    print(f"Nomor: {phone_number}")
-    print(f"Pulsa: Rp {remaining_balance}")
+    print(f"Nomor: {profile['number']}")
+    print(f"Type: {profile['subscription_type']}({profile['subscriber_id']})")
+    print(f"Pulsa: Rp {profile['balance']}")
     print(f"Masa aktif: {expired_at_dt}")
     print("-------------------------------------------------------")
     print("Menu:")
@@ -46,8 +44,21 @@ def main():
             balance = get_balance(AuthInstance.api_key, active_user["tokens"]["id_token"])
             balance_remaining = balance.get("remaining")
             balance_expired_at = balance.get("expired_at")
+            
+            profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
+            sub_id = profile_data["profile"]["subscriber_id"]
+            sub_type = profile_data["profile"]["subscription_type"]
+            print(f"Subscriber ID: {sub_id}, Type: {sub_type}")
+            
+            profile = {
+                "number": active_user["number"],
+                "subscriber_id": sub_id,
+                "subscription_type": sub_type,
+                "balance": balance_remaining,
+                "balance_expired_at": balance_expired_at,
+            }
 
-            show_main_menu(active_user["number"], balance_remaining, balance_expired_at)
+            show_main_menu(profile)
 
             choice = input("Pilih menu: ")
             if choice == "1":
