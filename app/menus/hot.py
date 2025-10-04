@@ -1,6 +1,6 @@
 import requests
 
-from app.client.engsel import get_family, get_family_v2, get_package_details
+from app.client.engsel import get_family_v2, get_package_details
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause

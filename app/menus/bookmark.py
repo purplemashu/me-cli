@@ -1,8 +1,8 @@
-from app.client.engsel import get_family
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause
 from app.service.bookmark import BookmarkInstance
+from app.client.engsel import get_family_v2
 
 def show_bookmark_menu():
     api_key = AuthInstance.api_key
@@ -49,7 +49,7 @@ def show_bookmark_menu():
             family_code = selected_bm["family_code"]
             is_enterprise = selected_bm["is_enterprise"]
             
-            family_data = get_family(api_key, tokens, family_code, is_enterprise)
+            family_data = get_family_v2(api_key, tokens, family_code, is_enterprise)
             if not family_data:
                 print("Gagal mengambil data family.")
                 pause()
