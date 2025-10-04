@@ -166,7 +166,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             continue
         
         if choice == '1':
-            # purchase_package(api_key, tokens, package_option_code, is_enterprise)
             settlement_balance(
                 api_key,
                 tokens,
@@ -178,7 +177,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '2':
-            # show_multipayment(api_key, tokens, package_option_code, token_confirmation, price, item_name)
             show_multipayment_v2(
                 api_key,
                 tokens,
@@ -190,7 +188,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '3':
-            # show_qris_payment(api_key, tokens, package_option_code, token_confirmation, price, item_name)
             show_qris_payment_v2(
                 api_key,
                 tokens,
@@ -234,7 +231,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 amount_used=""
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
-            # return True
+            pause()
         elif choice == '4':
             settlement_bounty(
                 api_key=api_key,
@@ -265,7 +262,6 @@ def get_packages_by_family(
     
     packages = []
     
-    # data = get_family(api_key, tokens, family_code, is_enterprise, migration_type)
     data = get_family_v2(
         api_key,
         tokens,
@@ -276,6 +272,7 @@ def get_packages_by_family(
     
     if not data:
         print("Failed to load family data.")
+        pause()
         return None    
     
     in_package_menu = True
@@ -313,9 +310,7 @@ def get_packages_by_family(
                     "code": option["package_option_code"],
                     "option_order": option["order"]
                 })
-                
-                # print(json.dumps(option, indent=2))
-                
+                                
                 print(f"   {option_number}. {option_name} - Rp {option['price']}")
                 
                 option_number += 1
