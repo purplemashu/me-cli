@@ -17,7 +17,7 @@ def login_prompt(api_key: str):
     print("-------------------------------------------------------")
     print("Login ke MyXL")
     print("-------------------------------------------------------")
-    print("Masukan nomor XL Prabayar (Contoh 6281234567890):")
+    print("Masukan nomor XL (Contoh 6281234567890):")
     phone_number = input("Nomor: ")
 
     if not phone_number.startswith("628") or len(phone_number) < 10 or len(phone_number) > 14:
