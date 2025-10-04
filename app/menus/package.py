@@ -234,7 +234,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 amount_used=""
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
-            return True
+            # return True
         elif choice == '4':
             settlement_bounty(
                 api_key=api_key,
