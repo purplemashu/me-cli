@@ -379,7 +379,7 @@ def fetch_my_packages():
         quota_code = quota["quota_code"] # Can be used as option_code
         group_code = quota["group_code"]
         group_name = quota["group_name"]
-        name = quota["name"]
+        quota_name = quota["name"]
         family_code = "N/A"
         
         benefit_infos = []
@@ -441,7 +441,7 @@ def fetch_my_packages():
         
         print("=======================================================")
         print(f"Package {num}")
-        print(f"Name: {name}")
+        print(f"Name: {quota_name}")
         print("Benefits:")
         if len(benefit_infos) > 0:
             for bi in benefit_infos:
