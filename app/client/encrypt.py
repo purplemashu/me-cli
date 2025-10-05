@@ -1,6 +1,11 @@
-import os, hashlib, requests, brotli, zlib, base64
+import os
+import hashlib
+import requests
+import base64
+
 from random import randint
 from datetime import datetime, timezone, timedelta
+
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from dataclasses import dataclass

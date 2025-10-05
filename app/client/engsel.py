@@ -1,7 +1,20 @@
-import os, json, uuid, requests, time
+import os
+import json
+import uuid
+import requests
+
 from datetime import datetime, timezone, timedelta
 
-from app.client.encrypt import encryptsign_xdata, java_like_timestamp, ts_gmt7_without_colon, ax_api_signature, decrypt_xdata, API_KEY, get_x_signature_payment, build_encrypted_field, load_ax_fp, ax_device_id
+from app.client.encrypt import (
+    encryptsign_xdata,
+    java_like_timestamp,
+    ts_gmt7_without_colon,
+    ax_api_signature,
+    decrypt_xdata,
+    API_KEY,
+    load_ax_fp,
+    ax_device_id
+)
 
 BASE_API_URL = os.getenv("BASE_API_URL")
 BASE_CIAM_URL = os.getenv("BASE_CIAM_URL")
