@@ -154,7 +154,8 @@ def settlement_balance(
                 payment_targets,
                 token_payment,
                 "BALANCE",
-                payment_for
+                payment_for,
+                path
             )
     
     headers = {

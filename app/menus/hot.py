@@ -1,11 +1,11 @@
 import requests
 
-from app.client.engsel import get_family_v2, get_package_details
+from app.client.engsel import get_family, get_package_details
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause
-from app.client.ewallet import show_multipayment_v2
-from app.client.qris import show_qris_payment_v2
+from app.client.ewallet import show_multipayment
+from app.client.qris import show_qris_payment
 from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 
@@ -44,7 +44,7 @@ def show_hot_menu():
             family_code = selected_bm["family_code"]
             is_enterprise = selected_bm["is_enterprise"]
             
-            family_data = get_family_v2(api_key, tokens, family_code, is_enterprise)
+            family_data = get_family(api_key, tokens, family_code, is_enterprise)
             if not family_data:
                 print("Gagal mengambil data family.")
                 pause()
@@ -153,7 +153,7 @@ def show_hot_menu2():
                 
                 input_method = input("Pilih metode (nomor): ")
                 if input_method == "1":
-                    show_multipayment_v2(
+                    show_multipayment(
                         api_key,
                         tokens,
                         payment_items,
@@ -165,7 +165,7 @@ def show_hot_menu2():
                     in_bookmark_menu = False
                     return None
                 elif input_method == "2":
-                    show_qris_payment_v2(
+                    show_qris_payment(
                         api_key,
                         tokens,
                         payment_items,

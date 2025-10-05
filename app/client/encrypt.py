@@ -6,20 +6,16 @@ from Crypto.Util.Padding import pad
 from dataclasses import dataclass
 
 API_KEY = os.getenv("API_KEY")
+AES_KEY_ASCII = os.getenv("AES_KEY_ASCII")
+AX_FP_KEY = os.getenv("AX_FP_KEY")
 
 BASE_CRYPTO_URL = "https://crypto.mashu.lol/api/870"
 
 XDATA_DECRYPT_URL = f"{BASE_CRYPTO_URL}/decrypt"
 XDATA_ENCRYPT_SIGN_URL = f"{BASE_CRYPTO_URL}/encryptsign"
 PAYMENT_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-payment"
-PAYMENT_SIGN_V2_URL = f"{BASE_CRYPTO_URL}/sign-payment-v2"
 BOUNTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-bounty"
 AX_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-ax"
-
-AES_KEY_ASCII = os.getenv("AES_KEY_ASCII")
-BLOCK = AES.block_size
-
-AX_FP_KEY = os.getenv("AX_FP_KEY")
 
 @dataclass
 class DeviceInfo:
@@ -94,17 +90,6 @@ def java_like_timestamp(now: datetime) -> str:
     ms2 = f"{int(now.microsecond/10000):02d}"
     tz = now.strftime("%z"); tz_colon = tz[:-2] + ":" + tz[-2:] if tz else "+00:00"
     return now.strftime(f"%Y-%m-%dT%H:%M:%S.{ms2}") + tz_colon
-
-def decode_response(response):
-    encoding = response.headers.get("Content-Encoding", "").lower()
-    if encoding == "br":
-        return brotli.decompress(response.content).decode("utf-8")
-    elif encoding == "gzip":
-        return zlib.decompress(response.content, zlib.MAX_WBITS | 16).decode("utf-8")
-    elif encoding == "deflate":
-        return zlib.decompress(response.content).decode("utf-8")
-    else:
-        return response.text
 
 def ts_gmt7_without_colon(dt: datetime) -> str:
     if dt.tzinfo is None:
@@ -192,36 +177,6 @@ def get_x_signature_payment(
         package_code: str,
         token_payment: str,
         payment_method: str,
-        payment_for: str = "BUY_PACKAGE"
-    ) -> str:
-    headers = {
-        "Content-Type": "application/json",
-        "x-api-key": api_key,
-    }
-    
-    request_body = {
-        "access_token": access_token,
-        "sig_time_sec": sig_time_sec,
-        "package_code": package_code,
-        "token_payment": token_payment,
-        "payment_method": payment_method,
-        "payment_for": payment_for
-    }
-    
-    response = requests.request("POST", PAYMENT_SIGN_URL, json=request_body, headers=headers, timeout=30)
-    
-    if response.status_code == 200:
-        return response.json().get("x_signature")
-    else:
-        raise Exception(f"Signature generation failed: {response.text}")
-
-def get_x_signature_payment_v2(
-        api_key: str,
-        access_token: str,
-        sig_time_sec: int,
-        package_code: str,
-        token_payment: str,
-        payment_method: str,
         payment_for: str,
         path: str,
     ) -> str:
@@ -240,7 +195,7 @@ def get_x_signature_payment_v2(
         "path": path,
     }
     
-    response = requests.request("POST", PAYMENT_SIGN_V2_URL, json=request_body, headers=headers, timeout=30)
+    response = requests.request("POST", PAYMENT_SIGN_URL, json=request_body, headers=headers, timeout=30)
     
     if response.status_code == 200:
         return response.json().get("x_signature")

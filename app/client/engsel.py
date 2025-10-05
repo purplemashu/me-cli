@@ -246,7 +246,7 @@ def get_balance(api_key: str, id_token: str) -> dict:
         print("Error getting balance:", res.get("error", "Unknown error"))
         return None
 
-def get_family_v2(
+def get_family(
     api_key: str,
     tokens: dict,
     family_code: str,
@@ -416,207 +416,6 @@ def intercept_page(
     else:
         print("Intercept error")
 
-def send_payment_request(
-    api_key: str,
-    payload_dict: dict,
-    access_token: str,
-    id_token: str,
-    token_payment: str,
-    ts_to_sign: int,
-    payment_for: str = "BUY_PACKAGE"
-):
-    path = "payments/api/v8/settlement-balance"
-    package_code = payload_dict["items"][0]["item_code"]
-    
-    encrypted_payload = encryptsign_xdata(
-        api_key=api_key,
-        method="POST",
-        path=path,
-        id_token=id_token,
-        payload=payload_dict
-    )
-    
-    xtime = int(encrypted_payload["encrypted_body"]["xtime"])
-    sig_time_sec = (xtime // 1000)
-    x_requested_at = datetime.fromtimestamp(sig_time_sec, tz=timezone.utc).astimezone()
-    payload_dict["timestamp"] = ts_to_sign
-    
-    body = encrypted_payload["encrypted_body"]
-    
-    x_sig = get_x_signature_payment(
-        api_key,
-        access_token,
-        ts_to_sign,
-        package_code,
-        token_payment,
-        "BALANCE",
-        payment_for
-    )
-    
-    headers = {
-        "host": BASE_API_URL.replace("https://", ""),
-        "content-type": "application/json; charset=utf-8",
-        "user-agent": UA,
-        "x-api-key": API_KEY,
-        "authorization": f"Bearer {id_token}",
-        "x-hv": "v3",
-        "x-signature-time": str(sig_time_sec),
-        "x-signature": x_sig,
-        "x-request-id": str(uuid.uuid4()),
-        "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.7.0",
-    }
-    
-    url = f"{BASE_API_URL}/{path}"
-    resp = requests.post(url, headers=headers, data=json.dumps(body), timeout=30)
-    
-    try:
-        decrypted_body = decrypt_xdata(api_key, json.loads(resp.text))
-        return decrypted_body
-    except Exception as e:
-        print("[decrypt err]", e)
-        return resp.text
-
-def purchase_package(
-    api_key: str,
-    tokens: dict,
-    package_option_code:str,
-    is_enterprise: bool = False
-    ) -> dict:
-    package_details_data = get_package(api_key, tokens, package_option_code)
-    if not package_details_data:
-        print("Failed to get package details for purchase.")
-        return None
-    
-    token_confirmation = package_details_data["token_confirmation"]
-    payment_target = package_details_data["package_option"]["package_option_code"]
-    
-    variant_name = package_details_data["package_detail_variant"].get("name", "")
-    option_name = package_details_data["package_option"].get("name", "")
-    item_name = f"{variant_name} {option_name}".strip()
-    
-    activated_autobuy_code = package_details_data["package_option"]["activated_autobuy_code"]
-    autobuy_threshold_setting = package_details_data["package_option"]["autobuy_threshold_setting"]
-    can_trigger_rating = package_details_data["package_option"]["can_trigger_rating"]
-    payment_for = package_details_data["package_family"]["payment_for"]
-    
-    price = package_details_data["package_option"]["price"]
-    amount_str = input(f"Total amount is {price}.\nEnter value if you need to overwrite, press enter to ignore & use default amount: ")
-    amount_int = price
-    
-    # Intercept, IDK for what purpose
-    intercept_page(api_key, tokens, package_option_code, is_enterprise)
-    
-    if amount_str != "":
-        try:
-            amount_int = int(amount_str)
-        except ValueError:
-            print("Invalid overwrite input, using original price.")
-            return None
-    
-    payment_path = "payments/api/v8/payment-methods-option"
-    payment_payload = {
-        "payment_type": "PURCHASE",
-        "is_enterprise": is_enterprise,
-        "payment_target": payment_target,
-        "lang": "en",
-        "is_referral": False,
-        "token_confirmation": token_confirmation
-    }
-    
-    print("Initiating payment...")
-    payment_res = send_api_request(api_key, payment_path, payment_payload, tokens["id_token"], "POST")
-    if payment_res.get("status") != "SUCCESS":
-        print("Failed to initiate payment")
-        print(json.dumps(payment_res, indent=2))
-        input("Press Enter to continue...")
-        return None
-    
-    token_payment = payment_res["data"]["token_payment"]
-    ts_to_sign = payment_res["data"]["timestamp"]
-    
-    # Overwrite, sometimes the payment_for from package details is empty
-    if payment_for == "":
-        payment_for = "BUY_PACKAGE"
-    
-    # Settlement request
-    settlement_payload = {
-        "total_discount": 0,
-        "is_enterprise": is_enterprise,
-        "payment_token": "",
-        "token_payment": token_payment,
-        "activated_autobuy_code": activated_autobuy_code,
-        "cc_payment_type": "",
-        "is_myxl_wallet": False,
-        "pin": "",
-        "ewallet_promo_id": "",
-        "members": [],
-        "total_fee": 0,
-        "fingerprint": "",
-        "autobuy_threshold_setting": autobuy_threshold_setting,
-        "is_use_point": False,
-        "lang": "en",
-        "payment_method": "BALANCE",
-        "timestamp": int(time.time()),
-        "points_gained": 0,
-        "can_trigger_rating": can_trigger_rating,
-        "akrab_members": [],
-        "akrab_parent_alias": "",
-        "referral_unique_code": "",
-        "coupon": "",
-        "payment_for": payment_for,
-        "with_upsell": False,
-        "topup_number": "",
-        "stage_token": "",
-        "authentication_id": "",
-        "encrypted_payment_token": build_encrypted_field(urlsafe_b64=True),
-        "token": "",
-        "token_confirmation": token_confirmation,
-        "access_token": tokens["access_token"],
-        "wallet_number": "",
-        "encrypted_authentication_id": build_encrypted_field(urlsafe_b64=True),
-        "additional_data": {
-            "original_price": price,
-            "is_spend_limit_temporary": False,
-            "migration_type": "",
-            "akrab_m2m_group_id": "false",
-            "spend_limit_amount": 0,
-            "is_spend_limit": False,
-            "mission_id": "",
-            "tax": 0,
-            # "benefit_type": "NONE",
-            "quota_bonus": 0,
-            "cashtag": "",
-            "is_family_plan": False,
-            "combo_details": [],
-            "is_switch_plan": False,
-            "discount_recurring": 0,
-            "is_akrab_m2m": False,
-            "balance_type": "PREPAID_BALANCE",
-            "has_bonus": False,
-            "discount_promo": 0
-            },
-        "total_amount": amount_int,
-        "is_using_autobuy": False,
-        "items": [
-            {
-                "item_code": payment_target,
-                "product_type": "",
-                "item_price": price,
-                "item_name": item_name,
-                "tax": 0
-            }
-        ]
-    }
-    
-    print("Processing purchase...")
-    # print(f"settlement payload:\n{json.dumps(settlement_payload, indent=2)}")
-    purchase_result = send_payment_request(api_key, settlement_payload, tokens["access_token"], tokens["id_token"], token_payment, ts_to_sign, payment_for)
-    
-    print(f"Purchase result:\n{json.dumps(purchase_result, indent=2)}")
-    
-    input("Press Enter to continue...")
-
 def login_info(
     api_key: str,
     tokens: dict,
@@ -648,7 +447,7 @@ def get_package_details(
     is_enterprise: bool | None = None,
     migration_type: str | None = None
 ) -> dict | None:
-    family_data = get_family_v2(api_key, tokens, family_code, is_enterprise, migration_type)
+    family_data = get_family(api_key, tokens, family_code, is_enterprise, migration_type)
     if not family_data:
         print(f"Gagal mengambil data family untuk {family_code}.")
         return None
