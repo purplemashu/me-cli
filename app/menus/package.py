@@ -1,13 +1,12 @@
 import json
 import sys
 from app.service.auth import AuthInstance
-from app.client.engsel import get_family_v2, get_package, get_addons, get_package_details, purchase_package, send_api_request
+from app.client.engsel import get_family, get_package, get_addons, get_package_details, send_api_request
 from app.service.bookmark import BookmarkInstance
-from app.client.purchase import show_qris_payment, settlement_bounty
-from app.client.ewallet import show_multipayment
+from app.client.purchase import settlement_bounty
 from app.menus.util import clear_screen, pause, display_html
-from app.client.qris import show_qris_payment_v2
-from app.client.ewallet import show_multipayment_v2
+from app.client.qris import show_qris_payment
+from app.client.ewallet import show_multipayment
 from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 
@@ -177,7 +176,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '2':
-            show_multipayment_v2(
+            show_multipayment(
                 api_key,
                 tokens,
                 payment_items,
@@ -188,7 +187,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '3':
-            show_qris_payment_v2(
+            show_qris_payment(
                 api_key,
                 tokens,
                 payment_items,
@@ -222,7 +221,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 )
             )
 
-            show_qris_payment_v2(
+            show_qris_payment(
                 api_key,
                 tokens,
                 payment_items,
@@ -262,7 +261,7 @@ def get_packages_by_family(
     
     packages = []
     
-    data = get_family_v2(
+    data = get_family(
         api_key,
         tokens,
         family_code,

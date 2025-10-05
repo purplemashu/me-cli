@@ -7,7 +7,7 @@ import qrcode
 import time
 import requests
 from app.client.engsel import *
-from app.client.encrypt import API_KEY, build_encrypted_field, decrypt_xdata, encryptsign_xdata, java_like_timestamp, get_x_signature_payment, get_x_signature_bounty
+from app.client.encrypt import API_KEY, decrypt_xdata, encryptsign_xdata, java_like_timestamp, get_x_signature_payment
 from app.type_dict import PaymentItem
 
 def settlement_qris_v2(
@@ -136,7 +136,8 @@ def settlement_qris_v2(
             payment_targets,
             token_payment,
             "QRIS",
-            payment_for
+            payment_for,
+            path
         )
     
     headers = {
@@ -192,7 +193,7 @@ def get_qris_code(
     
     return res["data"]["qr_code"]
 
-def show_qris_payment_v2(
+def show_qris_payment(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
