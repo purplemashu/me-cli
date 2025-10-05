@@ -5,6 +5,7 @@ load_dotenv()
 import sys
 from app.menus.util import clear_screen, pause
 from app.client.engsel import *
+from app.menus.payment import show_transaction_history
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
@@ -29,6 +30,7 @@ def show_main_menu(profile):
     print("3. Beli Paket 🔥 HOT 🔥")
     print("4. Beli Paket 🔥 HOT-2 🔥")
     print("5. Beli Paket Berdasarkan Family Code")
+    print("6. Riwayat Transaksi")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -80,6 +82,8 @@ def main():
                 if family_code == "99":
                     continue
                 get_packages_by_family(family_code)
+            elif choice == "6":
+                show_transaction_history(AuthInstance.api_key, active_user["tokens"])
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
