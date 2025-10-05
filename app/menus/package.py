@@ -378,8 +378,61 @@ def fetch_my_packages():
     for quota in quotas:
         quota_code = quota["quota_code"] # Can be used as option_code
         group_code = quota["group_code"]
+        group_name = quota["group_name"]
         name = quota["name"]
         family_code = "N/A"
+        
+        benefit_infos = []
+        benefits = quota.get("benefits", [])
+        if len(benefits) > 0:
+            for benefit in benefits:
+                benefit_id = benefit.get("id", "")
+                name = benefit.get("name", "")
+                data_type = benefit.get("data_type", "N/A")
+                benefit_info = "  -----------------------------------------------------\n"
+                benefit_info += f"  ID    : {benefit_id}\n"
+                benefit_info += f"  Name  : {name}\n"
+                benefit_info += f"  Type  : {data_type}\n"
+                
+
+                remaining = benefit.get("remaining", 0)
+                total = benefit.get("total", 0)
+
+                if data_type == "DATA":
+                    if remaining >= 1_000_000_000:
+                        remaining_gb = remaining / (1024 ** 3)
+                        remaining_str = f"{remaining_gb:.2f} GB"
+                    elif remaining >= 1_000_000:
+                        remaining_mb = remaining / (1024 ** 2)
+                        remaining_str = f"{remaining_mb:.2f} MB"
+                    elif remaining >= 1_000:
+                        remaining_kb = remaining / 1024
+                        remaining_str = f"{remaining_kb:.2f} KB"
+                    else:
+                        remaining_str = str(remaining)
+                    
+                    if total >= 1_000_000_000:
+                        total_gb = total / (1024 ** 3)
+                        total_str = f"{total_gb:.2f} GB"
+                    elif total >= 1_000_000:
+                        total_mb = total / (1024 ** 2)
+                        total_str = f"{total_mb:.2f} MB"
+                    elif total >= 1_000:
+                        total_kb = total / 1024
+                        total_str = f"{total_kb:.2f} KB"
+                    else:
+                        total_str = str(total)
+                    
+                    benefit_info += f"  Kuota : {remaining_str} / {total_str}"
+                elif data_type == "VOICE":
+                    benefit_info += f"  Kuota : {remaining/60:.2f} / {total/60:.2f} menit"
+                elif data_type == "TEXT":
+                    benefit_info += f"  Kuota : {remaining} / {total} SMS"
+                else:
+                    benefit_info += f"  Kuota : {remaining} / {total}"
+
+                benefit_infos.append(benefit_info)
+            
         
         print(f"fetching package no. {num} details...")
         package_details = get_package(api_key, tokens, quota_code)
@@ -389,6 +442,12 @@ def fetch_my_packages():
         print("=======================================================")
         print(f"Package {num}")
         print(f"Name: {name}")
+        print("Benefits:")
+        if len(benefit_infos) > 0:
+            for bi in benefit_infos:
+                print(bi)
+        print("  -----------------------------------------------------")
+        print(f"Group Name: {group_name}")
         print(f"Quota Code: {quota_code}")
         print(f"Family Code: {family_code}")
         print(f"Group Code: {group_code}")
