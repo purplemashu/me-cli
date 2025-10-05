@@ -12,6 +12,7 @@ BASE_CRYPTO_URL = "https://crypto.mashu.lol/api/870"
 XDATA_DECRYPT_URL = f"{BASE_CRYPTO_URL}/decrypt"
 XDATA_ENCRYPT_SIGN_URL = f"{BASE_CRYPTO_URL}/encryptsign"
 PAYMENT_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-payment"
+PAYMENT_SIGN_V2_URL = f"{BASE_CRYPTO_URL}/sign-payment-v2"
 BOUNTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-bounty"
 AX_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-ax"
 
@@ -208,6 +209,38 @@ def get_x_signature_payment(
     }
     
     response = requests.request("POST", PAYMENT_SIGN_URL, json=request_body, headers=headers, timeout=30)
+    
+    if response.status_code == 200:
+        return response.json().get("x_signature")
+    else:
+        raise Exception(f"Signature generation failed: {response.text}")
+
+def get_x_signature_payment_v2(
+        api_key: str,
+        access_token: str,
+        sig_time_sec: int,
+        package_code: str,
+        token_payment: str,
+        payment_method: str,
+        payment_for: str,
+        path: str,
+    ) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key,
+    }
+    
+    request_body = {
+        "access_token": access_token,
+        "sig_time_sec": sig_time_sec,
+        "package_code": package_code,
+        "token_payment": token_payment,
+        "payment_method": payment_method,
+        "payment_for": payment_for,
+        "path": path,
+    }
+    
+    response = requests.request("POST", PAYMENT_SIGN_V2_URL, json=request_body, headers=headers, timeout=30)
     
     if response.status_code == 200:
         return response.json().get("x_signature")
