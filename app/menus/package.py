@@ -446,7 +446,7 @@ def fetch_my_packages():
         if len(benefit_infos) > 0:
             for bi in benefit_infos:
                 print(bi)
-        print("  -----------------------------------------------------")
+            print("  -----------------------------------------------------")
         print(f"Group Name: {group_name}")
         print(f"Quota Code: {quota_code}")
         print(f"Family Code: {family_code}")
