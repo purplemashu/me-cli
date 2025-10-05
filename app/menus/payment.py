@@ -1,8 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.client.engsel2 import get_pending_transaction, get_transaction_history
 from app.menus.util import clear_screen
-
 
 def show_transaction_history(api_key, tokens):
     clear_screen()
@@ -25,8 +24,11 @@ def show_transaction_history(api_key, tokens):
         
         for idx, transaction in enumerate(history, start=1):
             transaction_timestamp = transaction.get("timestamp", 0)
-            # manually convert timestamp to formatted date
-            formatted_time = datetime.fromtimestamp(transaction_timestamp).strftime("%d %B %Y | %H:%M")
+            dt = datetime.fromtimestamp(transaction_timestamp)
+            dt_jakarta = dt - timedelta(hours=7)
+
+            formatted_time = dt_jakarta.strftime("%d %B %Y | %H:%M WIB")
+
             print(f"{idx}. {transaction['title']} - {transaction['price']}")
             print(f"   Tanggal: {formatted_time}")
             print(f"   Metode Pembayaran: {transaction['payment_method_label']}")
