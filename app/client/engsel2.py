@@ -79,3 +79,30 @@ def get_transaction_history(api_key: str, tokens: dict) -> dict:
 # }
 
     return res.get("data")
+
+def get_tiering_info(api_key: str, tokens: dict) -> dict:
+    path = "gamification/api/v8/loyalties/tiering/info"
+
+    raw_payload = {
+        "is_enterprise": False,
+        "lang": "en"
+    }
+
+    # {
+    # "code": "000",
+    #     "data": {
+    #         "latest_tier_up_date": 1755955498,
+    #         "tier": 0,
+    #         "current_spending": 84000,
+    #         "current_point": 418,
+    #         "flag_upgrade_downgrade": "NONE"
+    #     },
+    # "status": "SUCCESS"
+    # }
+
+    print("Fetching tiering info...")
+    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    # print(json.dumps(res, indent=4))
+
+    return res.get("data")
+
