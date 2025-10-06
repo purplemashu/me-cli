@@ -3,7 +3,7 @@ import sys
 from app.service.auth import AuthInstance
 from app.client.engsel import get_family, get_package, get_addons, get_package_details, send_api_request
 from app.service.bookmark import BookmarkInstance
-from app.client.purchase import settlement_bounty
+from app.client.purchase import settlement_bounty, settlement_loyalty
 from app.menus.util import clear_screen, pause, display_html
 from app.client.qris import show_qris_payment
 from app.client.ewallet import show_multipayment
@@ -139,6 +139,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         
         if payment_for == "REDEEM_VOUCHER":
             print("4. Ambil sebagai bonus (jika tersedia)")
+            print("5. Beli dengan Poin (jika tersedia)")
         
         if option_order != -1:
             print("0. Tambah ke Bookmark")
@@ -197,6 +198,25 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
+        elif choice == '4':
+            settlement_bounty(
+                api_key=api_key,
+                tokens=tokens,
+                token_confirmation=token_confirmation,
+                ts_to_sign=ts_to_sign,
+                payment_target=package_option_code,
+                price=price,
+                item_name=variant_name
+            )
+        elif choice == '5':
+            settlement_loyalty(
+                api_key=api_key,
+                tokens=tokens,
+                token_confirmation=token_confirmation,
+                ts_to_sign=ts_to_sign,
+                payment_target=package_option_code,
+                price=price,
+            )
         elif choice == '9':
             # Testing purchase
             d = json.load(open("d.json", "r"))
@@ -231,16 +251,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             pause()
-        elif choice == '4':
-            settlement_bounty(
-                api_key=api_key,
-                tokens=tokens,
-                token_confirmation=token_confirmation,
-                ts_to_sign=ts_to_sign,
-                payment_target=package_option_code,
-                price=price,
-                item_name=variant_name
-            )
         else:
             print("Purchase cancelled.")
             return False

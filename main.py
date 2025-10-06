@@ -5,11 +5,12 @@ load_dotenv()
 import sys
 from app.menus.util import clear_screen, pause
 from app.client.engsel import *
+from app.client.engsel2 import get_tiering_info
 from app.menus.payment import show_transaction_history
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
-from app.menus.package import fetch_my_packages, get_packages_by_family, show_package_details
+from app.menus.package import fetch_my_packages, get_packages_by_family
 from app.menus.hot import show_hot_menu, show_hot_menu2
 from app.service.sentry import enter_sentry_mode
 
@@ -22,6 +23,7 @@ def show_main_menu(profile):
     print(f"Nomor: {profile['number']}")
     print(f"Type: {profile['subscription_type']}({profile['subscriber_id']})")
     print(f"Pulsa: Rp {profile['balance']}")
+    print(f"{profile['point_info']}")
     print(f"Masa aktif: {expired_at_dt}")
     print("-------------------------------------------------------")
     print("Menu:")
@@ -50,7 +52,10 @@ def main():
             profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
             sub_id = profile_data["profile"]["subscriber_id"]
             sub_type = profile_data["profile"]["subscription_type"]
-            print(f"Subscriber ID: {sub_id}, Type: {sub_type}")
+            
+            tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
+            tier = tiering_data.get("tier", 0)
+            current_point = tiering_data.get("current_point", 0)
             
             profile = {
                 "number": active_user["number"],
@@ -58,6 +63,7 @@ def main():
                 "subscription_type": sub_type,
                 "balance": balance_remaining,
                 "balance_expired_at": balance_expired_at,
+                "point_info": f"Points: {current_point} | Tier: {tier}"
             }
 
             show_main_menu(profile)

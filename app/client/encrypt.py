@@ -20,6 +20,7 @@ XDATA_DECRYPT_URL = f"{BASE_CRYPTO_URL}/decrypt"
 XDATA_ENCRYPT_SIGN_URL = f"{BASE_CRYPTO_URL}/encryptsign"
 PAYMENT_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-payment"
 BOUNTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-bounty"
+LOYALTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-loyalty"
 AX_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-ax"
 
 @dataclass
@@ -235,3 +236,28 @@ def get_x_signature_bounty(
 def ax_device_id() -> str:
     android_id = load_ax_fp() # Actually just b*llsh*tting
     return hashlib.md5(android_id.encode("utf-8")).hexdigest()
+
+def get_x_signature_loyalty(
+        api_key: str,
+        sig_time_sec: int,
+        package_code: str,
+        token_confirmation: str,
+        path: str
+    ) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key,
+    }
+    
+    request_body = {
+        "sig_time_sec": sig_time_sec,
+        "package_code": package_code,
+        "token_confirmation": token_confirmation,
+        "path": path
+    }
+    
+    response = requests.request("POST", LOYALTY_SIGN_URL, json=request_body, headers=headers, timeout=30)
+    if response.status_code == 200:
+        return response.json().get("x_signature")
+    else:
+        raise Exception(f"Signature generation failed: {response.text}")

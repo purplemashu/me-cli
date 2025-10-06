@@ -11,6 +11,7 @@ from app.client.encrypt import (
     build_encrypted_field,
     decrypt_xdata,
     encryptsign_xdata,
+    get_x_signature_loyalty,
     java_like_timestamp,
     get_x_signature_bounty
 )
@@ -171,6 +172,83 @@ def settlement_bounty(
         decrypted_body = decrypt_xdata(api_key, json.loads(resp.text))
         if decrypted_body["status"] != "SUCCESS":
             print("Failed to claim bounty.")
+            print(f"Error: {decrypted_body}")
+            return None
+        
+        print(decrypted_body)
+        
+        return decrypted_body
+    except Exception as e:
+        print("[decrypt err]", e)
+        return resp.text
+
+def settlement_loyalty(
+    api_key: str,
+    tokens: dict,
+    token_confirmation: str,
+    ts_to_sign: int,
+    payment_target: str,
+    price: int,
+):
+    # Settlement reuest
+    path = "gamification/api/v8/loyalties/tiering/exchange"
+    settlement_payload = {
+        "item_code": payment_target,
+        "amount": 0,
+        "partner": "",
+        "is_enterprise": False,
+        "item_name": "",
+        "lang": "en",
+        "points": price,
+        "timestamp": ts_to_sign,
+        "token_confirmation": token_confirmation
+    }
+
+    encrypted_payload = encryptsign_xdata(
+        api_key=api_key,
+        method="POST",
+        path=path,
+        id_token=tokens["id_token"],
+        payload=settlement_payload
+    )
+    
+    xtime = int(encrypted_payload["encrypted_body"]["xtime"])
+    sig_time_sec = (xtime // 1000)
+    x_requested_at = datetime.fromtimestamp(sig_time_sec, tz=timezone.utc).astimezone()
+    settlement_payload["timestamp"] = ts_to_sign
+    
+    body = encrypted_payload["encrypted_body"]
+
+    x_sig = get_x_signature_loyalty(
+        api_key=api_key,
+        sig_time_sec=ts_to_sign,
+        package_code=payment_target,
+        token_confirmation=token_confirmation,
+        path=path
+    )
+
+    headers = {
+        "host": BASE_API_URL.replace("https://", ""),
+        "content-type": "application/json; charset=utf-8",
+        "user-agent": UA,
+        "x-api-key": API_KEY,
+        "authorization": f"Bearer {tokens['id_token']}",
+        "x-hv": "v3",
+        "x-signature-time": str(sig_time_sec),
+        "x-signature": x_sig,
+        "x-request-id": str(uuid.uuid4()),
+        "x-request-at": java_like_timestamp(x_requested_at),
+        "x-version-app": "8.7.0",
+    }
+
+    url = f"{BASE_API_URL}/{path}"
+    print("Sending loyalty request...")
+    resp = requests.post(url, headers=headers, data=json.dumps(body), timeout=30)
+    
+    try:
+        decrypted_body = decrypt_xdata(api_key, json.loads(resp.text))
+        if decrypted_body["status"] != "SUCCESS":
+            print("Failed purchase.")
             print(f"Error: {decrypted_body}")
             return None
         
