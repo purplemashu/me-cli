@@ -208,6 +208,8 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 price=price,
                 item_name=variant_name
             )
+            input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
+            return True
         elif choice == '5':
             settlement_loyalty(
                 api_key=api_key,
@@ -217,6 +219,8 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 payment_target=package_option_code,
                 price=price,
             )
+            input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
+            return True
         elif choice == '9':
             # Testing purchase
             d = json.load(open("d.json", "r"))
