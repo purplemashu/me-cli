@@ -282,7 +282,11 @@ def get_packages_by_family(
     if not data:
         print("Failed to load family data.")
         pause()
-        return None    
+        return None
+    price_currency = "Rp"
+    rc_bonus_type = data["package_family"].get("rc_bonus_type", "")
+    if rc_bonus_type == "MYREWARDS":
+        price_currency = "Poin"
     
     in_package_menu = True
     while in_package_menu:
@@ -320,7 +324,7 @@ def get_packages_by_family(
                     "option_order": option["order"]
                 })
                                 
-                print(f"   {option_number}. {option_name} - Rp {option['price']}")
+                print(f"   {option_number}. {option_name} - {price_currency} {option['price']}")
                 
                 option_number += 1
             
