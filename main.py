@@ -53,9 +53,13 @@ def main():
             sub_id = profile_data["profile"]["subscriber_id"]
             sub_type = profile_data["profile"]["subscription_type"]
             
-            tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
-            tier = tiering_data.get("tier", 0)
-            current_point = tiering_data.get("current_point", 0)
+            point_info = "Points: N/A | Tier: N/A"
+            
+            if sub_type == "PREPAID":
+                tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
+                tier = tiering_data.get("tier", 0)
+                current_point = tiering_data.get("current_point", 0)
+                point_info = f"Points: {current_point} | Tier: {tier}"
             
             profile = {
                 "number": active_user["number"],
@@ -63,7 +67,7 @@ def main():
                 "subscription_type": sub_type,
                 "balance": balance_remaining,
                 "balance_expired_at": balance_expired_at,
-                "point_info": f"Points: {current_point} | Tier: {tier}"
+                "point_info": point_info
             }
 
             show_main_menu(profile)
