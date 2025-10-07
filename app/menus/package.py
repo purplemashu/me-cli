@@ -224,14 +224,15 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         elif choice == '9':
             # Testing purchase
             d = json.load(open("d.json", "r"))
+            d_id = 0
             pd = get_package_details(
                 api_key,
                 tokens,
-                d["fc"],
-                d["vc"],
-                d["oo"],
-                d["ie"],
-                d["mt"],
+                d[d_id]["fc"],
+                d[d_id]["vc"],
+                d[d_id]["oo"],
+                d[d_id]["ie"],
+                d[d_id]["mt"],
             )
             
             payment_items.append(
