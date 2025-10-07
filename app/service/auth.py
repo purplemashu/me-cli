@@ -32,16 +32,9 @@ class Auth:
                 with open("refresh-tokens.json", "w", encoding="utf-8") as f:
                     json.dump([], f, indent=4)
 
-            # Select the first user as active user by default
-            if self.refresh_tokens and len(self.refresh_tokens) != 0:
-                first_rt = self.refresh_tokens[0]
-                tokens = get_new_token(first_rt["refresh_token"])
-                if tokens:
-                    self.active_user = {
-                        "number": int(first_rt["number"]),
-                        "tokens": tokens
-                    }
-                
+            # Select active user from file if available
+            self.load_active_number()
+
             self.api_key = ensure_api_key()
             self.last_refresh_time = int(time.time())
 
@@ -116,10 +109,13 @@ class Auth:
             "tokens": tokens
         }
         
+        # Save active number to file
+        self.write_active_number()
+
         # Put the selected user to the top of the list
-        self.refresh_tokens = [rt for rt in self.refresh_tokens if rt["number"] != number]
-        self.refresh_tokens.insert(0, rt_entry)
-        self.write_tokens_to_file()
+        # self.refresh_tokens = [rt for rt in self.refresh_tokens if rt["number"] != number]
+        # self.refresh_tokens.insert(0, rt_entry)
+        # self.write_tokens_to_file()
 
     def renew_active_user_token(self):
         if self.active_user:
@@ -166,4 +162,20 @@ class Auth:
         with open("refresh-tokens.json", "w", encoding="utf-8") as f:
             json.dump(self.refresh_tokens, f, indent=4)
     
+    def write_active_number(self):
+        if self.active_user:
+            with open("active.number", "w", encoding="utf-8") as f:
+                f.write(str(self.active_user["number"]))
+        else:
+            if os.path.exists("active.number"):
+                os.remove("active.number")
+    
+    def load_active_number(self):
+        if os.path.exists("active.number"):
+            with open("active.number", "r", encoding="utf-8") as f:
+                number_str = f.read().strip()
+                if number_str.isdigit():
+                    number = int(number_str)
+                    self.set_active_user(number)
+
 AuthInstance = Auth()
