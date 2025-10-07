@@ -4,12 +4,14 @@ from app.client.engsel2 import get_pending_transaction, get_transaction_history
 from app.menus.util import clear_screen
 
 def show_transaction_history(api_key, tokens):
-    clear_screen()
-    print("-------------------------------------------------------")
-    print("Riwayat Transaksi")
-    print("-------------------------------------------------------")
     in_transaction_menu = True
+
     while in_transaction_menu:
+        clear_screen()
+        print("-------------------------------------------------------")
+        print("Riwayat Transaksi")
+        print("-------------------------------------------------------")
+
         data = None
         history = []
         try:
