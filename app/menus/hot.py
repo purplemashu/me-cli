@@ -178,7 +178,7 @@ def show_hot_menu2():
                     in_bookmark_menu = False
                     return None
                 elif input_method == "1":
-                    print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]["item_price"]}!!!")
+                    print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]['item_price']}!!!")
                     balance_answer = input("Apakah anda yakin ingin melanjutkan pembelian? (y/n): ")
                     if balance_answer.lower() != "y":
                         print("Pembelian dibatalkan oleh user.")
