@@ -147,12 +147,13 @@ def show_hot_menu2():
             in_payment_menu = True
             while in_payment_menu:
                 print("Pilih Metode Pembelian:")
-                print("1. E-Wallet")
-                print("2. QRIS")
+                print("1. Balance")
+                print("2. E-Wallet")
+                print("3. QRIS")
                 print("00. Kembali ke menu sebelumnya")
                 
                 input_method = input("Pilih metode (nomor): ")
-                if input_method == "1":
+                if input_method == "2":
                     show_multipayment(
                         api_key,
                         tokens,
@@ -164,7 +165,7 @@ def show_hot_menu2():
                     in_payment_menu = False
                     in_bookmark_menu = False
                     return None
-                elif input_method == "2":
+                elif input_method == "3":
                     show_qris_payment(
                         api_key,
                         tokens,
@@ -176,7 +177,7 @@ def show_hot_menu2():
                     in_payment_menu = False
                     in_bookmark_menu = False
                     return None
-                elif input_method == "3":
+                elif input_method == "1":
                     settlement_balance(
                         api_key,
                         tokens,
@@ -194,8 +195,7 @@ def show_hot_menu2():
                 else:
                     print("Metode tidak valid. Silahkan coba lagi.")
                     pause()
-                    continue       
-            
+                    continue
         else:
             print("Input tidak valid. Silahkan coba lagi.")
             pause()
