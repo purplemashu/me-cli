@@ -171,8 +171,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 tokens,
                 payment_items,
                 payment_for,
-                True,
-                amount_used="first"
+                True
             )
             input("Silahkan cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
@@ -183,7 +182,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 payment_items,
                 payment_for,
                 True,
-                amount_used="first"
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
