@@ -144,6 +144,12 @@ def show_hot_menu2():
             print(f"Detail: {selected_package['detail']}")
             print("=======================================================")
             
+            payment_for = selected_package.get("payment_for", "BUY_PACKAGE")
+            ask_overwrite = selected_package.get("ask_overwrite", False)
+            overwrite_amount = int(selected_package.get("overwrite_amount", -1))
+            token_confirmation_idx = int(selected_package.get("token_confirmation_idx", 0))
+            amount_idx = int(selected_package.get("amount_idx", -1))
+
             in_payment_menu = True
             while in_payment_menu:
                 print("Pilih Metode Pembelian:")
@@ -158,25 +164,30 @@ def show_hot_menu2():
                         api_key,
                         tokens,
                         payment_items,
-                        "BUY_PACKAGE",
-                        True
+                        payment_for,
+                        ask_overwrite,
+                        overwrite_amount,
+                        token_confirmation_idx,
+                        amount_idx,
                     )
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
                     in_bookmark_menu = False
-                    return None
                 elif input_method == "3":
                     show_qris_payment(
                         api_key,
                         tokens,
                         payment_items,
-                        "BUY_PACKAGE",
-                        True
+                        payment_for,
+                        ask_overwrite,
+                        overwrite_amount,
+                        token_confirmation_idx,
+                        amount_idx,
                     )
+
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
                     in_bookmark_menu = False
-                    return None
                 elif input_method == "1":
                     print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]['item_price']}!!!")
                     balance_answer = input("Apakah anda yakin ingin melanjutkan pembelian? (y/n): ")
@@ -196,7 +207,6 @@ def show_hot_menu2():
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
                     in_bookmark_menu = False
-                    return None
                 elif input_method == "00":
                     in_payment_menu = False
                     continue
