@@ -9,7 +9,7 @@ from app.client.engsel import BASE_API_URL, UA, intercept_page, send_api_request
 from app.client.encrypt import API_KEY, decrypt_xdata, encryptsign_xdata, java_like_timestamp, get_x_signature_payment
 from app.type_dict import PaymentItem
 
-def settlement_multipayment_v2(
+def settlement_multipayment(
     api_key: str,
     tokens: dict,
     items: list[PaymentItem],
@@ -17,20 +17,31 @@ def settlement_multipayment_v2(
     payment_method,
     payment_for,
     ask_overwrite: bool,
-    amount_used: str = ""
+    overwrite_amount: int = -1,
+    token_confirmation_idx: int = 0,
+    amount_idx: int = -1,
 ):
-    token_confirmation = items[0]["token_confirmation"]
+    # Sanity check
+    if overwrite_amount == -1 and not ask_overwrite:
+        print("Either ask_overwrite must be True or overwrite_amount must be set.")
+        return None
+
+    token_confirmation = items[token_confirmation_idx]["token_confirmation"]
     payment_targets = ""
     for item in items:
         if payment_targets != "":
             payment_targets += ";"
         payment_targets += item["item_code"]
-        
-    amount_int = items[-1]["item_price"]
-    if amount_used == "first":
-        amount_int = items[0]["item_price"]
+
+    amount_int = 0
     
-    # Overwrite
+    # Determine amount to use
+    if overwrite_amount != -1:
+        amount_int = overwrite_amount
+    elif amount_idx == -1:
+        amount_int = items[amount_idx]["item_price"]
+
+    # If Overwrite
     if ask_overwrite:
         print(f"Total amount is {amount_int}.\nEnter new amount if you need to overwrite.")
         amount_str = input("Press enter to ignore & use default amount: ")
@@ -48,7 +59,7 @@ def settlement_multipayment_v2(
     payment_payload = {
         "payment_type": "PURCHASE",
         "is_enterprise": False,
-        "payment_target": items[0]["item_code"],
+        "payment_target": items[token_confirmation_idx]["item_code"],
         "lang": "en",
         "is_referral": False,
         "token_confirmation": token_confirmation
@@ -159,7 +170,9 @@ def show_multipayment(
     items: list[PaymentItem],
     payment_for,
     ask_overwrite: bool,
-    amount_used: str = "",
+    overwrite_amount: int = -1,
+    token_confirmation_idx: int = 0,
+    amount_idx: int = -1,
 ):
     choosing_payment_method = True
     while choosing_payment_method:
@@ -194,7 +207,7 @@ def show_multipayment(
             print("Pilihan tidak valid.")
             continue
     
-    settlement_response = settlement_multipayment_v2(
+    settlement_response = settlement_multipayment(
         api_key,
         tokens,
         items,
@@ -202,7 +215,9 @@ def show_multipayment(
         payment_method,
         payment_for,
         ask_overwrite,
-        amount_used,
+        overwrite_amount,
+        token_confirmation_idx,
+        amount_idx,
     )
     
     # print(f"Settlement response: {json.dumps(settlement_response, indent=2)}")

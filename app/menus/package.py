@@ -194,7 +194,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 payment_items,
                 payment_for,
                 True,
-                amount_used="first"
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
@@ -235,8 +234,8 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 d[d_id]["mt"],
             )
             
-            payment_items.append(
-                PaymentItem(
+            payment_items.insert(
+                0,PaymentItem(
                     item_code=pd["package_option"]["package_option_code"],
                     product_type="",
                     item_price=pd["package_option"]["price"],
@@ -250,9 +249,8 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 api_key,
                 tokens,
                 payment_items,
-                payment_for,
+                "SHARE_PACKAGE",
                 True,
-                amount_used=""
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             pause()
