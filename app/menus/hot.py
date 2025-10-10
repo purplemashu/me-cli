@@ -160,13 +160,14 @@ def show_hot_menu2():
                 
                 input_method = input("Pilih metode (nomor): ")
                 if input_method == "1":
-                    print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]['item_price']}!!!")
-                    balance_answer = input("Apakah anda yakin ingin melanjutkan pembelian? (y/n): ")
-                    if balance_answer.lower() != "y":
-                        print("Pembelian dibatalkan oleh user.")
-                        pause()
-                        in_payment_menu = False
-                        continue
+                    if overwrite_amount == -1:
+                        print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]['item_price']}!!!")
+                        balance_answer = input("Apakah anda yakin ingin melanjutkan pembelian? (y/n): ")
+                        if balance_answer.lower() != "y":
+                            print("Pembelian dibatalkan oleh user.")
+                            pause()
+                            in_payment_menu = False
+                            continue
 
                     settlement_balance(
                         api_key,
