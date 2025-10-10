@@ -159,7 +159,29 @@ def show_hot_menu2():
                 print("00. Kembali ke menu sebelumnya")
                 
                 input_method = input("Pilih metode (nomor): ")
-                if input_method == "2":
+                if input_method == "1":
+                    print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]['item_price']}!!!")
+                    balance_answer = input("Apakah anda yakin ingin melanjutkan pembelian? (y/n): ")
+                    if balance_answer.lower() != "y":
+                        print("Pembelian dibatalkan oleh user.")
+                        pause()
+                        in_payment_menu = False
+                        continue
+
+                    settlement_balance(
+                        api_key,
+                        tokens,
+                        payment_items,
+                        payment_for,
+                        ask_overwrite,
+                        overwrite_amount,
+                        token_confirmation_idx,
+                        amount_idx,
+                    )
+                    input("Tekan enter untuk kembali...")
+                    in_payment_menu = False
+                    in_bookmark_menu = False
+                elif input_method == "2":
                     show_multipayment(
                         api_key,
                         tokens,
@@ -185,25 +207,6 @@ def show_hot_menu2():
                         amount_idx,
                     )
 
-                    input("Tekan enter untuk kembali...")
-                    in_payment_menu = False
-                    in_bookmark_menu = False
-                elif input_method == "1":
-                    print(f"Pastikan sisa balance KURANG DARI Rp{payment_items[-1]['item_price']}!!!")
-                    balance_answer = input("Apakah anda yakin ingin melanjutkan pembelian? (y/n): ")
-                    if balance_answer.lower() != "y":
-                        print("Pembelian dibatalkan oleh user.")
-                        pause()
-                        in_payment_menu = False
-                        continue
-
-                    settlement_balance(
-                        api_key,
-                        tokens,
-                        payment_items,
-                        "BUY_PACKAGE",
-                        True
-                    )
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False
                     in_bookmark_menu = False

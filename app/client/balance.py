@@ -14,21 +14,31 @@ def settlement_balance(
     items: list[PaymentItem],
     payment_for: str,
     ask_overwrite: bool,
-    amount_used: str = ""
+    overwrite_amount: int = -1,
+    token_confirmation_idx: int = 0,
+    amount_idx: int = -1,
 ):
-    token_confirmation = items[0]["token_confirmation"]
+    # Sanity check
+    if overwrite_amount == -1 and not ask_overwrite:
+        print("Either ask_overwrite must be True or overwrite_amount must be set.")
+        return None
+
+    token_confirmation = items[token_confirmation_idx]["token_confirmation"]
     payment_targets = ""
     for item in items:
         if payment_targets != "":
             payment_targets += ";"
         payment_targets += item["item_code"]
+
+    amount_int = 0
     
-    amount_int = items[-1]["item_price"]
-    
-    if amount_used == "first":
-        amount_int = items[0]["item_price"]
-    
-    # Overwrite
+    # Determine amount to use
+    if overwrite_amount != -1:
+        amount_int = overwrite_amount
+    elif amount_idx == -1:
+        amount_int = items[amount_idx]["item_price"]
+
+    # If Overwrite
     if ask_overwrite:
         print(f"Total amount is {amount_int}.\nEnter new amount if you need to overwrite.")
         amount_str = input("Press enter to ignore & use default amount: ")
@@ -38,7 +48,6 @@ def settlement_balance(
             except ValueError:
                 print("Invalid overwrite input, using original price.")
                 # return None
-    
     intercept_page(api_key, tokens, items[0]["item_code"], False)
     
     # Get payment methods
