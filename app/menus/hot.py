@@ -146,9 +146,9 @@ def show_hot_menu2():
             
             payment_for = selected_package.get("payment_for", "BUY_PACKAGE")
             ask_overwrite = selected_package.get("ask_overwrite", False)
-            overwrite_amount = int(selected_package.get("overwrite_amount", -1))
-            token_confirmation_idx = int(selected_package.get("token_confirmation_idx", 0))
-            amount_idx = int(selected_package.get("amount_idx", -1))
+            overwrite_amount = selected_package.get("overwrite_amount", -1)
+            token_confirmation_idx = selected_package.get("token_confirmation_idx", 0)
+            amount_idx = selected_package.get("amount_idx", -1)
 
             in_payment_menu = True
             while in_payment_menu:
