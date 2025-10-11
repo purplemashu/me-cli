@@ -52,6 +52,7 @@ def purchase_by_family(
     family_name = family_data["package_family"]["name"]
     variants = family_data["package_variants"]
     
+    print("========================================")
     successful_purchases = []
     for variant in variants:
         variant_name = variant["name"]
@@ -156,10 +157,13 @@ def purchase_by_family(
             except Exception as e:
                 print(f"Exception occurred while creating order: {e}")
                 res = None
+        print("========================================")
     
     print(f"Total successful purchases for family {family_name}: {len(successful_purchases)}")
     if len(successful_purchases) > 0:
+        print("========================================")
         print("Successful purchases:")
         for purchase in successful_purchases:
             print(f"- {purchase}")
+    print("========================================")
     pause()
