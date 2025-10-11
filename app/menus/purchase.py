@@ -9,6 +9,7 @@ from app.client.balance import settlement_balance
 def purchase_by_family(
     family_code: str,
     use_decoy: bool,
+    pause_on_success: bool = True,
     token_confirmation_idx: int = 0,
 ):
     api_key = AuthInstance.api_key
@@ -158,12 +159,21 @@ def purchase_by_family(
                             successful_purchases.append(
                                 f"{variant_name}|{option_order}. {option_name} - {option_price}"
                             )
-                            print("Purchase successful!")
+                            
+                            if pause_on_success:
+                                print("Purchase successful!")
+                                pause()
+                            else:
+                                print("Purchase successful!")
                 else:
                     successful_purchases.append(
                         f"{variant_name}|{option_order}. {option_name} - {option_price}"
                     )
-                    print("Purchase successful!")
+                    if pause_on_success:
+                        print("Purchase successful!")
+                        pause()
+                    else:
+                        print("Purchase successful!")
 
             except Exception as e:
                 print(f"Exception occurred while creating order: {e}")
