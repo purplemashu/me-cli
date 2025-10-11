@@ -54,6 +54,11 @@ def purchase_by_family(
     
     print("-------------------------------------------------------")
     successful_purchases = []
+    packages_count = 0
+    for variant in variants:
+        packages_count += len(variant["package_options"])
+    
+    purchase_count = 0
     for variant in variants:
         variant_name = variant["name"]
         for option in variant["package_options"]:
@@ -63,6 +68,8 @@ def purchase_by_family(
             option_order = option["order"]
             option_price = option["price"]
             
+            purchase_count += 1
+            print(f"Pruchase {purchase_count} of {packages_count}...")
             print(f"Trying to buy: {variant_name} - {option_order}. {option_name} - {option['price']}")
             
             payment_items = []
@@ -117,6 +124,11 @@ def purchase_by_family(
                 )
             
             res = None
+            
+            overwrite_amount = target_package_detail["package_option"]["price"]
+            if use_decoy:
+                overwrite_amount += decoy_package_detail["package_option"]["price"]
+
             try:
                 res = settlement_balance(
                     api_key,
@@ -124,8 +136,7 @@ def purchase_by_family(
                     payment_items,
                     "BUY_PACKAGE",
                     False,
-                    overwrite_amount=decoy_package_detail["package_option"]["price"]
-                    +target_package_detail["package_option"]["price"],
+                    overwrite_amount,
                 )
                 
                 if res and res.get("status", "") != "SUCCESS":
