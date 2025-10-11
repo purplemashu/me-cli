@@ -63,7 +63,7 @@ def purchase_by_family(
             option_order = option["order"]
             option_price = option["price"]
             
-            print(f"Trying to buy: {family_name} - {variant_name} - {option_name} - {option['price']}")
+            print(f"Trying to buy: {variant_name} - {option_order}. {option_name} - {option['price']}")
             
             payment_items = []
             
