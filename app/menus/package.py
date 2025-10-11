@@ -1,5 +1,7 @@
 import json
 import sys
+
+import requests
 from app.service.auth import AuthInstance
 from app.client.engsel import get_family, get_package, get_addons, get_package_details, send_api_request
 from app.service.bookmark import BookmarkInstance
@@ -132,14 +134,15 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("1. Beli dengan Pulsa")
         print("2. Beli dengan E-Wallet")
         print("3. Bayar dengan QRIS")
+        print("4. Pulsa + Decoy XCP")
         
         # Sometimes payment_for is empty, so we set default to BUY_PACKAGE
         if payment_for == "":
             payment_for = "BUY_PACKAGE"
         
         if payment_for == "REDEEM_VOUCHER":
-            print("4. Ambil sebagai bonus (jika tersedia)")
-            print("5. Beli dengan Poin (jika tersedia)")
+            print("5. Ambil sebagai bonus (jika tersedia)")
+            print("6. Beli dengan Poin (jika tersedia)")
         
         if option_order != -1:
             print("0. Tambah ke Bookmark")
@@ -196,6 +199,68 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '4':
+            # Balance; Decoy XCP
+            url = "https://me.mashu.lol/pg-decoy-xcp.json"
+            
+            response = requests.get(url, timeout=30)
+            if response.status_code != 200:
+                print("Gagal mengambil data decoy package.")
+                pause()
+                return None
+            
+            decoy_data = response.json()
+            decoy_package_detail = get_package_details(
+                api_key,
+                tokens,
+                decoy_data["family_code"],
+                decoy_data["variant_code"],
+                decoy_data["order"],
+                decoy_data["is_enterprise"],
+                decoy_data["migration_type"],
+            )
+
+            payment_items.append(
+                PaymentItem(
+                    item_code=decoy_package_detail["package_option"]["package_option_code"],
+                    product_type="",
+                    item_price=decoy_package_detail["package_option"]["price"],
+                    item_name=decoy_package_detail["package_option"]["name"],
+                    tax=0,
+                    token_confirmation=decoy_package_detail["token_confirmation"],
+                )
+            )
+
+            overwrite_amount = price + decoy_package_detail["package_option"]["price"]
+            res = settlement_balance(
+                api_key,
+                tokens,
+                payment_items,
+                "BUY_PACKAGE",
+                False,
+                overwrite_amount,
+            )
+            
+            if res and res.get("status", "") != "SUCCESS":
+                error_msg = res.get("message", "Unknown error")
+                if "Bizz-err.Amount.Total" in error_msg:
+                    error_msg_arr = error_msg.split("=")
+                    valid_amount = int(error_msg_arr[1].strip())
+                    
+                    print(f"Adjusted total amount to: {valid_amount}")
+                    res = settlement_balance(
+                        api_key,
+                        tokens,
+                        payment_items,
+                        "BUY_PACKAGE",
+                        False,
+                        valid_amount,
+                    )
+                    if res and res.get("status", "") == "SUCCESS":
+                        print("Purchase successful!")
+            else:
+                print("Purchase successful!")
+            pause()
+        elif choice == '5':
             settlement_bounty(
                 api_key=api_key,
                 tokens=tokens,
@@ -207,7 +272,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
-        elif choice == '5':
+        elif choice == '6':
             settlement_loyalty(
                 api_key=api_key,
                 tokens=tokens,
@@ -218,40 +283,6 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
-        elif choice == '9':
-            # Testing purchase
-            d = json.load(open("d.json", "r"))
-            d_id = 0
-            pd = get_package_details(
-                api_key,
-                tokens,
-                d[d_id]["fc"],
-                d[d_id]["vc"],
-                d[d_id]["oo"],
-                d[d_id]["ie"],
-                d[d_id]["mt"],
-            )
-            
-            payment_items.insert(
-                0,PaymentItem(
-                    item_code=pd["package_option"]["package_option_code"],
-                    product_type="",
-                    item_price=pd["package_option"]["price"],
-                    item_name=pd["package_option"]["name"],
-                    tax=0,
-                    token_confirmation=pd["token_confirmation"],
-                )
-            )
-
-            show_qris_payment(
-                api_key,
-                tokens,
-                payment_items,
-                "SHARE_PACKAGE",
-                True,
-            )
-            input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
-            pause()
         else:
             print("Purchase cancelled.")
             return False
