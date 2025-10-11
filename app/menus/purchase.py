@@ -162,3 +162,4 @@ def purchase_by_family(
         print("Successful purchases:")
         for purchase in successful_purchases:
             print(f"- {purchase}")
+    pause()
