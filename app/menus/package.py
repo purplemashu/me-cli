@@ -260,6 +260,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             else:
                 print("Purchase successful!")
             pause()
+            return True
         elif choice == '5':
             settlement_bounty(
                 api_key=api_key,
