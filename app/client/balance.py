@@ -55,7 +55,7 @@ def settlement_balance(
     payment_payload = {
         "payment_type": "PURCHASE",
         "is_enterprise": False,
-        "payment_target": items[0]["item_code"],
+        "payment_target": items[token_confirmation_idx]["item_code"],
         "lang": "en",
         "is_referral": False,
         "token_confirmation": token_confirmation
