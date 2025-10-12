@@ -129,6 +129,8 @@ def ax_api_signature(
     response = requests.request("POST", AX_SIGN_URL, json=request_body, headers=headers, timeout=30)
     if response.status_code == 200:
         return response.json().get("ax_signature")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Signature generation failed: {response.text}")
     
@@ -155,6 +157,8 @@ def encryptsign_xdata(
     
     if response.status_code == 200:
         return response.json()
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Encryption failed: {response.text}")
     
@@ -174,6 +178,8 @@ def decrypt_xdata(
     
     if response.status_code == 200:
         return response.json().get("plaintext")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Decryption failed: {response.text}")
 
@@ -206,6 +212,8 @@ def get_x_signature_payment(
     
     if response.status_code == 200:
         return response.json().get("x_signature")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Signature generation failed: {response.text}")
     
@@ -231,6 +239,8 @@ def get_x_signature_bounty(
     response = requests.request("POST", BOUNTY_SIGN_URL, json=request_body, headers=headers, timeout=30)
     if response.status_code == 200:
         return response.json().get("x_signature")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Signature generation failed: {response.text}")
 
@@ -260,5 +270,7 @@ def get_x_signature_loyalty(
     response = requests.request("POST", LOYALTY_SIGN_URL, json=request_body, headers=headers, timeout=30)
     if response.status_code == 200:
         return response.json().get("x_signature")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Signature generation failed: {response.text}")

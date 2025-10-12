@@ -1,3 +1,4 @@
+from random import randint
 import requests
 from app.client.engsel import get_family, get_package_details
 from app.menus.util import pause
@@ -106,7 +107,7 @@ def purchase_by_family(
                     item_code=target_package_detail["package_option"]["package_option_code"],
                     product_type="",
                     item_price=target_package_detail["package_option"]["price"],
-                    item_name=str(option["order"]) + target_package_detail["package_option"]["name"],
+                    item_name=str(randint(1000, 9999)) + target_package_detail["package_option"]["name"],
                     tax=0,
                     token_confirmation=target_package_detail["token_confirmation"],
                 )
@@ -118,7 +119,7 @@ def purchase_by_family(
                         item_code=decoy_package_detail["package_option"]["package_option_code"],
                         product_type="",
                         item_price=decoy_package_detail["package_option"]["price"],
-                        item_name=str(option["order"]) + decoy_package_detail["package_option"]["name"],
+                        item_name=str(randint(1000, 9999)) + decoy_package_detail["package_option"]["name"],
                         tax=0,
                         token_confirmation=decoy_package_detail["token_confirmation"],
                     )
