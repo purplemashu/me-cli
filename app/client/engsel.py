@@ -5,6 +5,7 @@ import requests
 
 from datetime import datetime, timezone, timedelta
 
+from app.service.auth import AuthInstance
 from app.client.encrypt import (
     encryptsign_xdata,
     java_like_timestamp,
@@ -82,7 +83,7 @@ def get_otp(contact: str) -> str:
         print(f"Error requesting OTP: {e}")
         return None
     
-def submit_otp(api_key: str, contact: str, code: str):
+def submit_otp(contact: str, code: str):
     if not validate_contact(contact):
         print("Invalid number")
         return None
@@ -96,7 +97,7 @@ def submit_otp(api_key: str, contact: str, code: str):
     now_gmt7 = datetime.now(timezone(timedelta(hours=7)))
     ts_for_sign = ts_gmt7_without_colon(now_gmt7)
     ts_header = ts_gmt7_without_colon(now_gmt7 - timedelta(minutes=5))
-    signature = ax_api_signature(api_key, ts_for_sign, contact, code, "SMS")
+    signature = ax_api_signature(AuthInstance.api_key, ts_for_sign, contact, code, "SMS")
 
     payload = f"contactType=SMS&code={code}&grant_type=password&contact={contact}&scope=openid"
 
@@ -173,14 +174,13 @@ def get_new_token(refresh_token: str) -> str:
     return body
 
 def send_api_request(
-    api_key: str,
     path: str,
     payload_dict: dict,
     id_token: str,
     method: str = "POST",
 ):
     encrypted_payload = encryptsign_xdata(
-        api_key=api_key,
+        api_key=AuthInstance.api_key,
         method=method,
         path=path,
         id_token=id_token,
@@ -218,14 +218,14 @@ def send_api_request(
     # print(f"Response body: {resp.text}")
 
     try:
-        decrypted_body = decrypt_xdata(api_key, json.loads(resp.text))
+        decrypted_body = decrypt_xdata(AuthInstance.api_key, json.loads(resp.text))
         # print(f"Decrypted body: {json.dumps(decrypted_body, indent=2)}")
         return decrypted_body
     except Exception as e:
         print("[decrypt err]", e)
         return resp.text
 
-def get_profile(api_key: str, access_token: str, id_token: str) -> dict:
+def get_profile(access_token: str, id_token: str) -> dict:
     path = "api/v8/profile"
 
     raw_payload = {
@@ -236,11 +236,11 @@ def get_profile(api_key: str, access_token: str, id_token: str) -> dict:
     }
 
     print("Fetching profile...")
-    res = send_api_request(api_key, path, raw_payload, id_token, "POST")
+    res = send_api_request(path, raw_payload, id_token, "POST")
 
     return res.get("data")
 
-def get_balance(api_key: str, id_token: str) -> dict:
+def get_balance(id_token: str) -> dict:
     path = "api/v8/packages/balance-and-credit"
     
     raw_payload = {
@@ -249,7 +249,7 @@ def get_balance(api_key: str, id_token: str) -> dict:
     }
     
     print("Fetching balance...")
-    res = send_api_request(api_key, path, raw_payload, id_token, "POST")
+    res = send_api_request(path, raw_payload, id_token, "POST")
     # print(f"[GB-256]:\n{json.dumps(res, indent=2)}")
     
     if "data" in res:
@@ -260,7 +260,6 @@ def get_balance(api_key: str, id_token: str) -> dict:
         return None
 
 def get_family(
-    api_key: str,
     tokens: dict,
     family_code: str,
     is_enterprise: bool | None = None,
@@ -315,7 +314,7 @@ def get_family(
                 "lang": "en"
             }
         
-            res = send_api_request(api_key, path, payload_dict, id_token, "POST")
+            res = send_api_request(path, payload_dict, id_token, "POST")
             # print(f"[get fam 320]:\n{json.dumps(res, indent=2)}")
             if res.get("status") != "SUCCESS":
                 continue
@@ -332,7 +331,7 @@ def get_family(
 
     return family_data
 
-def get_families(api_key: str, tokens: dict, package_category_code: str) -> dict:
+def get_families(tokens: dict, package_category_code: str) -> dict:
     print("Fetching families...")
     path = "api/v8/xl-stores/families"
     payload_dict = {
@@ -345,7 +344,7 @@ def get_families(api_key: str, tokens: dict, package_category_code: str) -> dict
         "lang": "en"
     }
     
-    res = send_api_request(api_key, path, payload_dict, tokens["id_token"], "POST")
+    res = send_api_request(path, payload_dict, tokens["id_token"], "POST")
     if res.get("status") != "SUCCESS":
         print(f"Failed to get families for category {package_category_code}")
         print(f"Res:{res}")
@@ -355,7 +354,6 @@ def get_families(api_key: str, tokens: dict, package_category_code: str) -> dict
     return res["data"]
 
 def get_package(
-    api_key: str,
     tokens: dict,
     package_option_code: str,
     package_family_code: str = "",
@@ -380,7 +378,7 @@ def get_package(
     
     print("Fetching package...")
     # print(f"Payload: {json.dumps(raw_payload, indent=2)}")
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
     
     if "data" not in res:
         print(json.dumps(res, indent=2))
@@ -389,7 +387,7 @@ def get_package(
         
     return res["data"]
 
-def get_addons(api_key: str, tokens: dict, package_option_code: str) -> dict:
+def get_addons(tokens: dict, package_option_code: str) -> dict:
     path = "api/v8/xl-stores/options/addons-pinky-box"
     
     raw_payload = {
@@ -399,7 +397,7 @@ def get_addons(api_key: str, tokens: dict, package_option_code: str) -> dict:
     }
     
     print("Fetching addons...")
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
     
     if "data" not in res:
         print("Error getting addons:", res.get("error", "Unknown error"))
@@ -408,7 +406,6 @@ def get_addons(api_key: str, tokens: dict, package_option_code: str) -> dict:
     return res["data"]
 
 def intercept_page(
-    api_key: str,
     tokens: dict,
     option_code: str,
     is_enterprise: bool = False
@@ -422,7 +419,7 @@ def intercept_page(
     }
     
     print("Fetching intercept page...")
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
     
     if "status" in res:
         print(f"Intercept status: {res['status']}")
@@ -430,7 +427,6 @@ def intercept_page(
         print("Intercept error")
 
 def login_info(
-    api_key: str,
     tokens: dict,
     is_enterprise: bool = False
 ):
@@ -442,7 +438,7 @@ def login_info(
         "lang": "en"
     }
     
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
     
     if "data" not in res:
         print(json.dumps(res, indent=2))
@@ -452,7 +448,6 @@ def login_info(
     return res["data"]
 
 def get_package_details(
-    api_key: str,
     tokens: dict,
     family_code: str,
     variant_code: str,
@@ -460,7 +455,7 @@ def get_package_details(
     is_enterprise: bool | None = None,
     migration_type: str | None = None
 ) -> dict | None:
-    family_data = get_family(api_key, tokens, family_code, is_enterprise, migration_type)
+    family_data = get_family(tokens, family_code, is_enterprise, migration_type)
     if not family_data:
         print(f"Gagal mengambil data family untuk {family_code}.")
         return None
@@ -483,7 +478,7 @@ def get_package_details(
         print("Gagal menemukan opsi paket yang sesuai.")
         return None
         
-    package_details_data = get_package(api_key, tokens, option_code)
+    package_details_data = get_package(tokens, option_code)
     if not package_details_data:
         print("Gagal mengambil detail paket.")
         return None

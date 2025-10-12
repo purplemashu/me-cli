@@ -47,18 +47,18 @@ def main():
 
         # Logged in
         if active_user is not None:
-            balance = get_balance(AuthInstance.api_key, active_user["tokens"]["id_token"])
+            balance = get_balance(active_user["tokens"]["id_token"])
             balance_remaining = balance.get("remaining")
             balance_expired_at = balance.get("expired_at")
             
-            profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
+            profile_data = get_profile(active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
             sub_id = profile_data["profile"]["subscriber_id"]
             sub_type = profile_data["profile"]["subscription_type"]
             
             point_info = "Points: N/A | Tier: N/A"
             
             if sub_type == "PREPAID":
-                tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
+                tiering_data = get_tiering_info(active_user["tokens"])
                 tier = tiering_data.get("tier", 0)
                 current_point = tiering_data.get("current_point", 0)
                 point_info = f"Points: {current_point} | Tier: {tier}"
@@ -95,7 +95,7 @@ def main():
                     continue
                 get_packages_by_family(family_code)
             elif choice == "6":
-                show_transaction_history(AuthInstance.api_key, active_user["tokens"])
+                show_transaction_history(active_user["tokens"])
             elif choice == "7":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
@@ -110,7 +110,6 @@ def main():
                 sys.exit(0)
             elif choice == "t":
                 res = get_package(
-                    AuthInstance.api_key,
                     active_user["tokens"],
                     ""
                 )

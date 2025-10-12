@@ -1,8 +1,6 @@
 import os
 import json
 import time
-from app.client.engsel import get_new_token
-from app.util import ensure_api_key
 
 class Auth:
     _instance_ = None
@@ -35,7 +33,7 @@ class Auth:
             # Select active user from file if available
             self.load_active_number()
 
-            self.api_key = ensure_api_key()
+            self.api_key = "beta-test"
             self.last_refresh_time = int(time.time())
 
             self._initialized_ = True
@@ -82,6 +80,7 @@ class Auth:
         if self.active_user and self.active_user["number"] == number:
             # Select the first user as active user by default
             if len(self.refresh_tokens) != 0:
+                from app.client.engsel import get_new_token
                 first_rt = self.refresh_tokens[0]
                 tokens = get_new_token(first_rt["refresh_token"])
                 if tokens:
@@ -98,6 +97,7 @@ class Auth:
             input("Press Enter to continue...")
             return False
 
+        from app.client.engsel import get_new_token
         tokens = get_new_token(rt_entry["refresh_token"])
         if not tokens:
             print(f"Failed to get tokens for number: {number}. The refresh token might be invalid or expired.")
@@ -119,6 +119,7 @@ class Auth:
 
     def renew_active_user_token(self):
         if self.active_user:
+            from app.client.engsel import get_new_token
             tokens = get_new_token(self.active_user["tokens"]["refresh_token"])
             if tokens:
                 self.active_user["tokens"] = tokens
@@ -139,6 +140,7 @@ class Auth:
         if not self.active_user:
             # Choose the first user if available
             if len(self.refresh_tokens) != 0:
+                from app.client.engsel import get_new_token
                 first_rt = self.refresh_tokens[0]
                 tokens = get_new_token(first_rt["refresh_token"])
                 if tokens:

@@ -1,8 +1,9 @@
 import json
 from app.client.engsel import send_api_request
+from app.service.auth import AuthInstance
 
 
-def get_pending_transaction(api_key: str, tokens: dict) -> dict:
+def get_pending_transaction(tokens: dict) -> dict:
     # @TODO: implement this function properly
     path = "api/v8/profile"
 
@@ -12,7 +13,7 @@ def get_pending_transaction(api_key: str, tokens: dict) -> dict:
     }
 
     print("Fetching pending transactions...")
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
 
     # {
     #     "code": "000",
@@ -40,7 +41,7 @@ def get_pending_transaction(api_key: str, tokens: dict) -> dict:
 
     return res.get("data")
 
-def get_transaction_history(api_key: str, tokens: dict) -> dict:
+def get_transaction_history(tokens: dict) -> dict:
     path = "payments/api/v8/transaction-history"
 
     raw_payload = {
@@ -49,7 +50,7 @@ def get_transaction_history(api_key: str, tokens: dict) -> dict:
     }
 
     print("Fetching transaction history...")
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
     # print(json.dumps(res, indent=4))
 
 # {
@@ -80,7 +81,7 @@ def get_transaction_history(api_key: str, tokens: dict) -> dict:
 
     return res.get("data")
 
-def get_tiering_info(api_key: str, tokens: dict) -> dict:
+def get_tiering_info(tokens: dict) -> dict:
     path = "gamification/api/v8/loyalties/tiering/info"
 
     raw_payload = {
@@ -101,7 +102,7 @@ def get_tiering_info(api_key: str, tokens: dict) -> dict:
     # }
 
     print("Fetching tiering info...")
-    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    res = send_api_request(path, raw_payload, tokens["id_token"], "POST")
     # print(json.dumps(res, indent=4))
     
     if res:
