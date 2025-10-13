@@ -15,18 +15,16 @@ from app.menus.hot import show_hot_menu, show_hot_menu2
 from app.service.sentry import enter_sentry_mode
 from app.menus.purchase import purchase_by_family
 
+WIDTH = 55
+
 def show_main_menu(profile):
     clear_screen()
-    expired_at_dt = datetime.fromtimestamp(profile["balance_expired_at"]).strftime("%Y-%m-%d %H:%M:%S")
-    
-    print("-------------------------------------------------------")
-    print("Informasi Akun")
-    print(f"Nomor: {profile['number']}")
-    print(f"Type: {profile['subscription_type']}({profile['subscriber_id']})")
-    print(f"Pulsa: Rp {profile['balance']}")
-    print(f"{profile['point_info']}")
-    print(f"Masa aktif: {expired_at_dt}")
-    print("-------------------------------------------------------")
+    print("=" * WIDTH)
+    expired_at_dt = datetime.fromtimestamp(profile["balance_expired_at"]).strftime("%Y-%m-%d")
+    print(f"Nomor: {profile['number']} | Type: {profile['subscription_type']}".center(WIDTH))
+    print(f"Pulsa: Rp {profile['balance']} | Aktif sampai: {expired_at_dt}".center(WIDTH))
+    print(f"{profile['point_info']}".center(WIDTH))
+    print("=" * WIDTH)
     print("Menu:")
     print("1. Login/Ganti akun")
     print("2. Lihat Paket Saya")
