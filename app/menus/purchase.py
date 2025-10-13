@@ -265,6 +265,9 @@ def purchase_n_times(
         print(f"Pruchase {i + 1} of {n}...")
         print(f"Trying to buy: {target_variant['name']} - {option_order}. {option_name} - {option_price}")
         
+        api_key = AuthInstance.api_key
+        tokens: dict = AuthInstance.get_active_tokens() or {}
+        
         payment_items = []
         
         try:
