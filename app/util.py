@@ -72,29 +72,22 @@ def get_user_info(api_key: str, *, timeout: float = 10.0) -> dict:
 
 def ensure_api_key() -> str:
     """
-    Load api.key if present; otherwise prompt the user.
-    Always verifies the key. Saves only if valid.
-    Exits the program if invalid or empty.
+    Ensures an API key is available for the server environment.
+    It prioritizes the API_KEY from the environment variables (loaded from .env).
+    If not found, it falls back to the `api.key` file.
+    If neither is available, it raises a ValueError.
+    It does not use interactive input.
     """
-    # Try to load an existing key
-    current = load_api_key()
-    if current:
-        if verify_api_key(current):
-            return current
-        else:
-            print("Existing API key is invalid. Please enter a new one.")
+    # 1. Check environment variable (loaded from .env)
+    api_key = os.getenv("API_KEY")
+    if api_key:
+        print("API key loaded from environment.")
+        return api_key
 
-    # Prompt user if missing or invalid
-    print("Dapatkan API key di Bot Telegram @fyxt_bot")
-    api_key = input("Masukkan API key: ").strip()
-    if not api_key:
-        print("API key tidak boleh kosong. Menutup aplikasi.")
-        sys.exit(1)
+    # 2. Fallback to loading from api.key file
+    api_key_from_file = load_api_key()
+    if api_key_from_file:
+        return api_key_from_file
 
-    if not verify_api_key(api_key):
-        print("API key tidak valid. Menutup aplikasi.")
-        delete_api_key()
-        sys.exit(1)
-
-    save_api_key(api_key)
-    return api_key
+    # 3. If no key is available, raise an error.
+    raise ValueError("API key is not configured. Please set API_KEY in your .env file or create an api.key file.")
