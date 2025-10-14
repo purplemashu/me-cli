@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ukons Dor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ukons Dor</h1>
+            <p>Tools and Server Fuyuki</p>
+        </header>
+        <main>
+            {% if profile %}
+                <div class="profile-info">
+                    <h2>Welcome, {{ profile.number }}</h2>
+                    <p>Balance: Rp {{ profile.balance }}</p>
+                    <p>Subscription: {{ profile.subscription_type }}</p>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                </div>
+            {% else %}
+                <p>Loading profile...</p>
+            {% endif %}
+            <!-- Konten aplikasi lainnya akan ditambahkan di sini -->
+        </main>
+    </div>
+</body>
+</html>

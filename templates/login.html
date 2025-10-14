@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ukons Dor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Select Account</h1>
+            <p>Choose an account to proceed</p>
+        </header>
+        <main>
+            <div class="user-list">
+                {% if users %}
+                    <ul>
+                        {% for user in users %}
+                            <li><a href="{{ url_for('set_user', number=user.number) }}">{{ user.number }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No saved accounts found. Please run the CLI app first to add an account.</p>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>
