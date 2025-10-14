@@ -138,6 +138,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("4. Pulsa + Decoy XCP")
         print("5. Pulsa + Decoy XCP V2")
         print("6. Pulsa N kali")
+        print("7. QRIS + Decoy Edu")
         
         # Sometimes payment_for is empty, so we set default to BUY_PACKAGE
         if payment_for == "":
@@ -359,6 +360,55 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 price=price,
                 item_name=variant_name
             )
+            input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
+            return True
+        elif choice == '7':
+            # QRIS; Decoy Edu
+            url = "https://me.mashu.lol/pg-decoy-edu.json"
+            
+            response = requests.get(url, timeout=30)
+            if response.status_code != 200:
+                print("Gagal mengambil data decoy package.")
+                pause()
+                return None
+            
+            decoy_data = response.json()
+            decoy_package_detail = get_package_details(
+                api_key,
+                tokens,
+                decoy_data["family_code"],
+                decoy_data["variant_code"],
+                decoy_data["order"],
+                decoy_data["is_enterprise"],
+                decoy_data["migration_type"],
+            )
+
+            payment_items.append(
+                PaymentItem(
+                    item_code=decoy_package_detail["package_option"]["package_option_code"],
+                    product_type="",
+                    item_price=decoy_package_detail["package_option"]["price"],
+                    item_name=decoy_package_detail["package_option"]["name"],
+                    tax=0,
+                    token_confirmation=decoy_package_detail["token_confirmation"],
+                )
+            )
+            
+            print("-"*55)
+            print(f"Harga Paket Utama: Rp {price}")
+            print(f"Harga Decoy Paket Edu: Rp {decoy_package_detail['package_option']['price']}")
+            print(f"Silahkan sesuaikan amount (trial & error)")
+            print("-"*55)
+
+            show_qris_payment(
+                api_key,
+                tokens,
+                payment_items,
+                "SHARE_PACKAGE",
+                True,
+                token_confirmation_idx=1
+            )
+            
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice.lower() == 'l':
