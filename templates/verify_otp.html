@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Ukons Dor</title>
+    <title>Verifikasi OTP - Ukons Dor</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         body {
@@ -43,7 +43,7 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
-        input[type="password"], input[type="text"] {
+        input[type="text"] {
             background-color: #0d0221;
             border: 1px solid #00ffcc;
             color: #00ffcc;
@@ -51,6 +51,9 @@
             width: 80%;
             border-radius: 5px;
             font-family: inherit;
+            letter-spacing: 5px;
+            text-align: center;
+            font-size: 1.2em;
         }
         button {
             background-color: #f0f;
@@ -83,18 +86,17 @@
         .flash-messages .error {
             background-color: #ff1b1b; color: #fff;
         }
+        .flash-messages .warning {
+            background-color: #ff9d1b; color: #0d0221;
+        }
         .flash-messages .success {
             background-color: #1bff8a; color: #0d0221;
-        }
-        .flash-messages .info {
-            background-color: #1bb3ff; color: #0d0221;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>[ Ukons Dor ]</h1>
-        <h2>Autentikasi Diperlukan</h2>
+        <h1>[ Verifikasi Kode OTP ]</h1>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -106,12 +108,12 @@
           {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('login') }}" method="post">
+        <form action="{{ url_for('verify_otp') }}" method="post">
             <div class="form-group">
-                <label for="api_key">Masukan API Key Anda</label>
-                <input type="password" id="api_key" name="api_key" required>
+                <label for="otp">Masukan 6 Digit Kode dari Authenticator Anda</label>
+                <input type="text" id="otp" name="otp" required maxlength="6" pattern="\\d{6}">
             </div>
-            <button type="submit">Validasi</button>
+            <button type="submit">Verifikasi & Login</button>
         </form>
     </div>
 </body>

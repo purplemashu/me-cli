@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup 2FA - Ukons Dor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            background-color: #0d0221;
+            color: #00ffcc;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+        }
+        .container {
+            background: rgba(10, 24, 72, 0.8);
+            border: 2px solid #6a0dad;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px #6a0dad;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        h1 {
+            color: #f0f;
+            text-shadow: 0 0 8px #f0f, 0 0 12px #f0f;
+            margin-bottom: 20px;
+        }
+        p {
+            max-width: 400px;
+            margin-bottom: 25px;
+        }
+        .qr-code {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+        .qr-code img {
+            display: block;
+        }
+        a {
+            color: #f0f;
+            text-decoration: none;
+            border-bottom: 1px dotted #f0f;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #00ffcc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>[ Setup Autentikasi Dua Langkah ]</h1>
+        <p>
+            Ini adalah login pertama Anda. Pindai QR code di bawah ini menggunakan aplikasi authenticator Anda (spt. Google Authenticator).
+        </p>
+        <div class="qr-code">
+            <img src="data:image/png;base64,{{ qr_code_data }}" alt="QR Code OTP">
+        </div>
+        <p>
+            Setelah memindai, klik tautan di bawah ini untuk melanjutkan ke verifikasi OTP.
+        </p>
+        <a href="{{ url_for('verify_otp') }}">Lanjutkan ke Verifikasi</a>
+    </div>
+</body>
+</html>
