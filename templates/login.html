@@ -9,22 +9,34 @@
 <body>
     <div class="container">
         <header>
-            <h1>Select Account</h1>
-            <p>Choose an account to proceed</p>
+            <h1>Login</h1>
+            <p>Masukkan API Key dan Nomor Telepon Anda</p>
         </header>
         <main>
-            <div class="user-list">
-                {% if users %}
-                    <ul>
-                        {% for user in users %}
-                            <li><a href="{{ url_for('set_user', number=user.number) }}">{{ user.number }}</a></li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No saved accounts found. Please run the CLI app first to add an account.</p>
-                {% endif %}
-            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="api-key">API Key</label>
+                    <input type="text" id="api-key" name="api-key" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone-number">Nomor Telepon (e.g., 628xxxxxxxx)</label>
+                    <input type="text" id="phone-number" name="phone-number" required>
+                </div>
+                <button type="button" id="request-otp-btn">Kirim OTP</button>
+
+                <div id="otp-section" style="display: none;">
+                    <hr>
+                    <p>OTP telah dikirim. Silakan periksa pesan Anda.</p>
+                    <div class="form-group">
+                        <label for="otp-code">Kode OTP</label>
+                        <input type="text" id="otp-code" name="otp-code" required>
+                    </div>
+                    <button type="submit" id="login-btn">Login</button>
+                </div>
+                 <p id="error-message" class="error-text" style="display: none;"></p>
+            </form>
         </main>
     </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
