@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+    background-color: #0a0a0a;
+    color: #00ff00;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+}
+
+.container {
+    border: 2px solid #00ff00;
+    padding: 2rem;
+    box-shadow: 0 0 15px #00ff00;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    animation: flicker 1.5s infinite alternate;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+}
+
+#welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 10, 10, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    text-align: center;
+}
+
+.overlay-content {
+    padding: 2rem;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 20px #00ffff;
+}
+
+.overlay-content h2 {
+    font-size: 2.5rem;
+    color: #00ff00;
+    animation: flicker 1.5s infinite alternate;
+    margin-bottom: 1rem;
+}
+
+.overlay-content p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin-bottom: 2rem;
+}
+
+#start-btn {
+    background-color: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    padding: 10px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#start-btn:hover {
+    background-color: #00ff00;
+    color: #0a0a0a;
+}
+
+/* Login Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #00ffff;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Orbitron', sans-serif;
+}
+
+#request-otp-btn, #login-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#request-otp-btn:hover, #login-btn:hover {
+    background-color: #00ff00;
+    color: #0a0a0a;
+}
+
+.error-text {
+    color: #ff0000;
+    margin-top: 1rem;
+}
+
+/* Pop-up Modal Styles */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.popup-content {
+    background-color: #0a0a0a;
+    padding: 2rem;
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 25px #ff0000;
+    text-align: center;
+    max-width: 500px;
+}
+
+.popup-content h2 {
+    color: #ff0000;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.popup-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    text-align: left;
+}
+
+.popup-content ul li {
+    margin-bottom: 0.5rem;
+    color: #00ffff;
+}
+
+#confirm-btn {
+    background-color: transparent;
+    border: 2px solid #ff0000;
+    color: #ff0000;
+    padding: 10px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#confirm-btn:hover {
+    background-color: #ff0000;
+    color: #0a0a0a;
+}
+
+
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow:
+        0 0 4px #00ff00,
+        0 0 11px #00ff00,
+        0 0 19px #00ff00,
+        0 0 40px #00ff00,
+        0 0 80px #00ff00,
+        0 0 90px #00ff00,
+        0 0 100px #00ff00,
+        0 0 150px #00ff00;
+    }
+    20%, 24%, 55% {
+        text-shadow: none;
+    }
+}

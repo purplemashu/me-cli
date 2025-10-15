@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ukons Dor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Login</h1>
+            <p>Masukkan API Key dan Nomor Telepon Anda</p>
+        </header>
+        <main>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="api-key">API Key</label>
+                    <input type="text" id="api-key" name="api-key" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone-number">Nomor Telepon (e.g., 628xxxxxxxx)</label>
+                    <input type="text" id="phone-number" name="phone-number" required>
+                </div>
+                <button type="button" id="request-otp-btn">Kirim OTP</button>
+
+                <div id="otp-section" style="display: none;">
+                    <hr>
+                    <p>OTP telah dikirim. Silakan periksa pesan Anda.</p>
+                    <div class="form-group">
+                        <label for="otp-code">Kode OTP</label>
+                        <input type="text" id="otp-code" name="otp-code" required>
+                    </div>
+                    <button type="submit" id="login-btn">Login</button>
+                </div>
+                 <p id="error-message" class="error-text" style="display: none;"></p>
+            </form>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

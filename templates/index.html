@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ukons Dor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-show-warning="{{ 'true' if show_warning else 'false' }}">
+    <div id="welcome-overlay">
+        <div class="overlay-content">
+            <h2>Selamat datang di ukons dor</h2>
+            <p>Tempat penyedia jasa tembak ada yang halal dan haramnya, dan tentu saja kalian pasti nyari yang haram</p>
+            <button id="start-btn">mulai</button>
+        </div>
+    </div>
+
+    <div class="container" style="display: none;">
+        <header>
+            <h1>Ukons Dor</h1>
+            <p>Tools and Server Fuyuki</p>
+        </header>
+        <main>
+            {% if profile %}
+                <div class="profile-info">
+                    <h2>Welcome, {{ profile.number }}</h2>
+                    <p>Balance: Rp {{ profile.balance }}</p>
+                    <p>Subscription: {{ profile.subscription_type }}</p>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+                </div>
+            {% else %}
+                <p>Loading profile...</p>
+            {% endif %}
+            <!-- Konten aplikasi lainnya akan ditambahkan di sini -->
+        </main>
+    </div>
+
+    <!-- Warning Pop-up Modal -->
+    <div id="warning-popup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2>Peringatan Besar</h2>
+            <p>Terlalu sering dor bisa menyebabkan anda terkena wabah dor gila, gejala awalnya diantaranya sebagai berikut:</p>
+            <ul>
+                <li>selalu mencari paket Rp 0</li>
+                <li>menumpuk paket ber TB TB</li>
+                <li>merasa kecanduan gacha paket Rp 0 seperti judol</li>
+            </ul>
+            <button id="confirm-btn">tetap lanjutkan</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
