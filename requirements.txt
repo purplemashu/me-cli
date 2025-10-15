@@ -9,3 +9,4 @@ qrcode==8.2
 ascii_magic==2.3.0
 python-dotenv==1.1.1
 Flask
+serverless-wsgi

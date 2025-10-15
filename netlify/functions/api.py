@@ -1,8 +1,13 @@
+# Add project root to the Python path
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from dotenv import load_dotenv
 load_dotenv()
 
-import os
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
+from serverless_wsgi import handle
 from app.client.engsel import get_balance, get_profile, get_otp, submit_otp
 
 app = Flask(__name__)
@@ -52,12 +57,9 @@ def request_otp():
     if not api_key or not phone_number:
         return jsonify({'success': False, 'message': 'API Key and phone number are required.'}), 400
 
-    # The get_otp function from the original CLI doesn't need an API key.
-    # It uses other env vars like BASIC_AUTH. The user-provided API key is for later.
     subscriber_id = get_otp(phone_number)
 
     if subscriber_id:
-        # Temporarily store api_key and phone_number for the next step
         session['api_key_temp'] = api_key
         session['phone_number_temp'] = phone_number
         return jsonify({'success': True, 'message': 'OTP sent successfully.'})
@@ -69,7 +71,6 @@ def verify_otp():
     data = request.json
     otp_code = data.get('otp_code')
 
-    # Retrieve data from temporary session
     api_key = session.get('api_key_temp')
     phone_number = session.get('phone_number_temp')
 
@@ -79,13 +80,11 @@ def verify_otp():
     tokens = submit_otp(api_key, phone_number, otp_code)
 
     if tokens:
-        # Login successful, store permanent data in session
         session['api_key'] = api_key
         session['phone_number'] = phone_number
         session['tokens'] = tokens
         session['show_warning'] = True # Flag to show the warning pop-up
 
-        # Clear temporary data
         session.pop('api_key_temp', None)
         session.pop('phone_number_temp', None)
 
@@ -99,5 +98,6 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+# Netlify function handler
+def handler(event, context):
+    return handle(app, event, context)
