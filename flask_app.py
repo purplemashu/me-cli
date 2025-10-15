@@ -1,13 +1,8 @@
-# Add project root to the Python path
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
 from dotenv import load_dotenv
 load_dotenv()
 
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify
-from serverless_wsgi import handle
+import os
 from app.client.engsel import get_balance, get_profile, get_otp, submit_otp
 
 app = Flask(__name__)
@@ -98,6 +93,5 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-# Netlify function handler
-def handler(event, context):
-    return handle(app, event, context)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)
