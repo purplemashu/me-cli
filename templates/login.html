@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Ukons Dor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            background-color: #0d0221;
+            color: #00ffcc;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+        }
+        .container {
+            background: rgba(10, 24, 72, 0.8);
+            border: 2px solid #6a0dad;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px #6a0dad;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        h1 {
+            color: #f0f;
+            text-shadow: 0 0 8px #f0f, 0 0 12px #f0f;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="password"], input[type="text"] {
+            background-color: #0d0221;
+            border: 1px solid #00ffcc;
+            color: #00ffcc;
+            padding: 10px;
+            width: 80%;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        button {
+            background-color: #f0f;
+            color: #0d0221;
+            border: none;
+            padding: 12px 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #f0f;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #00ffcc;
+            color: #0d0221;
+            box-shadow: 0 0 20px #00ffcc;
+        }
+        .flash-messages {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
+        .flash-messages li {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .flash-messages .error {
+            background-color: #ff1b1b; color: #fff;
+        }
+        .flash-messages .success {
+            background-color: #1bff8a; color: #0d0221;
+        }
+        .flash-messages .info {
+            background-color: #1bb3ff; color: #0d0221;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>[ Ukons Dor ]</h1>
+        <h2>Autentikasi Diperlukan</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flash-messages">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('login') }}" method="post">
+            <div class="form-group">
+                <label for="api_key">Masukan API Key Anda</label>
+                <input type="password" id="api_key" name="api_key" required>
+            </div>
+            <button type="submit">Validasi</button>
+        </form>
+    </div>
+</body>
+</html>

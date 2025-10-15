@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tidak Ada Akun - Ukons Dor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            background-color: #0d0221;
+            color: #00ffcc;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+        }
+        .container {
+            background: rgba(10, 24, 72, 0.8);
+            border: 2px solid #ff9d1b;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px #ff9d1b;
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        h1 {
+            color: #ff9d1b;
+            text-shadow: 0 0 8px #ff9d1b;
+            margin-bottom: 20px;
+        }
+        p {
+            max-width: 450px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        code {
+            background-color: #0d0221;
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid #00ffcc;
+        }
+        a {
+            color: #f0f;
+            text-decoration: none;
+            border-bottom: 1px dotted #f0f;
+            transition: color 0.3s;
+            font-weight: bold;
+        }
+        a:hover {
+            color: #00ffcc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>[ Akun Tidak Ditemukan ]</h1>
+        <p>
+            Login berhasil, tetapi tidak ada akun (nomor telepon) yang terkonfigurasi di dalam aplikasi.
+        </p>
+        <p>
+            Silakan tambahkan akun terlebih dahulu dengan menjalankan aplikasi ini dalam mode CLI (Command Line Interface) menggunakan perintah <code>python main.py</code> dan pilih menu untuk menambah atau mengelola akun.
+        </p>
+        <p>
+            Setelah akun ditambahkan, <a href="{{ url_for('logout') }}">logout</a> lalu login kembali.
+        </p>
+    </div>
+</body>
+</html>
