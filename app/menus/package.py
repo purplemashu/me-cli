@@ -402,7 +402,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             
             print("-"*55)
             print(f"Harga Paket Utama: Rp {price}")
-            print(f"Harga Decoy Paket Edu: Rp {decoy_package_detail['package_option']['price']}")
+            print(f"Harga Paket Decoy: Rp {decoy_package_detail['package_option']['price']}")
             print(f"Silahkan sesuaikan amount (trial & error)")
             print("-"*55)
 
