@@ -7,32 +7,52 @@ CLI client for a certain Indonesian mobile internet service provider.
 # How to get API Key
 Chat telegram bot [@fykxt_bot](https://t.me/fykxt_bot) with message `/viewkey`. Copy the API key.
 
-# How to run with TERMUX
-1. Update & Upgrade Termux
-```
-pkg update && pkg upgrade -y
-```
-2. Install Git
-```
-pkg install git -y
-```
-3. Clone this repo
-```
-git clone https://github.com/purplemashu/me-cli
-```
-4. Open the folder
-```
-cd me-cli
-```
-5. Setup
-```
-bash setup.sh
-```
-6. Run the script
-```
+# How to Run
+
+## CLI Mode
+To run the application in command-line interface mode, simply run:
+```bash
 python main.py
 ```
-7. Input your API key when prompted
+
+## Telegram Bot Mode
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/purplemashu/me-cli
+   cd me-cli
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Set up environment variables:**
+   Create a `.env` file in the root directory and add the following variables. You can get the `API_KEY` from the [@fykxt_bot](https://t.me/fykxt_bot) on Telegram.
+   ```
+   BASE_API_URL=your_base_api_url
+   BASE_CIAM_URL=your_base_ciam_url
+   BASIC_AUTH=your_basic_auth
+   AX_DEVICE_ID=your_ax_device_id
+   AX_FP=your_ax_fp
+   UA=your_user_agent
+   API_KEY=your_api_key
+   AES_KEY_ASCII=your_aes_key_ascii
+   TELEGRAM_TOKEN=your_telegram_bot_token
+   ```
+
+4. **Run the bot:**
+   ```bash
+   python main.py bot
+   ```
+
+### Available Bot Commands
+- `/start`: Start the bot
+- `/login`: Log in to your account
+- `/balance`: Check your balance
+- `/packages`: View your active packages
+- `/purchase`: Purchase a package by family code
+- `/buy <package_option_code>`: Buy a specific package
 
 # Info
 

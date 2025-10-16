@@ -129,9 +129,14 @@ def main():
                 print("No user selected or failed to load user.")
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\nExiting the application.")
-    # except Exception as e:
-    #     print(f"An error occurred: {e}")
+    if len(sys.argv) > 1 and sys.argv[1] == "bot":
+        from bot import main as bot_main
+        try:
+            bot_main()
+        except KeyboardInterrupt:
+            print("\nExiting the bot.")
+    else:
+        try:
+            main()
+        except KeyboardInterrupt:
+            print("\nExiting the application.")

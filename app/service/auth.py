@@ -13,10 +13,8 @@ class Auth:
     refresh_tokens = []
     # Format of refresh_tokens: [{"number": int, "refresh_token": str}]
 
-    active_user = None
-    # Format of active_user: {"number": int, "tokens": {"refresh_token": str, "access_token": str, "id_token": str}}
-    
-    last_refresh_time = None
+    active_users = {}
+    # Format of active_users: {user_id: {"number": int, "tokens": {"refresh_token": str, "access_token": str, "id_token": str}, "last_refresh_time": int}}
     
     def __new__(cls, *args, **kwargs):
         if not cls._instance_:
@@ -90,92 +88,49 @@ class Auth:
                 input("No users left. Press Enter to continue...")
                 self.active_user = None
 
-    def set_active_user(self, number: int):
-        # Get refresh token for the number from refresh_tokens
+    def set_active_user(self, user_id: int, number: int):
         rt_entry = next((rt for rt in self.refresh_tokens if rt["number"] == number), None)
         if not rt_entry:
-            print(f"No refresh token found for number: {number}")
-            input("Press Enter to continue...")
             return False
 
         tokens = get_new_token(rt_entry["refresh_token"])
         if not tokens:
-            print(f"Failed to get tokens for number: {number}. The refresh token might be invalid or expired.")
-            input("Press Enter to continue...")
             return False
 
-        self.active_user = {
+        self.active_users[user_id] = {
             "number": int(number),
-            "tokens": tokens
+            "tokens": tokens,
+            "last_refresh_time": int(time.time())
         }
-        
-        # Save active number to file
-        self.write_active_number()
+        return True
 
-        # Put the selected user to the top of the list
-        # self.refresh_tokens = [rt for rt in self.refresh_tokens if rt["number"] != number]
-        # self.refresh_tokens.insert(0, rt_entry)
-        # self.write_tokens_to_file()
-
-    def renew_active_user_token(self):
-        if self.active_user:
-            tokens = get_new_token(self.active_user["tokens"]["refresh_token"])
+    def renew_user_token(self, user_id: int):
+        if user_id in self.active_users:
+            user_data = self.active_users[user_id]
+            tokens = get_new_token(user_data["tokens"]["refresh_token"])
             if tokens:
-                self.active_user["tokens"] = tokens
-                self.last_refresh_time = int(time.time())
-                self.add_refresh_token(self.active_user["number"], self.active_user["tokens"]["refresh_token"])
-                
-                print("Active user token renewed successfully.")
+                user_data["tokens"] = tokens
+                user_data["last_refresh_time"] = int(time.time())
+                self.add_refresh_token(user_data["number"], user_data["tokens"]["refresh_token"])
                 return True
-            else:
-                print("Failed to renew active user token.")
-                input("Press Enter to continue...")
-        else:
-            print("No active user set or missing refresh token.")
-            input("Press Enter to continue...")
         return False
     
-    def get_active_user(self):
-        if not self.active_user:
-            # Choose the first user if available
-            if len(self.refresh_tokens) != 0:
-                first_rt = self.refresh_tokens[0]
-                tokens = get_new_token(first_rt["refresh_token"])
-                if tokens:
-                    self.active_user = {
-                        "number": int(first_rt["number"]),
-                        "tokens": tokens
-                    }
+    def get_active_user(self, user_id: int):
+        if user_id not in self.active_users:
             return None
         
-        if self.last_refresh_time is None or (int(time.time()) - self.last_refresh_time) > 300:
-            self.renew_active_user_token()
-            self.last_refresh_time = time.time()
+        user_data = self.active_users[user_id]
+        if (int(time.time()) - user_data["last_refresh_time"]) > 300:
+            self.renew_user_token(user_id)
         
-        return self.active_user
+        return user_data
     
-    def get_active_tokens(self) -> dict | None:
-        active_user = self.get_active_user()
-        return active_user["tokens"] if active_user else None
+    def get_active_tokens(self, user_id: int) -> dict | None:
+        user_data = self.get_active_user(user_id)
+        return user_data["tokens"] if user_data else None
     
     def write_tokens_to_file(self):
         with open("refresh-tokens.json", "w", encoding="utf-8") as f:
             json.dump(self.refresh_tokens, f, indent=4)
-    
-    def write_active_number(self):
-        if self.active_user:
-            with open("active.number", "w", encoding="utf-8") as f:
-                f.write(str(self.active_user["number"]))
-        else:
-            if os.path.exists("active.number"):
-                os.remove("active.number")
-    
-    def load_active_number(self):
-        if os.path.exists("active.number"):
-            with open("active.number", "r", encoding="utf-8") as f:
-                number_str = f.read().strip()
-                if number_str.isdigit():
-                    number = int(number_str)
-                    self.set_active_user(number)
 
 AuthInstance = Auth()
