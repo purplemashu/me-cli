@@ -46,13 +46,13 @@ python main.py
    python main.py bot
    ```
 
-### Available Bot Commands
-- `/start`: Start the bot
-- `/login`: Log in to your account
-- `/balance`: Check your balance
-- `/packages`: View your active packages
-- `/purchase`: Purchase a package by family code
-- `/buy <package_option_code>`: Buy a specific package
+### Bot Usage
+The bot uses an interactive menu. Simply send `/start` to begin and follow the on-screen buttons.
+
+**Available Commands:**
+- `/start`: Shows the main menu.
+- `/login`: Starts the login process.
+- `/buy <package_option_code>`: Buys a specific package.
 
 # Info
 

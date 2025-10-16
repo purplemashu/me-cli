@@ -1,12 +1,14 @@
 import os
 import sys
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler, CallbackQueryHandler
 from datetime import datetime
 from app.client.engsel import get_otp, submit_otp, get_balance, get_profile, send_api_request
-from app.client.engsel2 import get_tiering_info
+from app.client.engsel2 import get_tiering_info, get_transaction_history
 from app.client.purchase import settlement_balance
+from app.client.ewallet import settlement_multipayment
+from app.client.qris import settlement_qris, get_qris_code
 from app.menus.package import get_packages_by_family, get_package
 from app.service.auth import AuthInstance
 from app.type_dict import PaymentItem
@@ -14,10 +16,19 @@ from app.type_dict import PaymentItem
 load_dotenv()
 
 LOGIN_PHONE, LOGIN_OTP = range(2)
+PURCHASE_FAMILY_CODE = range(1)
+BUY_PACKAGE_PAYMENT_METHOD, BUY_PACKAGE_EWALLET_NUMBER = range(2, 4)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Sends a welcome message when the /start command is issued."""
-    await update.message.reply_text("Welcome to the MyXL Bot! Use /login to get started.")
+    """Sends a welcome message with a menu of options."""
+    keyboard = [
+        [InlineKeyboardButton("Cek Akun & Pulsa", callback_data='balance')],
+        [InlineKeyboardButton("Cek Paket Saya", callback_data='packages')],
+        [InlineKeyboardButton("Beli Paket by Family Code", callback_data='purchase_family')],
+        [InlineKeyboardButton("Riwayat Transaksi", callback_data='history')],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text('Welcome to the MyXL Bot! Please choose an option:', reply_markup=reply_markup)
 
 async def login_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Starts the login process by asking for a phone number."""
@@ -62,7 +73,7 @@ async def login_otp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels the login process."""
-    await update.message.reply_text("Login process cancelled.")
+    await update.message.reply_text("Process cancelled.")
     return ConversationHandler.END
 
 def main() -> None:
@@ -74,7 +85,7 @@ def main() -> None:
 
     application = Application.builder().token(telegram_token).build()
 
-    conv_handler = ConversationHandler(
+    login_conv_handler = ConversationHandler(
         entry_points=[CommandHandler('login', login_start)],
         states={
             LOGIN_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, login_phone)],
@@ -84,18 +95,16 @@ def main() -> None:
     )
 
     application.add_handler(CommandHandler("start", start))
-    application.add_handler(conv_handler)
-    application.add_handler(CommandHandler("balance", balance))
-    application.add_handler(CommandHandler("packages", my_packages))
+    application.add_handler(login_conv_handler)
+    application.add_handler(CallbackQueryHandler(button))
 
-    purchase_conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('purchase', purchase_start)],
+    purchase_family_conv_handler = ConversationHandler(
+        entry_points=[CallbackQueryHandler(purchase_family_start, pattern='^purchase_family$')],
         states={
             PURCHASE_FAMILY_CODE: [MessageHandler(filters.TEXT & ~filters.COMMAND, purchase_family_code)],
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
-
     buy_conv_handler = ConversationHandler(
         entry_points=[CommandHandler('buy', buy_package_start)],
         states={
@@ -105,45 +114,10 @@ def main() -> None:
         fallbacks=[CommandHandler('cancel', cancel)],
     )
 
-    application.add_handler(purchase_conv_handler)
+    application.add_handler(purchase_family_conv_handler)
     application.add_handler(buy_conv_handler)
 
     application.run_polling()
-PURCHASE_FAMILY_CODE = range(1)
-BUY_PACKAGE_PAYMENT_METHOD, BUY_PACKAGE_EWALLET_NUMBER = range(2, 4)
-
-async def purchase_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Please enter the family code:")
-    return PURCHASE_FAMILY_CODE
-
-async def purchase_family_code(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    family_code = update.message.text
-    user_id = update.effective_user.id
-    active_user = AuthInstance.get_active_user(user_id)
-    if not active_user:
-        await update.message.reply_text("Please /login first.")
-        return ConversationHandler.END
-
-    api_key = AuthInstance.api_key
-    tokens = active_user["tokens"]
-
-    await update.message.reply_text(f"Fetching packages for family code: {family_code}")
-
-    packages = get_packages_by_family(family_code)
-
-    if not packages:
-        await update.message.reply_text("No packages found for this family code.")
-        return ConversationHandler.END
-
-    message = "Available packages:\n\n"
-    for pkg in packages:
-        message += f"*{pkg['variant_name']} - {pkg['option_name']}*\n"
-        message += f"Price: {pkg['price']}\n"
-        message += f"To purchase, use the command: `/buy {pkg['code']}`\n\n"
-
-    await update.message.reply_text(message)
-    return ConversationHandler.END
-
 async def buy_package_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if not context.args:
         await update.message.reply_text("Usage: /buy <package_option_code>")
@@ -224,105 +198,162 @@ async def buy_package_ewallet_number(update: Update, context: ContextTypes.DEFAU
     else:
         await update.message.reply_text(f"Purchase failed: {res.get('message', 'Unknown error')}")
     return ConversationHandler.END
-async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def purchase_family_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Starts the purchase by family code process."""
+    query = update.callback_query
+    await query.answer()
+    await query.edit_message_text("Please enter the family code:")
+    return PURCHASE_FAMILY_CODE
+
+async def purchase_family_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    family_code = update.message.text
     user_id = update.effective_user.id
     active_user = AuthInstance.get_active_user(user_id)
     if not active_user:
         await update.message.reply_text("Please /login first.")
-        return
+        return ConversationHandler.END
 
     api_key = AuthInstance.api_key
     tokens = active_user["tokens"]
-    balance_data = get_balance(api_key, tokens["id_token"])
-    profile_data = get_profile(api_key, tokens["access_token"], tokens["id_token"])
 
-    if not balance_data or not profile_data:
-        await update.message.reply_text("Failed to fetch balance or profile.")
-        return
+    await update.message.reply_text(f"Fetching packages for family code: {family_code}")
 
-    balance_remaining = balance_data.get("remaining")
-    balance_expired_at = datetime.fromtimestamp(balance_data.get("expired_at")).strftime("%Y-%m-%d")
-    sub_type = profile_data["profile"]["subscription_type"]
-    point_info = "Points: N/A | Tier: N/A"
+    packages = get_packages_by_family(family_code)
 
-    if sub_type == "PREPAID":
-        tiering_data = get_tiering_info(api_key, tokens)
-        tier = tiering_data.get("tier", 0)
-        current_point = tiering_data.get("current_point", 0)
-        point_info = f"Points: {current_point} | Tier: {tier}"
+    if not packages:
+        await update.message.reply_text("No packages found for this family code.")
+        return ConversationHandler.END
 
-    message = (
-        f"Nomor: {active_user['number']}\n"
-        f"Type: {sub_type}\n"
-        f"Pulsa: Rp {balance_remaining}\n"
-        f"Aktif sampai: {balance_expired_at}\n"
-        f"{point_info}"
-    )
-    await update.message.reply_text(message)
-
-async def my_packages(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    active_user = AuthInstance.get_active_user(user_id)
-    if not active_user:
-        await update.message.reply_text("Please /login first.")
-        return
-
-    api_key = AuthInstance.api_key
-    tokens = active_user["tokens"]
-    id_token = tokens.get("id_token")
-
-    path = "api/v8/packages/quota-details"
-    payload = {
-        "is_enterprise": False,
-        "lang": "en",
-        "family_member_id": ""
-    }
-
-    await update.message.reply_text("Fetching your packages...")
-    res = send_api_request(api_key, path, payload, id_token, "POST")
-    if res.get("status") != "SUCCESS":
-        await update.message.reply_text("Failed to fetch packages.")
-        return
-
-    quotas = res["data"]["quotas"]
-    if not quotas:
-        await update.message.reply_text("You have no active packages.")
-        return
-
-    message = "Your packages:\n\n"
-    for quota in quotas:
-        quota_name = quota["name"]
-        message += f"*{quota_name}*\n"
-        benefits = quota.get("benefits", [])
-        for benefit in benefits:
-            name = benefit.get("name", "")
-            data_type = benefit.get("data_type", "N/A")
-            remaining = benefit.get("remaining", 0)
-            total = benefit.get("total", 0)
-
-            if data_type == "DATA":
-                if remaining >= 1_000_000_000:
-                    remaining_str = f"{remaining / (1024 ** 3):.2f} GB"
-                elif remaining >= 1_000_000:
-                    remaining_str = f"{remaining / (1024 ** 2):.2f} MB"
-                else:
-                    remaining_str = f"{remaining / 1024:.2f} KB"
-                if total >= 1_000_000_000:
-                    total_str = f"{total / (1024 ** 3):.2f} GB"
-                elif total >= 1_000_000:
-                    total_str = f"{total / (1024 ** 2):.2f} MB"
-                else:
-                    total_str = f"{total / 1024:.2f} KB"
-                message += f"- {name}: {remaining_str} / {total_str}\n"
-            elif data_type == "VOICE":
-                message += f"- {name}: {remaining/60:.2f} / {total/60:.2f} minutes\n"
-            elif data_type == "TEXT":
-                 message += f"- {name}: {remaining} / {total} SMS\n"
-            else:
-                message += f"- {name}: {remaining} / {total}\n"
-        message += "\n"
+    message = "Available packages:\n\n"
+    for pkg in packages:
+        message += f"*{pkg['variant_name']} - {pkg['option_name']}*\n"
+        message += f"Price: {pkg['price']}\n"
+        message += f"To purchase, use the command: `/buy {pkg['code']}`\n\n"
 
     await update.message.reply_text(message)
+    return ConversationHandler.END
+
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    user_id = query.from_user.id
+
+    if query.data == 'balance':
+        active_user = AuthInstance.get_active_user(user_id)
+        if not active_user:
+            await query.edit_message_text("Please /login first.")
+            return
+
+        api_key = AuthInstance.api_key
+        tokens = active_user["tokens"]
+        balance_data = get_balance(api_key, tokens["id_token"])
+        profile_data = get_profile(api_key, tokens["access_token"], tokens["id_token"])
+
+        if not balance_data or not profile_data:
+            await query.edit_message_text("Failed to fetch balance or profile.")
+            return
+
+        balance_remaining = balance_data.get("remaining")
+        balance_expired_at = datetime.fromtimestamp(balance_data.get("expired_at")).strftime("%Y-%m-%d")
+        sub_type = profile_data["profile"]["subscription_type"]
+        point_info = "Points: N/A | Tier: N/A"
+
+        if sub_type == "PREPAID":
+            tiering_data = get_tiering_info(api_key, tokens)
+            tier = tiering_data.get("tier", 0)
+            current_point = tiering_data.get("current_point", 0)
+            point_info = f"Points: {current_point} | Tier: {tier}"
+
+        message = (
+            f"Nomor: {active_user['number']}\n"
+            f"Type: {sub_type}\n"
+            f"Pulsa: Rp {balance_remaining}\n"
+            f"Aktif sampai: {balance_expired_at}\n"
+            f"{point_info}"
+        )
+        await query.edit_message_text(text=message)
+    elif query.data == 'packages':
+        active_user = AuthInstance.get_active_user(user_id)
+        if not active_user:
+            await query.edit_message_text("Please /login first.")
+            return
+
+        api_key = AuthInstance.api_key
+        tokens = active_user["tokens"]
+        id_token = tokens.get("id_token")
+
+        path = "api/v8/packages/quota-details"
+        payload = {
+            "is_enterprise": False,
+            "lang": "en",
+            "family_member_id": ""
+        }
+
+        await query.edit_message_text("Fetching your packages...")
+        res = send_api_request(api_key, path, payload, id_token, "POST")
+        if res.get("status") != "SUCCESS":
+            await query.edit_message_text("Failed to fetch packages.")
+            return
+
+        quotas = res["data"]["quotas"]
+        if not quotas:
+            await query.edit_message_text("You have no active packages.")
+            return
+
+        message = "Your packages:\n\n"
+        for quota in quotas:
+            quota_name = quota["name"]
+            message += f"*{quota_name}*\n"
+            benefits = quota.get("benefits", [])
+            for benefit in benefits:
+                name = benefit.get("name", "")
+                data_type = benefit.get("data_type", "N/A")
+                remaining = benefit.get("remaining", 0)
+                total = benefit.get("total", 0)
+
+                if data_type == "DATA":
+                    if remaining >= 1_000_000_000:
+                        remaining_str = f"{remaining / (1024 ** 3):.2f} GB"
+                    elif remaining >= 1_000_000:
+                        remaining_str = f"{remaining / (1024 ** 2):.2f} MB"
+                    else:
+                        remaining_str = f"{remaining / 1024:.2f} KB"
+                    if total >= 1_000_000_000:
+                        total_str = f"{total / (1024 ** 3):.2f} GB"
+                    elif total >= 1_000_000:
+                        total_str = f"{total / (1024 ** 2):.2f} MB"
+                    else:
+                        total_str = f"{total / 1024:.2f} KB"
+                    message += f"- {name}: {remaining_str} / {total_str}\n"
+                elif data_type == "VOICE":
+                    message += f"- {name}: {remaining/60:.2f} / {total/60:.2f} minutes\n"
+                elif data_type == "TEXT":
+                     message += f"- {name}: {remaining} / {total} SMS\n"
+                else:
+                    message += f"- {name}: {remaining} / {total}\n"
+            message += "\n"
+
+        await query.edit_message_text(message)
+    elif query.data == 'history':
+        active_user = AuthInstance.get_active_user(user_id)
+        if not active_user:
+            await query.edit_message_text("Please /login first.")
+            return
+
+        api_key = AuthInstance.api_key
+        tokens = active_user["tokens"]
+        history_data = get_transaction_history(api_key, tokens)
+        if not history_data or not history_data.get("list"):
+            await query.edit_message_text("No transaction history found.")
+            return
+
+        message = "Transaction History:\n\n"
+        for tx in history_data["list"]:
+            message += f"*{tx['title']}*\n"
+            message += f"Price: {tx['price']}\n"
+            message += f"Date: {tx['formated_date']}\n"
+            message += f"Status: {tx['status']}\n\n"
+        await query.edit_message_text(message)
 
 if __name__ == "__main__":
     main()

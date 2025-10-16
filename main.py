@@ -136,6 +136,10 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print("\nExiting the bot.")
     else:
+        # In CLI mode, we need to ensure the AuthInstance is initialized for a single user.
+        # We can use a default user ID for the CLI.
+        AuthInstance.get_active_user = lambda: AuthInstance.get_active_user(0)
+        AuthInstance.set_active_user = lambda number: AuthInstance.set_active_user(0, number)
         try:
             main()
         except KeyboardInterrupt:

@@ -30,11 +30,7 @@ class Auth:
                 with open("refresh-tokens.json", "w", encoding="utf-8") as f:
                     json.dump([], f, indent=4)
 
-            # Select active user from file if available
-            self.load_active_number()
-
             self.api_key = ensure_api_key()
-            self.last_refresh_time = int(time.time())
 
             self._initialized_ = True
             
@@ -66,8 +62,6 @@ class Auth:
         # Save to file
         self.write_tokens_to_file()
 
-        # Set active user to newly added
-        self.set_active_user(number)
             
     def remove_refresh_token(self, number: int):
         self.refresh_tokens = [rt for rt in self.refresh_tokens if rt["number"] != number]
