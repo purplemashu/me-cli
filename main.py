@@ -32,7 +32,7 @@ def show_main_menu(profile):
     print("4. Beli Paket 🔥 HOT-2 🔥")
     print("5. Beli Paket Berdasarkan Family Code")
     print("6. Riwayat Transaksi")
-    print("7. [Test] Purchase all packages in family code")
+    print("7. Purchase all packages in a family code")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -98,9 +98,27 @@ def main():
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
                     continue
+
+                start_from_option = input("Start purchasing from option number (default 1): ")
+                try:
+                    start_from_option = int(start_from_option)
+                except ValueError:
+                    start_from_option = 1
+
                 use_decoy = input("Use decoy package? (y/n): ").lower() == 'y'
                 pause_on_success = input("Pause on each successful purchase? (y/n): ").lower() == 'y'
-                purchase_by_family(family_code, use_decoy, pause_on_success)
+                delay_seconds = input("Delay seconds between purchases (0 for no delay): ")
+                try:
+                    delay_seconds = int(delay_seconds)
+                except ValueError:
+                    delay_seconds = 0
+                purchase_by_family(
+                    family_code,
+                    use_decoy,
+                    pause_on_success,
+                    delay_seconds,
+                    start_from_option
+                )
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
