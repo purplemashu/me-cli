@@ -30,21 +30,25 @@ def login_prompt(api_key: str):
             return None
         print("OTP Berhasil dikirim ke nomor Anda.")
         
-        otp = input("Masukkan OTP yang telah dikirim: ")
-        if not otp.isdigit() or len(otp) != 6:
-            print("OTP tidak valid. Pastikan OTP terdiri dari 6 digit angka.")
-            pause()
-            return None
-        
-        tokens = submit_otp(api_key, phone_number, otp)
-        if not tokens:
-            print("Gagal login. Periksa OTP dan coba lagi.")
-            pause()
-            return None
-        
-        print("Berhasil login!")
-        
-        return phone_number, tokens["refresh_token"]
+        try_count = 5
+        while try_count > 0:
+            print(f"Sisa percobaan: {try_count}")
+            otp = input("Masukkan OTP yang telah dikirim: ")
+            if not otp.isdigit() or len(otp) != 6:
+                print("OTP tidak valid. Pastikan OTP terdiri dari 6 digit angka.")
+                continue
+            
+            tokens = submit_otp(api_key, phone_number, otp)
+            if not tokens:
+                print("OTP salah. Silahkan coba lagi.")
+                try_count -= 1
+                continue
+            
+            print("Berhasil login!")
+            return phone_number, tokens["refresh_token"]
+
+        print("Gagal login setelah beberapa percobaan. Silahkan coba lagi nanti.")
+        return None, None
     except Exception as e:
         return None, None
 
