@@ -201,6 +201,15 @@ def purchase_by_family(
             if delay_seconds > 0 and should_delay:
                 print(f"Waiting for {delay_seconds} seconds before next purchase...")
                 time.sleep(delay_seconds)
+                
+    print(f"Family: {family_name}\nSuccessful: {len(successful_purchases)}")
+    if len(successful_purchases) > 0:
+        print("-" * 55)
+        print("Successful purchases:")
+        for purchase in successful_purchases:
+            print(f"- {purchase}")
+    print("-" * 55)
+    pause()
 
 def purchase_n_times(
     n: int,
