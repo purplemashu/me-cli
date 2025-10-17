@@ -11,7 +11,8 @@ def purchase_by_family(
     family_code: str,
     use_decoy: bool,
     pause_on_success: bool = True,
-    token_confirmation_idx: int = 0,
+    delay_seconds: int = 0,
+    start_from_option: int = 1,
 ):
     api_key = AuthInstance.api_key
     tokens: dict = AuthInstance.get_active_tokens() or {}
@@ -61,13 +62,22 @@ def purchase_by_family(
         packages_count += len(variant["package_options"])
     
     purchase_count = 0
+    start_buying = False
+    if start_from_option <= 1:
+        start_buying = True
+
     for variant in variants:
         variant_name = variant["name"]
         for option in variant["package_options"]:
             tokens = AuthInstance.get_active_tokens()
+            option_order = option["order"]
+            if not start_buying and option_order == start_from_option:
+                start_buying = True
+            if not start_buying:
+                print(f"Skipping option {option_order}. {option['name']}")
+                continue
             
             option_name = option["name"]
-            option_order = option["order"]
             option_price = option["price"]
             
             purchase_count += 1
@@ -128,21 +138,24 @@ def purchase_by_family(
             res = None
             
             overwrite_amount = target_package_detail["package_option"]["price"]
-            if use_decoy:
+            if use_decoy or overwrite_amount == 0:
                 overwrite_amount += decoy_package_detail["package_option"]["price"]
+                
+            error_msg = ""
 
             try:
                 res = settlement_balance(
                     api_key,
                     tokens,
                     payment_items,
-                    "BUY_PACKAGE",
+                    "🤑",
                     False,
                     overwrite_amount,
+                    token_confirmation_idx=1
                 )
                 
                 if res and res.get("status", "") != "SUCCESS":
-                    error_msg = res.get("message", "Unknown error")
+                    error_msg = res.get("message", "")
                     if "Bizz-err.Amount.Total" in error_msg:
                         error_msg_arr = error_msg.split("=")
                         valid_amount = int(error_msg_arr[1].strip())
@@ -152,11 +165,13 @@ def purchase_by_family(
                             api_key,
                             tokens,
                             payment_items,
-                            "BUY_PACKAGE",
+                            "SHARE_PACKAGE",
                             False,
                             valid_amount,
+                            token_confirmation_idx=-1
                         )
                         if res and res.get("status", "") == "SUCCESS":
+                            error_msg = ""
                             successful_purchases.append(
                                 f"{variant_name}|{option_order}. {option_name} - {option_price}"
                             )
@@ -166,6 +181,8 @@ def purchase_by_family(
                                 pause()
                             else:
                                 print("Purchase successful!")
+                        else:
+                            error_msg = res.get("message", "")
                 else:
                     successful_purchases.append(
                         f"{variant_name}|{option_order}. {option_name} - {option_price}"
@@ -180,15 +197,10 @@ def purchase_by_family(
                 print(f"Exception occurred while creating order: {e}")
                 res = None
             print("-------------------------------------------------------")
-    
-    print(f"Total successful purchases for family {family_name}: {len(successful_purchases)}")
-    if len(successful_purchases) > 0:
-        print("-------------------------------------------------------")
-        print("Successful purchases:")
-        for purchase in successful_purchases:
-            print(f"- {purchase}")
-    print("-------------------------------------------------------")
-    pause()
+            should_delay = error_msg == "" or "Failed call ipaas purchase" in error_msg
+            if delay_seconds > 0 and should_delay:
+                print(f"Waiting for {delay_seconds} seconds before next purchase...")
+                time.sleep(delay_seconds)
 
 def purchase_n_times(
     n: int,
