@@ -91,11 +91,13 @@ def show_account_menu():
             active_marker = " (Aktif)" if is_active else ""
             print(f"{idx + 1}. {user['number']}{active_marker}")
         
+        print("-" * 55)
         print("Command:")
         print("0: Tambah Akun")
+        print("Masukan nomor urut akun untuk berganti.")
+        print("Masukan del <nomor urut> untuk menghapus akun tertentu.")
         print("00: Kembali ke menu utama")
-        print("99: Hapus Akun aktif")
-        print("Masukan nomor akun untuk berganti.")
+        print("-" * 55)
         input_str = input("Pilihan:")
         if input_str == "00":
             in_account_menu = False
@@ -103,26 +105,40 @@ def show_account_menu():
         elif input_str == "0":
             add_user = True
             continue
-        elif input_str == "99":
-            if not active_user:
-                print("Tidak ada akun aktif untuk dihapus.")
-                pause()
-                continue
-            confirm = input(f"Yakin ingin menghapus akun {active_user['number']}? (y/n): ")
-            if confirm.lower() == 'y':
-                AuthInstance.remove_refresh_token(active_user["number"])
-                # AuthInstance.load_tokens()
-                users = AuthInstance.refresh_tokens
-                active_user = AuthInstance.get_active_user()
-                print("Akun berhasil dihapus.")
-                pause()
-            else:
-                print("Penghapusan akun dibatalkan.")
-                pause()
-            continue
         elif input_str.isdigit() and 1 <= int(input_str) <= len(users):
             selected_user = users[int(input_str) - 1]
             return selected_user['number']
+        elif input_str.startswith("del "):
+            parts = input_str.split()
+            if len(parts) == 2 and parts[1].isdigit():
+                del_index = int(parts[1])
+                
+                # Prevent deleting the active user here
+                if active_user and users[del_index - 1]["number"] == active_user["number"]:
+                    print("Tidak dapat menghapus akun aktif. Silahkan ganti akun terlebih dahulu.")
+                    pause()
+                    continue
+                
+                if 1 <= del_index <= len(users):
+                    user_to_delete = users[del_index - 1]
+                    confirm = input(f"Yakin ingin menghapus akun {user_to_delete['number']}? (y/n): ")
+                    if confirm.lower() == 'y':
+                        AuthInstance.remove_refresh_token(user_to_delete["number"])
+                        # AuthInstance.load_tokens()
+                        users = AuthInstance.refresh_tokens
+                        active_user = AuthInstance.get_active_user()
+                        print("Akun berhasil dihapus.")
+                        pause()
+                    else:
+                        print("Penghapusan akun dibatalkan.")
+                        pause()
+                else:
+                    print("Nomor urut tidak valid.")
+                    pause()
+            else:
+                print("Perintah tidak valid. Gunakan format: del <nomor urut>")
+                pause()
+            continue
         else:
             print("Input tidak valid. Silahkan coba lagi.")
             pause()
