@@ -303,7 +303,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 api_key,
                 tokens,
                 payment_items,
-                "BUY_PACKAGE",
+                "🤫",
                 False,
                 overwrite_amount,
                 token_confirmation_idx=1
