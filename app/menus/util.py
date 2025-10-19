@@ -9,20 +9,20 @@ import textwrap
 
 def clear_screen():
     print("Clearing screen...")
-    user_info = get_user_info(load_api_key())
+    # user_info = get_user_info(load_api_key())
     os.system('cls' if os.name == 'nt' else 'clear')
     if ascii_art:
         ascii_art.to_terminal(columns=55)
 
-    if user_info:
-        credit = user_info.get("credit", 0)
-        premium_credit = user_info.get("premium_credit", 0)
+    # if user_info:
+    #     credit = user_info.get("credit", 0)
+    #     premium_credit = user_info.get("premium_credit", 0)
         
-        width = 55 
-        print("=" * width)
-        print(f" Credit: {credit} | Premium Credit: {premium_credit} ".center(width))
-        print("=" * width)
-        print("")
+    #     width = 55 
+    #     print("=" * width)
+    #     print(f" Credit: {credit} | Premium Credit: {premium_credit} ".center(width))
+    #     print("=" * width)
+    #     print("")
         
 
 def pause():
