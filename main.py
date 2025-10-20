@@ -14,6 +14,7 @@ from app.menus.package import fetch_my_packages, get_packages_by_family
 from app.menus.hot import show_hot_menu, show_hot_menu2
 from app.service.sentry import enter_sentry_mode
 from app.menus.purchase import purchase_by_family
+from app.menus.famplan import show_family_info
 
 WIDTH = 55
 
@@ -31,8 +32,9 @@ def show_main_menu(profile):
     print("3. Beli Paket 🔥 HOT 🔥")
     print("4. Beli Paket 🔥 HOT-2 🔥")
     print("5. Beli Paket Berdasarkan Family Code")
-    print("6. Riwayat Transaksi")
-    print("7. Purchase all packages in a family code")
+    print("6. Beli Semua Paket di Family Code (loop)")
+    print("7. Riwayat Transaksi")
+    print("8. Family Plan/Akrab Organizer")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -93,8 +95,6 @@ def main():
                     continue
                 get_packages_by_family(family_code)
             elif choice == "6":
-                show_transaction_history(AuthInstance.api_key, active_user["tokens"])
-            elif choice == "7":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
                     continue
@@ -119,6 +119,10 @@ def main():
                     delay_seconds,
                     start_from_option
                 )
+            elif choice == "7":
+                show_transaction_history(AuthInstance.api_key, active_user["tokens"])
+            elif choice == "8":
+                show_family_info(AuthInstance.api_key, active_user["tokens"])
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
