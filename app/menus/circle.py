@@ -140,7 +140,14 @@ def show_circle_info(api_key: str, tokens: dict):
                     continue
                 
                 member_id = member_to_remove.get("member_id", "")
+                
+                # Prevent removing last member
                 is_last_member = len(members) == 2
+                if is_last_member:
+                    print("Cannot remove the last member from the Circle.")
+                    pause()
+                    continue
+                
                 msisdn_to_remove = decrypt_circle_msisdn(member_to_remove.get("msisdn", ""), api_key)
                 confirm = input(f"Are you sure you want to remove {msisdn_to_remove} from the Circle? (y/n): ")
                 if confirm.lower() != "y":
@@ -148,7 +155,14 @@ def show_circle_info(api_key: str, tokens: dict):
                     pause()
                     continue
                 
-                remove_res = remove_circle_member(api_key, tokens, member_id, group_id, parent_member_id, is_last_member)
+                remove_res = remove_circle_member(
+                    api_key,
+                    tokens,
+                    member_id,
+                    group_id,
+                    parent_member_id,
+                    is_last_member
+                )
                 if remove_res.get("status") == "SUCCESS":
                     print(f"{msisdn_to_remove} has been removed from the Circle.")
                     print(json.dumps(remove_res, indent=2))
