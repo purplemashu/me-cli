@@ -25,13 +25,18 @@ def show_circle_info(api_key: str, tokens: dict):
         group_id = group_data.get("group_id", "")
 
         if group_id == "":
-            print("ou are not part of any Circle.")
+            print("You are not part of any Circle.")
             pause()
             return
         
         group_name = group_data.get("group_name", "N/A")
         owner_name = group_data.get("owner_name", "N/A")
         group_status = group_data.get("group_status", "N/A")
+        if group_status == "BLOCKED":
+            print("This Circle is currently blocked.")
+            pause()
+            return
+            
         
         members_res = get_group_members(api_key, tokens, group_id)
         if members_res.get("status") != "SUCCESS":
