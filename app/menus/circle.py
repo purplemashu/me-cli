@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from app.menus.util import pause, clear_screen, format_quota_byte
-from app.client.engsel3 import get_group_data, get_group_members, invite_circle_member, remove_circle_member, accept_circle_invitation
+from app.client.engsel3 import get_group_data, get_group_members, validate_circle_member, invite_circle_member, remove_circle_member, accept_circle_invitation
 
 from app.service.auth import AuthInstance
 from app.client.encrypt import decrypt_circle_msisdn
@@ -23,6 +23,7 @@ def show_circle_info(api_key: str, tokens: dict):
         
         group_data = group_res.get("data", {})        
         group_id = group_data.get("group_id", "")
+
         if group_id == "":
             print("ou are not part of any Circle.")
             pause()
@@ -114,15 +115,28 @@ def show_circle_info(api_key: str, tokens: dict):
             in_circle_menu = False
         elif choice == "1":
             msisdn_to_invite = input("Enter the MSISDN of the member to invite (e.g., 6281234567890): ")
-            invite_res = invite_circle_member(api_key, tokens, msisdn_to_invite)
+            validate_res = validate_circle_member(api_key, tokens, msisdn_to_invite)
+            if validate_res.get("status") == "SUCCESS":
+                if validate_res.get("data", {}).get("response_code", "") != "200-2001":
+                    print(f"Cannot invite {msisdn_to_invite}: {validate_res.get('data', {}).get('message', 'Unknown error')}")
+                    pause()
+                    continue
+            
+            member_name = input("Enter the name of the member to invite: ")
+            
+            invite_res = invite_circle_member(
+                api_key,
+                tokens,
+                msisdn_to_invite,
+                member_name,
+                group_id,
+                parent_member_id
+            )
             if invite_res.get("status") == "SUCCESS":
-                if invite_res.get("data", {}).get("response_code", "") == "200-2001":
-                    print(f"Invitation sent successfully to {msisdn_to_invite}.")
+                if invite_res.get("data", {}).get("response_code", "") == "200-00":
+                    print(f"Invitation sent to {msisdn_to_invite} successfully.")
                 else:
                     print(f"Failed to invite {msisdn_to_invite}: {invite_res.get('data', {}).get('message', 'Unknown error')}")
-                print(json.dumps(invite_res, indent=2))
-            else:
-                print(f"Error: {invite_res}")
             pause()
         elif choice.startswith("del "):
             try:
