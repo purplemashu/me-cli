@@ -24,7 +24,7 @@ def show_circle_info(api_key: str, tokens: dict):
         group_data = group_res.get("data", {})        
         group_id = group_data.get("group_id", "")
         if group_id == "":
-            print("You are not part of any Circle.")
+            print("ou are not part of any Circle.")
             pause()
             return
         
@@ -44,11 +44,16 @@ def show_circle_info(api_key: str, tokens: dict):
             print("No members found in the Circle.")
             pause()
             return
-
-        parent_member_id = members[0].get("member_id", "")
-        parent_subs_id = members[0].get("subscriber_number", "")
-        parrent_msisdn_encrypted = members[0].get("msisdn", "")
-        parrent_msisdn = decrypt_circle_msisdn(parrent_msisdn_encrypted, api_key)
+        
+        parent_member_id = ""
+        parent_subs_id = ""
+        parrent_msisdn = ""
+        for member in members:
+            if member.get("member_role", "") == "PARENT":
+                parent_member_id = member.get("member_id", "")
+                parent_subs_id = member.get("subscriber_number", "")
+                parrent_msisdn_encrypted = member.get("msisdn", "")
+                parrent_msisdn = decrypt_circle_msisdn(parrent_msisdn_encrypted, api_key)
         
         package = members_data.get("package", {})
         package_name = package.get("name", "N/A")
@@ -72,11 +77,6 @@ def show_circle_info(api_key: str, tokens: dict):
             member_id = member.get("member_id", "")
             member_role = member.get("member_role", "N/A")
             member_subs_number = member.get("subscriber_number", "")
-            
-            # @TODO: Redundant, refactor later
-            # if member_role == "PARENT":
-            #     parent_member_id = member_id
-            #     parent_subs_id = member_subs_number
             
             join_date_ts = member.get("join_date", 0)
             slot_type = member.get("slot_type", "N/A")
