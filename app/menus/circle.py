@@ -116,7 +116,10 @@ def show_circle_info(api_key: str, tokens: dict):
             msisdn_to_invite = input("Enter the MSISDN of the member to invite (e.g., 6281234567890): ")
             invite_res = invite_circle_member(api_key, tokens, msisdn_to_invite)
             if invite_res.get("status") == "SUCCESS":
-                print(f"Invitation sent successfully to {msisdn_to_invite}.")
+                if invite_res.get("data", {}).get("response_code", "") == "200-2001":
+                    print(f"Invitation sent successfully to {msisdn_to_invite}.")
+                else:
+                    print(f"Failed to invite {msisdn_to_invite}: {invite_res.get('data', {}).get('message', 'Unknown error')}")
                 print(json.dumps(invite_res, indent=2))
             else:
                 print(f"Error: {invite_res}")
