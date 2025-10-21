@@ -38,7 +38,7 @@ def get_group_members(
 
     return res
 
-def invite_circle_member(
+def validate_circle_member(
     api_key: str,
     tokens: dict,
     msisdn: str,
@@ -53,7 +53,38 @@ def invite_circle_member(
         "lang": "en"
     }
 
-    print(f"Inviting {msisdn} to Circle...")
+    print(f"Validating {msisdn}...")
+    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+
+    return res
+
+def invite_circle_member(
+    api_key: str,
+    tokens: dict,
+    msisdn: str,
+    name: str,
+    group_id: str,
+    member_id_parent: str,
+) -> dict:
+    path = "family-hub/api/v8/members/invite"
+    
+    encrypted_msisdn = encrypt_circle_msisdn(msisdn, api_key)
+
+    raw_payload = {
+        "access_token": tokens["access_token"],
+        "group_id": group_id,
+        "is_enterprise": False,
+        "members": [
+            {
+                "msisdn": encrypted_msisdn,
+                "name": name
+            }    
+        ],
+        "lang": "en",
+        "member_id_parent": member_id_parent
+    }
+    
+    print(f"Inviting {msisdn}...")
     res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
 
     return res
