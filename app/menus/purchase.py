@@ -352,9 +352,10 @@ def purchase_n_times(
                 api_key,
                 tokens,
                 payment_items,
-                "BUY_PACKAGE",
+                "🤫",
                 False,
                 overwrite_amount,
+                token_confirmation_idx=token_confirmation_idx
             )
             
             if res and res.get("status", "") != "SUCCESS":
@@ -368,9 +369,10 @@ def purchase_n_times(
                         api_key,
                         tokens,
                         payment_items,
-                        "BUY_PACKAGE",
+                        "🤫",
                         False,
                         valid_amount,
+                        token_confirmation_idx=token_confirmation_idx
                     )
                     if res and res.get("status", "") == "SUCCESS":
                         successful_purchases.append(
