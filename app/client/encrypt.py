@@ -23,6 +23,8 @@ PAYMENT_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-payment"
 BOUNTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-bounty"
 LOYALTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-loyalty"
 AX_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-ax"
+CIRCLE_MSISDN_ENCRYPT_URL = f"{BASE_CRYPTO_URL}/encrypt-circle-msisdn"
+CIRCLE_MSISDN_DECRYPT_URL = f"{BASE_CRYPTO_URL}/decrypt-circle-msisdn"
 
 @dataclass
 class DeviceInfo:
@@ -274,3 +276,40 @@ def get_x_signature_loyalty(
         raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"Signature generation failed: {response.text}")
+
+def encrypt_circle_msisdn(msisdn: str, api_key: str) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key,
+    }
+    
+    request_body = {
+        "msisdn": msisdn
+    }
+    response = requests.request("POST", CIRCLE_MSISDN_ENCRYPT_URL, json=request_body, headers=headers, timeout=30)
+    
+    if response.status_code == 200:
+        return response.json().get("encrypted_msisdn")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
+    else:
+        raise Exception(f"MSISDN encryption failed: {response.text}")
+    
+def decrypt_circle_msisdn(encrypted_msisdn: str, api_key: str) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key,
+    }
+    
+    request_body = {
+        "encrypted_msisdn": encrypted_msisdn
+    }
+    response = requests.request("POST", CIRCLE_MSISDN_DECRYPT_URL, json=request_body, headers=headers, timeout=30)
+    
+    if response.status_code == 200:
+        return response.json().get("msisdn")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
+    else:
+        raise Exception(f"MSISDN decryption failed: {response.text}")
+    
