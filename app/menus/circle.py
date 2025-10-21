@@ -62,12 +62,18 @@ def show_circle_info(api_key: str, tokens: dict):
         allocation_byte = benefit.get("allocation", 0)
         consumption_byte = benefit.get("consumption", 0)
         remaining_byte = benefit.get("remaining", 0)
+        
+        formatted_allocation = format_quota_byte(allocation_byte)
+        formatted_consumption = format_quota_byte(consumption_byte)
+        formatted_remaining = format_quota_byte(remaining_byte)
                 
         clear_screen()
         
         print("=" * WIDTH)
-        print(f"Circle Name: {group_name} ({group_status})".center(WIDTH))
+        print(f"Circle: {group_name} ({group_status})".center(WIDTH))
         print(f"Owner: {owner_name} {parrent_msisdn}".center(WIDTH))
+        print("-" * WIDTH)
+        print(f"Package: {package_name} | {formatted_remaining} / {formatted_allocation}".center(WIDTH))
         print("=" * WIDTH)
         
         print("Members:")
