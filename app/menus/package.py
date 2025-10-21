@@ -320,7 +320,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                         api_key,
                         tokens,
                         payment_items,
-                        "BUY_PACKAGE",
+                        "🤫",
                         False,
                         valid_amount,
                         token_confirmation_idx=-1
@@ -404,6 +404,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 use_decoy=use_decoy_for_n_times,
                 delay_seconds=int(delay_seconds_str),
                 pause_on_success=False,
+                token_confirmation_idx=1
             )
         elif choice.lower() == 'b':
             settlement_bounty(
