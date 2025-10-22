@@ -19,6 +19,8 @@ def settlement_qris(
     overwrite_amount: int = -1,
     token_confirmation_idx: int = 0,
     amount_idx: int = -1,
+    topup_number: str = "",
+    stage_token: str = "",
 ):  
     # Sanity check
     if overwrite_amount == -1 and not ask_overwrite:
@@ -86,7 +88,8 @@ def settlement_qris(
         "total_discount": 0,
         "coupon": "",
         "payment_for": payment_for,
-        "topup_number": "",
+        "topup_number": topup_number,
+        "stage_token": stage_token,
         "is_enterprise": False,
         "autobuy": {
             "is_using_autobuy": False,
@@ -213,6 +216,8 @@ def show_qris_payment(
     overwrite_amount: int = -1,
     token_confirmation_idx: int = 0,
     amount_idx: int = -1,
+    topup_number: str = "",
+    stage_token: str = "",
 ):  
     transaction_id = settlement_qris(
         api_key,
@@ -222,7 +227,9 @@ def show_qris_payment(
         ask_overwrite,
         overwrite_amount,
         token_confirmation_idx,
-        amount_idx
+        amount_idx,
+        topup_number,
+        stage_token
     )
     
     if not transaction_id:
@@ -251,4 +258,4 @@ def show_qris_payment(
     
     print(f"Atau buka link berikut untuk melihat QRIS:\n{qris_url}")
     
-    return
+    return qris_b64

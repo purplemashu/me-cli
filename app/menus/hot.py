@@ -175,9 +175,9 @@ def show_hot_menu2():
                         payment_items,
                         payment_for,
                         ask_overwrite,
-                        overwrite_amount,
-                        token_confirmation_idx,
-                        amount_idx,
+                        overwrite_amount=overwrite_amount,
+                        token_confirmation_idx=token_confirmation_idx,
+                        amount_idx=amount_idx,
                     )
                     input("Tekan enter untuk kembali...")
                     in_payment_menu = False

@@ -2,9 +2,15 @@ from dotenv import load_dotenv
 
 load_dotenv() 
 
-import sys
+import sys, json
+from datetime import datetime
 from app.menus.util import clear_screen, pause
-from app.client.engsel import *
+from app.client.engsel import (
+    get_balance,
+    get_profile,
+    get_package,
+    get_auth_code,
+)
 from app.client.engsel2 import get_tiering_info
 from app.menus.payment import show_transaction_history
 from app.service.auth import AuthInstance
@@ -38,6 +44,7 @@ def show_main_menu(profile):
     print("8. Riwayat Transaksi")
     print("9. Family Plan/Akrab Organizer")
     print("10. [WIP] Circle")
+    print("T. Test API (debug)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -78,7 +85,23 @@ def main():
             show_main_menu(profile)
 
             choice = input("Pilih menu: ")
-            if choice == "1":
+            # If T
+            if choice.lower() == "t":
+                # pin = input("Enter PIN for auth code test: ")
+                # if len(pin) != 6:
+                #     print("PIN too short.")
+                #     pause()
+                #     continue
+                # auth_code = get_auth_code(
+                #     active_user["tokens"],
+                #     "111111",
+                #     active_user["number"]
+                # )
+                
+                # print(auth_code)
+                # pause()
+                pass
+            elif choice == "1":
                 selected_user_number = show_account_menu()
                 if selected_user_number:
                     AuthInstance.set_active_user(selected_user_number)
