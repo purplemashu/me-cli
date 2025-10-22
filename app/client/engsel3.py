@@ -1,7 +1,5 @@
 # CIRCLE
-import json
 from app.client.engsel import send_api_request
-from app.menus.util import format_quota_byte
 from app.client.encrypt import encrypt_circle_msisdn
 
 def get_group_data(
@@ -45,7 +43,7 @@ def validate_circle_member(
 ) -> dict:
     path = "family-hub/api/v8/members/validate"
     
-    encrypted_msisdn = encrypt_circle_msisdn(msisdn, api_key)
+    encrypted_msisdn = encrypt_circle_msisdn(api_key, msisdn)
 
     raw_payload = {
         "msisdn": encrypted_msisdn,
@@ -68,7 +66,7 @@ def invite_circle_member(
 ) -> dict:
     path = "family-hub/api/v8/members/invite"
     
-    encrypted_msisdn = encrypt_circle_msisdn(msisdn, api_key)
+    encrypted_msisdn = encrypt_circle_msisdn(api_key, msisdn)
 
     raw_payload = {
         "access_token": tokens["access_token"],

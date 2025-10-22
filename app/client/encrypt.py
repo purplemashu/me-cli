@@ -277,7 +277,7 @@ def get_x_signature_loyalty(
     else:
         raise Exception(f"Signature generation failed: {response.text}")
 
-def encrypt_circle_msisdn(msisdn: str, api_key: str) -> str:
+def encrypt_circle_msisdn(api_key: str, msisdn: str) -> str:
     headers = {
         "Content-Type": "application/json",
         "x-api-key": api_key,
@@ -295,7 +295,7 @@ def encrypt_circle_msisdn(msisdn: str, api_key: str) -> str:
     else:
         raise Exception(f"MSISDN encryption failed: {response.text}")
     
-def decrypt_circle_msisdn(encrypted_msisdn: str, api_key: str) -> str:
+def decrypt_circle_msisdn(api_key: str, encrypted_msisdn: str) -> str:
     headers = {
         "Content-Type": "application/json",
         "x-api-key": api_key,
