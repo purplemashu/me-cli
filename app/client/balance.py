@@ -17,6 +17,8 @@ def settlement_balance(
     overwrite_amount: int = -1,
     token_confirmation_idx: int = 0,
     amount_idx: int = -1,
+    topup_number: str = "",
+    stage_token: str = "",
 ):
     # Sanity check
     if overwrite_amount == -1 and not ask_overwrite:
@@ -103,8 +105,8 @@ def settlement_balance(
         "coupon": "",
         "payment_for": payment_for,
         "with_upsell": False,
-        "topup_number": "",
-        "stage_token": "",
+        "topup_number": topup_number,
+        "stage_token": stage_token,
         "authentication_id": "",
         "encrypted_payment_token": build_encrypted_field(urlsafe_b64=True),
         "token": "",
@@ -136,6 +138,8 @@ def settlement_balance(
         "is_using_autobuy": False,
         "items": items,
     }
+    
+    # print(f"[SB] payload: {json.dumps(settlement_payload, indent=1)}")
     
     encrypted_payload = encryptsign_xdata(
         api_key=api_key,

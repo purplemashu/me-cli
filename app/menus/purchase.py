@@ -150,7 +150,7 @@ def purchase_by_family(
                     payment_items,
                     "🤑",
                     False,
-                    overwrite_amount,
+                    overwrite_amount=overwrite_amount,
                     token_confirmation_idx=1
                 )
                 
@@ -167,7 +167,7 @@ def purchase_by_family(
                             payment_items,
                             "SHARE_PACKAGE",
                             False,
-                            valid_amount,
+                            overwrite_amount=valid_amount,
                             token_confirmation_idx=-1
                         )
                         if res and res.get("status", "") == "SUCCESS":
@@ -354,7 +354,7 @@ def purchase_n_times(
                 payment_items,
                 "🤫",
                 False,
-                overwrite_amount,
+                overwrite_amount=overwrite_amount,
                 token_confirmation_idx=token_confirmation_idx
             )
             
@@ -371,7 +371,7 @@ def purchase_n_times(
                         payment_items,
                         "🤫",
                         False,
-                        valid_amount,
+                        overwrite_amount=valid_amount,
                         token_confirmation_idx=token_confirmation_idx
                     )
                     if res and res.get("status", "") == "SUCCESS":
