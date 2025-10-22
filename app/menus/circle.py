@@ -59,7 +59,7 @@ def show_circle_info(api_key: str, tokens: dict):
                 parent_member_id = member.get("member_id", "")
                 parent_subs_id = member.get("subscriber_number", "")
                 parrent_msisdn_encrypted = member.get("msisdn", "")
-                parrent_msisdn = decrypt_circle_msisdn(parrent_msisdn_encrypted, api_key)
+                parrent_msisdn = decrypt_circle_msisdn(api_key, parrent_msisdn_encrypted)
         
         package = members_data.get("package", {})
         package_name = package.get("name", "N/A")
@@ -84,7 +84,7 @@ def show_circle_info(api_key: str, tokens: dict):
         print("Members:")
         for idx, member in enumerate(members, start=1):
             encrypted_msisdn = member.get("msisdn", "")
-            msisdn = decrypt_circle_msisdn(encrypted_msisdn, api_key)
+            msisdn = decrypt_circle_msisdn(api_key, encrypted_msisdn)
             
             member_id = member.get("member_id", "")
             member_role = member.get("member_role", "N/A")
@@ -173,7 +173,7 @@ def show_circle_info(api_key: str, tokens: dict):
                     pause()
                     continue
                 
-                msisdn_to_remove = decrypt_circle_msisdn(member_to_remove.get("msisdn", ""), api_key)
+                msisdn_to_remove = decrypt_circle_msisdn(api_key, member_to_remove.get("msisdn", ""))
                 confirm = input(f"Are you sure you want to remove {msisdn_to_remove} from the Circle? (y/n): ")
                 if confirm.lower() != "y":
                     print("Removal cancelled.")
@@ -212,7 +212,7 @@ def show_circle_info(api_key: str, tokens: dict):
                     continue
                 
                 member_id = member_to_accept.get("member_id", "")
-                msisdn_to_accept = decrypt_circle_msisdn(member_to_accept.get("msisdn", ""), api_key)
+                msisdn_to_accept = decrypt_circle_msisdn(api_key, member_to_accept.get("msisdn", ""))
                 confirm = input(f"Do you want to accept the invitation for {msisdn_to_accept}? (y/n): ")
                 if confirm.lower() != "y":
                     print("Acceptance cancelled.")
