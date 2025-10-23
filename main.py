@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
-
-load_dotenv() 
+load_dotenv()
 
 import sys, json
 from datetime import datetime
@@ -24,6 +23,7 @@ from app.menus.famplan import show_family_info
 from app.menus.circle import show_circle_info
 from app.menus.notification import show_notification_menu
 from app.menus.store.segments import show_store_segments_menu
+from app.menus.store.search import show_family_list_menu
 
 
 WIDTH = 55
@@ -170,6 +170,11 @@ def main():
                 input_11 = input("Is enterprise store? (y/n): ").lower()
                 is_enterprise = input_11 == 'y'
                 show_store_segments_menu(is_enterprise)
+            elif choice == "12":
+                input_12_1 = input("Is enterprise? (y/n): ").lower()
+                is_enterprise = input_12_1 == 'y'
+                
+                show_family_list_menu(profile['subscription_type'], is_enterprise)
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
