@@ -8,7 +8,6 @@ from app.client.engsel import (
     get_balance,
     get_profile,
     get_package,
-    get_auth_code,
 )
 from app.client.engsel2 import get_tiering_info
 from app.menus.payment import show_transaction_history
@@ -23,7 +22,7 @@ from app.menus.famplan import show_family_info
 from app.menus.circle import show_circle_info
 from app.menus.notification import show_notification_menu
 from app.menus.store.segments import show_store_segments_menu
-from app.menus.store.search import show_family_list_menu
+from app.menus.store.search import show_family_list_menu, show_store_packages_menu
 
 
 WIDTH = 55
@@ -48,8 +47,9 @@ def show_main_menu(profile):
     print("9. Family Plan/Akrab Organizer")
     print("10. [WIP] Circle")
     print("11. Store Segments")
+    print("12. Store Family List")
+    print("13. Store Packages")
     print("N. Notifikasi")
-    # print("T. Test API (debug)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -92,19 +92,6 @@ def main():
             choice = input("Pilih menu: ")
             # If T
             if choice.lower() == "t":
-                # pin = input("Enter PIN for auth code test: ")
-                # if len(pin) != 6:
-                #     print("PIN too short.")
-                #     pause()
-                #     continue
-                # auth_code = get_auth_code(
-                #     active_user["tokens"],
-                #     "111111",
-                #     active_user["number"]
-                # )
-                
-                # print(auth_code)
-                # pause()
                 pass
             elif choice == "1":
                 selected_user_number = show_account_menu()
@@ -175,6 +162,11 @@ def main():
                 is_enterprise = input_12_1 == 'y'
                 
                 show_family_list_menu(profile['subscription_type'], is_enterprise)
+            elif choice == "13":
+                input_13_1 = input("Is enterprise? (y/n): ").lower()
+                is_enterprise = input_13_1 == 'y'
+                
+                show_store_packages_menu(profile['subscription_type'], is_enterprise)
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
