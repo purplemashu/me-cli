@@ -167,7 +167,9 @@ def main():
             elif choice == "10":
                 show_circle_info(AuthInstance.api_key, active_user["tokens"])
             elif choice == "11":
-                show_store_segments_menu()
+                input_11 = input("Is enterprise store? (y/n): ").lower()
+                is_enterprise = input_11 == 'y'
+                show_store_segments_menu(is_enterprise)
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
