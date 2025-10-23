@@ -6,7 +6,7 @@ from app.service.auth import AuthInstance
 from app.client.engsel import get_auth_code, get_family, get_package, get_addons, get_package_details, send_api_request
 from app.client.engsel2 import unsubscribe
 from app.service.bookmark import BookmarkInstance
-from app.client.purchase import settlement_bounty, settlement_loyalty
+from app.client.purchase import settlement_bounty, settlement_loyalty, bounty_allotment
 from app.menus.util import clear_screen, pause, display_html
 from app.client.qris import show_qris_payment
 from app.client.ewallet import show_multipayment
@@ -151,7 +151,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("5. Pulsa + Decoy XCP V2")
         print("6. QRIS + Decoy Edu")
         print("7. Pulsa N kali")
-        print("8. Debug Share Package")
+        # print("8. Debug Share Package")
 
         # Sometimes payment_for is empty, so we set default to BUY_PACKAGE
         if payment_for == "":
@@ -159,6 +159,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         
         if payment_for == "REDEEM_VOUCHER":
             print("B. Ambil sebagai bonus (jika tersedia)")
+            print("BA. Kirim bonus (jika tersedia)")
             print("L. Beli dengan Poin (jika tersedia)")
         
         if option_order != -1:
@@ -517,6 +518,19 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             )
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
+        elif choice.lower() == 'ba':
+            destination_msisdn = input("Masukkan nomor tujuan bonus (mulai dengan 62): ").strip()
+            bounty_allotment(
+                api_key=api_key,
+                tokens=tokens,
+                ts_to_sign=ts_to_sign,
+                destination_msisdn=destination_msisdn,
+                item_name=option_name,
+                item_code=package_option_code,
+                token_confirmation=token_confirmation,
+            )
+            pause()
+            in_package_detail_menu = False
         elif choice.lower() == 'l':
             settlement_loyalty(
                 api_key=api_key,

@@ -21,6 +21,7 @@ XDATA_DECRYPT_URL = f"{BASE_CRYPTO_URL}/decrypt"
 XDATA_ENCRYPT_SIGN_URL = f"{BASE_CRYPTO_URL}/encryptsign"
 PAYMENT_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-payment"
 BOUNTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-bounty"
+BOUNTY_ALLOTMENT_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-bounty-allotment"
 LOYALTY_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-loyalty"
 AX_SIGN_URL = f"{BASE_CRYPTO_URL}/sign-ax"
 CIRCLE_MSISDN_ENCRYPT_URL = f"{BASE_CRYPTO_URL}/encrypt-circle-msisdn"
@@ -312,4 +313,32 @@ def decrypt_circle_msisdn(api_key: str, encrypted_msisdn: str) -> str:
         raise Exception("Insufficient API credit.")
     else:
         raise Exception(f"MSISDN decryption failed: {response.text}")
+
+def get_x_signature_bounty_allotment(
+        api_key: str,
+        sig_time_sec: int,
+        package_code: str,
+        token_confirmation: str,
+        destination_msisdn: str,
+        path: str
+    ) -> str:
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key,
+    }
     
+    request_body = {
+        "sig_time_sec": sig_time_sec,
+        "package_code": package_code,
+        "token_confirmation": token_confirmation,
+        "destination_msisdn": destination_msisdn,
+        "path": path
+    }
+    
+    response = requests.request("POST", BOUNTY_ALLOTMENT_SIGN_URL, json=request_body, headers=headers, timeout=30)
+    if response.status_code == 200:
+        return response.json().get("x_signature")
+    elif response.status_code == 402:
+        raise Exception("Insufficient API credit.")
+    else:
+        raise Exception(f"Signature generation failed: {response.text}")
