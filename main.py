@@ -22,6 +22,7 @@ from app.service.sentry import enter_sentry_mode
 from app.menus.purchase import purchase_by_family
 from app.menus.famplan import show_family_info
 from app.menus.circle import show_circle_info
+from app.menus.notification import show_notification_menu
 
 WIDTH = 55
 
@@ -44,7 +45,8 @@ def show_main_menu(profile):
     print("8. Riwayat Transaksi")
     print("9. Family Plan/Akrab Organizer")
     print("10. [WIP] Circle")
-    print("T. Test API (debug)")
+    print("N. Notifikasi")
+    # print("T. Test API (debug)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -174,7 +176,8 @@ def main():
                 )
                 print(json.dumps(res, indent=2))
                 input("Press Enter to continue...")
-                pass
+            elif choice.lower() == "n":
+                show_notification_menu()
             elif choice == "s":
                 enter_sentry_mode()
             else:
