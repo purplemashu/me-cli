@@ -23,6 +23,8 @@ from app.menus.purchase import purchase_by_family
 from app.menus.famplan import show_family_info
 from app.menus.circle import show_circle_info
 from app.menus.notification import show_notification_menu
+from app.menus.store.segments import show_store_segments_menu
+
 
 WIDTH = 55
 
@@ -45,6 +47,7 @@ def show_main_menu(profile):
     print("8. Riwayat Transaksi")
     print("9. Family Plan/Akrab Organizer")
     print("10. [WIP] Circle")
+    print("11. Store Segments")
     print("N. Notifikasi")
     # print("T. Test API (debug)")
     print("00. Bookmark Paket")
@@ -163,6 +166,8 @@ def main():
                 show_family_info(AuthInstance.api_key, active_user["tokens"])
             elif choice == "10":
                 show_circle_info(AuthInstance.api_key, active_user["tokens"])
+            elif choice == "11":
+                show_store_segments_menu()
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
