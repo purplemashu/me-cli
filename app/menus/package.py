@@ -530,7 +530,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 token_confirmation=token_confirmation,
             )
             pause()
-            in_package_detail_menu = False
+            return True
         elif choice.lower() == 'l':
             settlement_loyalty(
                 api_key=api_key,
@@ -636,12 +636,13 @@ def get_packages_by_family(
             print("Paket tidak ditemukan. Silakan masukan nomor yang benar.")
             continue
         
-        is_done = show_package_details(api_key, tokens, selected_pkg["code"], is_enterprise, option_order=selected_pkg["option_order"])
-        if is_done:
-            in_package_menu = False
-            return None
-        else:
-            continue
+        show_package_details(
+            api_key,
+            tokens,
+            selected_pkg["code"],
+            is_enterprise,
+            option_order=selected_pkg["option_order"],
+        )
         
     return packages
 
