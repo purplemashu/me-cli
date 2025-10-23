@@ -13,6 +13,7 @@ from app.client.ewallet import show_multipayment
 from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 from app.menus.purchase import purchase_n_times
+from app.menus.util import format_quota_byte
 
 
 def show_package_details(api_key, tokens, package_option_code, is_enterprise, option_order = -1):
@@ -150,7 +151,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("5. Pulsa + Decoy XCP V2")
         print("6. QRIS + Decoy Edu")
         print("7. Pulsa N kali")
-        print("8. [Debug] Share Package")
+        print("8. Debug Share Package")
 
         # Sometimes payment_for is empty, so we set default to BUY_PACKAGE
         if payment_for == "":
@@ -455,16 +456,16 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 decoy_data["migration_type"],
             )
 
-            payment_items.append(
-                PaymentItem(
-                    item_code=decoy_package_detail["package_option"]["package_option_code"],
-                    product_type="",
-                    item_price=decoy_package_detail["package_option"]["price"],
-                    item_name=decoy_package_detail["package_option"]["name"],
-                    tax=0,
-                    token_confirmation=decoy_package_detail["token_confirmation"],
-                )
-            )
+            # payment_items.append(
+            #     PaymentItem(
+            #         item_code=decoy_package_detail["package_option"]["package_option_code"],
+            #         product_type="",
+            #         item_price=decoy_package_detail["package_option"]["price"],
+            #         item_name=decoy_package_detail["package_option"]["name"],
+            #         tax=0,
+            #         token_confirmation=decoy_package_detail["token_confirmation"],
+            #     )
+            # )
 
             overwrite_amount = price + decoy_package_detail["package_option"]["price"]
             res = show_qris_payment(
@@ -631,174 +632,154 @@ def get_packages_by_family(
     return packages
 
 def fetch_my_packages():
-    api_key = AuthInstance.api_key
-    tokens = AuthInstance.get_active_tokens()
-    if not tokens:
-        print("No active user tokens found.")
-        pause()
-        return None
-    
-    id_token = tokens.get("id_token")
-    
-    path = "api/v8/packages/quota-details"
-    
-    payload = {
-        "is_enterprise": False,
-        "lang": "en",
-        "family_member_id": ""
-    }
-    
-    print("Fetching my packages...")
-    res = send_api_request(api_key, path, payload, id_token, "POST")
-    if res.get("status") != "SUCCESS":
-        print("Failed to fetch packages")
-        print("Response:", res)
-        pause()
-        return None
-    
-    quotas = res["data"]["quotas"]
-    
-    clear_screen()
-    print("=======================================================")
-    print("======================My Packages======================")
-    print("=======================================================")
-    my_packages =[]
-    num = 1
-    for quota in quotas:
-        quota_code = quota["quota_code"] # Can be used as option_code
-        group_code = quota["group_code"]
-        group_name = quota["group_name"]
-        quota_name = quota["name"]
-        family_code = "N/A"
+    in_my_packages_menu = True
+    while in_my_packages_menu:
+        api_key = AuthInstance.api_key
+        tokens = AuthInstance.get_active_tokens()
+        if not tokens:
+            print("No active user tokens found.")
+            pause()
+            return None
         
-        product_subscription_type = quota.get("product_subscription_type", "")
-        product_domain = quota.get("product_domain", "")
+        id_token = tokens.get("id_token")
         
-        benefit_infos = []
-        benefits = quota.get("benefits", [])
-        if len(benefits) > 0:
-            for benefit in benefits:
-                benefit_id = benefit.get("id", "")
-                name = benefit.get("name", "")
-                data_type = benefit.get("data_type", "N/A")
-                benefit_info = "  -----------------------------------------------------\n"
-                benefit_info += f"  ID    : {benefit_id}\n"
-                benefit_info += f"  Name  : {name}\n"
-                benefit_info += f"  Type  : {data_type}\n"
-                
-
-                remaining = benefit.get("remaining", 0)
-                total = benefit.get("total", 0)
-
-                if data_type == "DATA":
-                    if remaining >= 1_000_000_000:
-                        remaining_gb = remaining / (1024 ** 3)
-                        remaining_str = f"{remaining_gb:.2f} GB"
-                    elif remaining >= 1_000_000:
-                        remaining_mb = remaining / (1024 ** 2)
-                        remaining_str = f"{remaining_mb:.2f} MB"
-                    elif remaining >= 1_000:
-                        remaining_kb = remaining / 1024
-                        remaining_str = f"{remaining_kb:.2f} KB"
-                    else:
-                        remaining_str = str(remaining)
-                    
-                    if total >= 1_000_000_000:
-                        total_gb = total / (1024 ** 3)
-                        total_str = f"{total_gb:.2f} GB"
-                    elif total >= 1_000_000:
-                        total_mb = total / (1024 ** 2)
-                        total_str = f"{total_mb:.2f} MB"
-                    elif total >= 1_000:
-                        total_kb = total / 1024
-                        total_str = f"{total_kb:.2f} KB"
-                    else:
-                        total_str = str(total)
-                    
-                    benefit_info += f"  Kuota : {remaining_str} / {total_str}"
-                elif data_type == "VOICE":
-                    benefit_info += f"  Kuota : {remaining/60:.2f} / {total/60:.2f} menit"
-                elif data_type == "TEXT":
-                    benefit_info += f"  Kuota : {remaining} / {total} SMS"
-                else:
-                    benefit_info += f"  Kuota : {remaining} / {total}"
-
-                benefit_infos.append(benefit_info)
+        path = "api/v8/packages/quota-details"
+        
+        payload = {
+            "is_enterprise": False,
+            "lang": "en",
+            "family_member_id": ""
+        }
+        
+        print("Fetching my packages...")
+        res = send_api_request(api_key, path, payload, id_token, "POST")
+        if res.get("status") != "SUCCESS":
+            print("Failed to fetch packages")
+            print("Response:", res)
+            pause()
+            return None
+        
+        quotas = res["data"]["quotas"]
+        
+        clear_screen()
+        print("=======================================================")
+        print("======================My Packages======================")
+        print("=======================================================")
+        my_packages =[]
+        num = 1
+        for quota in quotas:
+            quota_code = quota["quota_code"] # Can be used as option_code
+            group_code = quota["group_code"]
+            group_name = quota["group_name"]
+            quota_name = quota["name"]
+            family_code = "N/A"
             
+            product_subscription_type = quota.get("product_subscription_type", "")
+            product_domain = quota.get("product_domain", "")
+            
+            benefit_infos = []
+            benefits = quota.get("benefits", [])
+            if len(benefits) > 0:
+                for benefit in benefits:
+                    benefit_id = benefit.get("id", "")
+                    name = benefit.get("name", "")
+                    data_type = benefit.get("data_type", "N/A")
+                    benefit_info = "  -----------------------------------------------------\n"
+                    benefit_info += f"  ID    : {benefit_id}\n"
+                    benefit_info += f"  Name  : {name}\n"
+                    benefit_info += f"  Type  : {data_type}\n"
+                    
+
+                    remaining = benefit.get("remaining", 0)
+                    total = benefit.get("total", 0)
+
+                    if data_type == "DATA":
+                        remaining_str = format_quota_byte(remaining)
+                        total_str = format_quota_byte(total)
+                        
+                        benefit_info += f"  Kuota : {remaining_str} / {total_str}"
+                    elif data_type == "VOICE":
+                        benefit_info += f"  Kuota : {remaining/60:.2f} / {total/60:.2f} menit"
+                    elif data_type == "TEXT":
+                        benefit_info += f"  Kuota : {remaining} / {total} SMS"
+                    else:
+                        benefit_info += f"  Kuota : {remaining} / {total}"
+
+                    benefit_infos.append(benefit_info)
+                
+            
+            print(f"fetching package no. {num} details...")
+            package_details = get_package(api_key, tokens, quota_code)
+            if package_details:
+                family_code = package_details["package_family"]["package_family_code"]
+            
+            print("=======================================================")
+            print(f"Package {num}")
+            print(f"Name: {quota_name}")
+            print("Benefits:")
+            if len(benefit_infos) > 0:
+                for bi in benefit_infos:
+                    print(bi)
+                print("  -----------------------------------------------------")
+            print(f"Group Name: {group_name}")
+            print(f"Quota Code: {quota_code}")
+            print(f"Family Code: {family_code}")
+            print(f"Group Code: {group_code}")
+            print("=======================================================")
+            
+            my_packages.append({
+                "number": num,
+                "name": quota_name,
+                "quota_code": quota_code,
+                "product_subscription_type": product_subscription_type,
+                "product_domain": product_domain,
+            })
+            
+            num += 1
         
-        print(f"fetching package no. {num} details...")
-        package_details = get_package(api_key, tokens, quota_code)
-        if package_details:
-            family_code = package_details["package_family"]["package_family_code"]
+        print("Input package number to view detail.")
+        print("Input del <package number> to unsubscribe from a package.")
+        print("Input 00 to return to main menu.")
+        choice = input("Choice: ")
+        if choice == "00":
+            in_my_packages_menu = False
+
+        # Handle seletcting package to view detail
+        if choice.isdigit() and int(choice) > 0 and int(choice) <= len(my_packages):
+            selected_pkg = next((pkg for pkg in my_packages if pkg["number"] == int(choice)), None)
+            if not selected_pkg:
+                print("Paket tidak ditemukan. Silakan masukan nomor yang benar.")
+                pause()
+                continue
+            
+            _ = show_package_details(api_key, tokens, selected_pkg["quota_code"], False)
         
-        print("=======================================================")
-        print(f"Package {num}")
-        print(f"Name: {quota_name}")
-        print("Benefits:")
-        if len(benefit_infos) > 0:
-            for bi in benefit_infos:
-                print(bi)
-            print("  -----------------------------------------------------")
-        print(f"Group Name: {group_name}")
-        print(f"Quota Code: {quota_code}")
-        print(f"Family Code: {family_code}")
-        print(f"Group Code: {group_code}")
-        print("=======================================================")
-        
-        my_packages.append({
-            "number": num,
-            "name": quota_name,
-            "quota_code": quota_code,
-            "product_subscription_type": product_subscription_type,
-            "product_domain": product_domain,
-        })
-        
-        num += 1
-    
-    print("Input package number to view detail.")
-    print("Input del <package number> to unsubscribe from a package.")
-    print("Input 00 to return to main menu.")
-    choice = input("Choice: ")
-    if choice == "00":
-        return None
-    if choice.startswith("del "):
-        del_parts = choice.split(" ")
-        if len(del_parts) != 2 or not del_parts[1].isdigit():
-            print("Invalid input for delete command.")
-            pause()
-            return None
-        del_number = int(del_parts[1])
-        del_pkg = next((pkg for pkg in my_packages if pkg["number"] == del_number), None)
-        if not del_pkg:
-            print("Package not found for deletion.")
-            pause()
-            return None
-        confirm = input(f"Are you sure you want to unsubscribe from package  {del_number}. {del_pkg['name']}? (y/n): ")
-        if confirm.lower() == 'y':
-            print(f"Unsubscribing from package number {del_pkg['name']}...")
-            success = unsubscribe(
-                api_key,
-                tokens,
-                del_pkg["quota_code"],
-                del_pkg["product_subscription_type"],
-                del_pkg["product_domain"]
-            )
-            if success:
-                print("Successfully unsubscribed from the package.")
+        elif choice.startswith("del "):
+            del_parts = choice.split(" ")
+            if len(del_parts) != 2 or not del_parts[1].isdigit():
+                print("Invalid input for delete command.")
+                pause()
+            
+            del_number = int(del_parts[1])
+            del_pkg = next((pkg for pkg in my_packages if pkg["number"] == del_number), None)
+            if not del_pkg:
+                print("Package not found for deletion.")
+                pause()
+            
+            confirm = input(f"Are you sure you want to unsubscribe from package  {del_number}. {del_pkg['name']}? (y/n): ")
+            if confirm.lower() == 'y':
+                print(f"Unsubscribing from package number {del_pkg['name']}...")
+                success = unsubscribe(
+                    api_key,
+                    tokens,
+                    del_pkg["quota_code"],
+                    del_pkg["product_subscription_type"],
+                    del_pkg["product_domain"]
+                )
+                if success:
+                    print("Successfully unsubscribed from the package.")
+                else:
+                    print("Failed to unsubscribe from the package.")
             else:
-                print("Failed to unsubscribe from the package.")
-        else:
-            print("Unsubscribe cancelled.")
-        pause()
-        return None
-    selected_pkg = next((pkg for pkg in my_packages if str(pkg["number"]) == choice), None)
-    
-    if not selected_pkg:
-        print("Paket tidak ditemukan. Silakan masukan nomor yang benar.")
-        return None
-    
-    is_done = show_package_details(api_key, tokens, selected_pkg["quota_code"], False)
-    if is_done:
-        return None
-        
-    pause()
+                print("Unsubscribe cancelled.")
+            pause()
