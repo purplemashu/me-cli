@@ -24,7 +24,9 @@ def show_notification_menu():
             print("No notifications available.")
             return
         
+        print("=" * WIDTH)
         print("Notifications:")
+        print("=" * WIDTH)
         unread_count = 0
         for idx, notification in enumerate(notifications):
             is_read = notification.get("is_read", False)
