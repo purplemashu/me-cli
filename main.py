@@ -23,7 +23,7 @@ from app.menus.circle import show_circle_info
 from app.menus.notification import show_notification_menu
 from app.menus.store.segments import show_store_segments_menu
 from app.menus.store.search import show_family_list_menu, show_store_packages_menu
-
+from app.menus.store.redemables import show_redeemables_menu
 
 WIDTH = 55
 
@@ -49,6 +49,7 @@ def show_main_menu(profile):
     print("11. Store Segments")
     print("12. Store Family List")
     print("13. Store Packages")
+    print("14. Redemables")
     print("N. Notifikasi")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
@@ -167,6 +168,11 @@ def main():
                 is_enterprise = input_13_1 == 'y'
                 
                 show_store_packages_menu(profile['subscription_type'], is_enterprise)
+            elif choice == "14":
+                input_14_1 = input("Is enterprise? (y/n): ").lower()
+                is_enterprise = input_14_1 == 'y'
+                
+                show_redeemables_menu(is_enterprise)
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
