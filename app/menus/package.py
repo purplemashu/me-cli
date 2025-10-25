@@ -680,6 +680,11 @@ def get_packages_by_family(
         if pkg_choice == "00":
             in_package_menu = False
             return None
+        
+        if isinstance(pkg_choice, str) == False or not pkg_choice.isdigit():
+            print("Input tidak valid. Silakan masukan nomor paket.")
+            continue
+        
         selected_pkg = next((p for p in packages if p["number"] == int(pkg_choice)), None)
         
         if not selected_pkg:
