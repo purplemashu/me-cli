@@ -24,7 +24,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
     print("Detail Paket")
     print("-------------------------------------------------------")
     package = get_package(api_key, tokens, package_option_code)
-    # print(f"[SPD-202]:\n{json.dumps(package, indent=1)}")
+    print(f"[SPD-202]:\n{json.dumps(package, indent=1)}")
     if not package:
         print("Failed to load package details.")
         pause()
@@ -149,9 +149,10 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("3. Bayar dengan QRIS")
         print("4. Pulsa + Decoy XCP")
         print("5. Pulsa + Decoy XCP V2")
-        print("6. QRIS + Decoy Edu")
-        print("7. Pulsa N kali")
-        # print("8. Debug Share Package")
+        print("6. QRIS + Decoy (+1K)")
+        print("7. QRIS + Decoy V2")
+        print("8. Pulsa N kali")
+        # print("9. Debug Share Package")
 
         # Sometimes payment_for is empty, so we set default to BUY_PACKAGE
         if payment_for == "":
@@ -379,7 +380,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             print("-"*55)
             print(f"Harga Paket Utama: Rp {price}")
             print(f"Harga Paket Decoy: Rp {decoy_package_detail['package_option']['price']}")
-            print("Silahkan sesuaikan amount (trial & error)")
+            print("Silahkan sesuaikan amount (trial & error, 0 = malformed)")
             print("-"*55)
 
             show_qris_payment(
@@ -394,6 +395,55 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '7':
+            # QRIS; Decoy 0
+            url = "https://me.mashu.lol/pg-decoy-q0.json"
+            
+            response = requests.get(url, timeout=30)
+            if response.status_code != 200:
+                print("Gagal mengambil data decoy package.")
+                pause()
+                return None
+            
+            decoy_data = response.json()
+            decoy_package_detail = get_package_details(
+                api_key,
+                tokens,
+                decoy_data["family_code"],
+                decoy_data["variant_code"],
+                decoy_data["order"],
+                decoy_data["is_enterprise"],
+                decoy_data["migration_type"],
+            )
+
+            payment_items.append(
+                PaymentItem(
+                    item_code=decoy_package_detail["package_option"]["package_option_code"],
+                    product_type="",
+                    item_price=decoy_package_detail["package_option"]["price"],
+                    item_name=decoy_package_detail["package_option"]["name"],
+                    tax=0,
+                    token_confirmation=decoy_package_detail["token_confirmation"],
+                )
+            )
+            
+            print("-"*55)
+            print(f"Harga Paket Utama: Rp {price}")
+            print(f"Harga Paket Decoy: Rp {decoy_package_detail['package_option']['price']}")
+            print("Silahkan sesuaikan amount (trial & error, 0 = malformed)")
+            print("-"*55)
+
+            show_qris_payment(
+                api_key,
+                tokens,
+                payment_items,
+                "SHARE_PACKAGE",
+                True,
+                token_confirmation_idx=1
+            )
+            
+            input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
+            return True
+        elif choice == '8':
             #Pulsa N kali
             use_decoy_for_n_times = input("Use decoy package? (y/n): ").strip().lower() == 'y'
             n_times_str = input("Enter number of times to purchase (e.g., 3): ").strip()
@@ -420,7 +470,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 pause_on_success=False,
                 token_confirmation_idx=1
             )
-        elif choice == '8':
+        elif choice == '9':
             pin = input("Enter PIN: ")
             if len(pin) != 6:
                 print("PIN too short.")
