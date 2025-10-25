@@ -79,7 +79,7 @@ def show_redeemables_menu(is_enterprise: bool = False):
         action_type = selected_pkg["action_type"]
         
         if action_type == "PLP":
-            get_packages_by_family(action_param, is_enterprise)
+            get_packages_by_family(action_param, is_enterprise, "")
         elif action_type == "PDP":
             show_package_details(
                 api_key,
