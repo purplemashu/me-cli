@@ -24,7 +24,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
     print("Detail Paket")
     print("-------------------------------------------------------")
     package = get_package(api_key, tokens, package_option_code)
-    print(f"[SPD-202]:\n{json.dumps(package, indent=1)}")
+    # print(f"[SPD-202]:\n{json.dumps(package, indent=1)}")
     if not package:
         print("Failed to load package details.")
         pause()
@@ -219,7 +219,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             return True
         elif choice == '4':
             # Balance; Decoy XCP
-            url = "https://me.mashu.lol/pg-decoy-xcp.json"
+            url = "https://me.mashu.lol/pg-decoy-b.json"
             
             response = requests.get(url, timeout=30)
             if response.status_code != 200:
@@ -282,7 +282,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             return True
         elif choice == '5':
             # Balance; Decoy XCP V2: Use token confirmation from decoy package
-            url = "https://me.mashu.lol/pg-decoy-xcp.json"
+            url = "https://me.mashu.lol/pg-decoy-b.json"
             
             response = requests.get(url, timeout=30)
             if response.status_code != 200:
