@@ -19,7 +19,7 @@ def purchase_by_family(
     
     if use_decoy:
         # Balance; Decoy XCP
-        url = "https://me.mashu.lol/pg-decoy-xcp.json"
+        url = "https://me.mashu.lol/pg-decoy-b.json"
         
         response = requests.get(url, timeout=30)
         if response.status_code != 200:
@@ -226,7 +226,7 @@ def purchase_n_times(
     
     if use_decoy:
         # Balance; Decoy XCP
-        url = "https://me.mashu.lol/pg-decoy-xcp.json"
+        url = "https://me.mashu.lol/pg-decoy-b.json"
         
         response = requests.get(url, timeout=30)
         if response.status_code != 200:
