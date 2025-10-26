@@ -147,8 +147,8 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("1. Beli dengan Pulsa")
         print("2. Beli dengan E-Wallet")
         print("3. Bayar dengan QRIS")
-        print("4. Pulsa + Decoy XCP")
-        print("5. Pulsa + Decoy XCP V2")
+        print("4. Pulsa + Decoy B")
+        print("5. Pulsa + Decoy B V2")
         print("6. QRIS + Decoy (+1K)")
         print("7. QRIS + Decoy V2")
         print("8. Pulsa N kali")
@@ -218,7 +218,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '4':
-            # Balance; Decoy XCP
+            # Balance; Decoy B
             url = "https://me.mashu.lol/pg-decoy-b.json"
             
             response = requests.get(url, timeout=30)
@@ -281,7 +281,7 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             pause()
             return True
         elif choice == '5':
-            # Balance; Decoy XCP V2: Use token confirmation from decoy package
+            # Balance; Decoy B V2: Use token confirmation from decoy package
             url = "https://me.mashu.lol/pg-decoy-b.json"
             
             response = requests.get(url, timeout=30)
