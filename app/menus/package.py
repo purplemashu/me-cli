@@ -12,7 +12,7 @@ from app.client.qris import show_qris_payment
 from app.client.ewallet import show_multipayment
 from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
-from app.menus.purchase import purchase_n_times
+from app.menus.purchase import purchase_n_times, purchase_n_times_by_option_code
 from app.menus.util import format_quota_byte
 
 
@@ -480,11 +480,9 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 print("Invalid number entered. Please enter a valid integer.")
                 pause()
                 continue
-            purchase_n_times(
+            purchase_n_times_by_option_code(
                 n_times,
-                family_code=package.get("package_family", {}).get("package_family_code",""),
-                variant_code=package.get("package_detail_variant", {}).get("package_variant_code",""),
-                option_order=option_order,
+                option_code=package_option_code,
                 use_decoy=use_decoy_for_n_times,
                 delay_seconds=int(delay_seconds_str),
                 pause_on_success=False,
