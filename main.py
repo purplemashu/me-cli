@@ -6,7 +6,6 @@ from datetime import datetime
 from app.menus.util import clear_screen, pause
 from app.client.engsel import (
     get_balance,
-    get_profile,
     get_package,
 )
 from app.client.engsel2 import get_tiering_info
@@ -67,13 +66,9 @@ def main():
             balance_remaining = balance.get("remaining")
             balance_expired_at = balance.get("expired_at")
             
-            profile_data = get_profile(AuthInstance.api_key, active_user["tokens"]["access_token"], active_user["tokens"]["id_token"])
-            sub_id = profile_data["profile"]["subscriber_id"]
-            sub_type = profile_data["profile"]["subscription_type"]
-            
             point_info = "Points: N/A | Tier: N/A"
             
-            if sub_type == "PREPAID":
+            if active_user["subscription_type"] == "PREPAID":
                 tiering_data = get_tiering_info(AuthInstance.api_key, active_user["tokens"])
                 tier = tiering_data.get("tier", 0)
                 current_point = tiering_data.get("current_point", 0)
@@ -81,8 +76,8 @@ def main():
             
             profile = {
                 "number": active_user["number"],
-                "subscriber_id": sub_id,
-                "subscription_type": sub_type,
+                "subscriber_id": active_user["subscriber_id"],
+                "subscription_type": active_user["subscription_type"],
                 "balance": balance_remaining,
                 "balance_expired_at": balance_expired_at,
                 "point_info": point_info
