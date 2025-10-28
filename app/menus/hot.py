@@ -119,6 +119,7 @@ def show_hot_menu2():
                     package["variant_code"],
                     package["order"],
                     package["is_enterprise"],
+                    package["migration_type"],
                 )
                 
                 # Force failed when one of the package detail is None
