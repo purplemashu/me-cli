@@ -3,6 +3,7 @@ from random import randint
 from app.client.engsel import get_family, get_package_details, get_package
 from app.menus.util import pause
 from app.service.auth import AuthInstance
+from app.service.decoy import DecoyInstance
 from app.type_dict import PaymentItem
 from app.client.balance import settlement_balance
 
@@ -14,28 +15,26 @@ def purchase_by_family(
     delay_seconds: int = 0,
     start_from_option: int = 1,
 ):
+    active_user = AuthInstance.get_active_user()
+    subscription_type = active_user.get("subscription_type", "")
+    
     api_key = AuthInstance.api_key
     tokens: dict = AuthInstance.get_active_tokens() or {}
     
     if use_decoy:
-        # Balance; Decoy B
-        url = "https://me.mashu.lol/pg-decoy-b.json"
+        # Balance with Decoy
+        decoy_name = "default-balance"
+        if subscription_type == "PRIO":
+            decoy_name = "prio-balance"
+        elif subscription_type == "PRIOHYBRID":
+            decoy_name = "prio-balance"
         
-        response = requests.get(url, timeout=30)
-        if response.status_code != 200:
-            print("Gagal mengambil data decoy package.")
-            pause()
-            return None
+        decoy = DecoyInstance.get_decoy(decoy_name)
         
-        decoy_data = response.json()
-        decoy_package_detail = get_package_details(
+        decoy_package_detail = get_package(
             api_key,
             tokens,
-            decoy_data["family_code"],
-            decoy_data["variant_code"],
-            decoy_data["order"],
-            decoy_data["is_enterprise"],
-            decoy_data["migration_type"],
+            decoy["option_code"],
         )
         
         balance_treshold = decoy_package_detail["package_option"]["price"]
@@ -88,14 +87,18 @@ def purchase_by_family(
             
             try:
                 if use_decoy:
-                    decoy_package_detail = get_package_details(
+                    decoy_name = "default-balance"
+                    if subscription_type == "PRIO":
+                        decoy_name = "prio-balance"
+                    elif subscription_type == "PRIOHYBRID":
+                        decoy_name = "prio-balance"
+                    
+                    decoy = DecoyInstance.get_decoy(decoy_name)
+                    
+                    decoy_package_detail = get_package(
                         api_key,
                         tokens,
-                        decoy_data["family_code"],
-                        decoy_data["variant_code"],
-                        decoy_data["order"],
-                        decoy_data["is_enterprise"],
-                        decoy_data["migration_type"],
+                        decoy["option_code"],
                     )
                 
                 target_package_detail = get_package_details(
@@ -221,28 +224,26 @@ def purchase_n_times(
     pause_on_success: bool = False,
     token_confirmation_idx: int = 0,
 ):
+    active_user = AuthInstance.get_active_user()
+    subscription_type = active_user.get("subscription_type", "")
+    
     api_key = AuthInstance.api_key
     tokens: dict = AuthInstance.get_active_tokens() or {}
     
     if use_decoy:
-        # Balance; Decoy B
-        url = "https://me.mashu.lol/pg-decoy-b.json"
+        # Balance with Decoy
+        decoy_name = "default-balance"
+        if subscription_type == "PRIO":
+            decoy_name = "prio-balance"
+        elif subscription_type == "PRIOHYBRID":
+            decoy_name = "prio-balance"
         
-        response = requests.get(url, timeout=30)
-        if response.status_code != 200:
-            print("Gagal mengambil data decoy package.")
-            pause()
-            return None
+        decoy = DecoyInstance.get_decoy(decoy_name)
         
-        decoy_data = response.json()
-        decoy_package_detail = get_package_details(
+        decoy_package_detail = get_package(
             api_key,
             tokens,
-            decoy_data["family_code"],
-            decoy_data["variant_code"],
-            decoy_data["order"],
-            decoy_data["is_enterprise"],
-            decoy_data["migration_type"],
+            decoy["option_code"],
         )
         
         balance_treshold = decoy_package_detail["package_option"]["price"]
@@ -294,14 +295,18 @@ def purchase_n_times(
         
         try:
             if use_decoy:
-                decoy_package_detail = get_package_details(
+                decoy_name = "default-balance"
+                if subscription_type == "PRIO":
+                    decoy_name = "prio-balance"
+                elif subscription_type == "PRIOHYBRID":
+                    decoy_name = "prio-balance"
+                
+                decoy = DecoyInstance.get_decoy(decoy_name)
+                
+                decoy_package_detail = get_package(
                     api_key,
                     tokens,
-                    decoy_data["family_code"],
-                    decoy_data["variant_code"],
-                    decoy_data["order"],
-                    decoy_data["is_enterprise"],
-                    decoy_data["migration_type"],
+                    decoy["option_code"],
                 )
             
             target_package_detail = get_package_details(
@@ -420,28 +425,25 @@ def purchase_n_times_by_option_code(
     pause_on_success: bool = False,
     token_confirmation_idx: int = 0,
 ):
+    active_user = AuthInstance.get_active_user()
+    subscription_type = active_user.get("subscription_type", "")
+    
     api_key = AuthInstance.api_key
     tokens: dict = AuthInstance.get_active_tokens() or {}
     
     if use_decoy:
-        # Balance; Decoy B
-        url = "https://me.mashu.lol/pg-decoy-b.json"
+        decoy_name = "default-balance"
+        if subscription_type == "PRIO":
+            decoy_name = "prio-balance"
+        elif subscription_type == "PRIOHYBRID":
+            decoy_name = "prio-balance"
         
-        response = requests.get(url, timeout=30)
-        if response.status_code != 200:
-            print("Gagal mengambil data decoy package.")
-            pause()
-            return None
+        decoy = DecoyInstance.get_decoy(decoy_name)
         
-        decoy_data = response.json()
-        decoy_package_detail = get_package_details(
+        decoy_package_detail = get_package(
             api_key,
             tokens,
-            decoy_data["family_code"],
-            decoy_data["variant_code"],
-            decoy_data["order"],
-            decoy_data["is_enterprise"],
-            decoy_data["migration_type"],
+            decoy["option_code"],
         )
         
         balance_treshold = decoy_package_detail["package_option"]["price"]
@@ -465,14 +467,18 @@ def purchase_n_times_by_option_code(
         
         try:
             if use_decoy:
-                decoy_package_detail = get_package_details(
+                decoy_name = "default-balance"
+                if subscription_type == "PRIO":
+                    decoy_name = "prio-balance"
+                elif subscription_type == "PRIOHYBRID":
+                    decoy_name = "prio-balance"
+                
+                decoy = DecoyInstance.get_decoy(decoy_name)
+                
+                decoy_package_detail = get_package(
                     api_key,
                     tokens,
-                    decoy_data["family_code"],
-                    decoy_data["variant_code"],
-                    decoy_data["order"],
-                    decoy_data["is_enterprise"],
-                    decoy_data["migration_type"],
+                    decoy["option_code"],
                 )
             
             target_package_detail = get_package(
