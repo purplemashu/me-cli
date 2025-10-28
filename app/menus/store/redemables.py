@@ -40,6 +40,10 @@ def show_redeemables_menu(is_enterprise: bool = False):
             print(f"Code: {category_code}")
             print("-" * WIDTH)
             
+            if len(redemables) == 0:
+                print("  No redeemables in this category.")
+                continue
+            
             for j, redemable in enumerate(redemables):
                 name = redemable.get("name", "N/A")
                 valid_until = redemable.get("valid_until", 0)
