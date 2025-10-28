@@ -14,10 +14,11 @@ from app.client.balance import settlement_balance
 from app.type_dict import PaymentItem
 from app.menus.purchase import purchase_n_times, purchase_n_times_by_option_code
 from app.menus.util import format_quota_byte
-
+from app.service.decoy import DecoyInstance
 
 def show_package_details(api_key, tokens, package_option_code, is_enterprise, option_order = -1):
     active_user = AuthInstance.active_user
+    subscription_type = active_user.get("subscription_type", "")
     
     clear_screen()
     print("-------------------------------------------------------")
@@ -147,8 +148,8 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
         print("1. Beli dengan Pulsa")
         print("2. Beli dengan E-Wallet")
         print("3. Bayar dengan QRIS")
-        print("4. Pulsa + Decoy B")
-        print("5. Pulsa + Decoy B V2")
+        print("4. Pulsa + Decoy")
+        print("5. Pulsa + Decoy V2")
         print("6. QRIS + Decoy (+1K)")
         print("7. QRIS + Decoy V2")
         print("8. Pulsa N kali")
@@ -218,30 +219,20 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '4':
-            # Balance; Decoy B
-            url = "https://me.mashu.lol/pg-decoy-b.json"
+            # Balance with Decoy
+            decoy_name = "default-balance"
+            if subscription_type == "PRIO":
+                decoy_name = "prio-balance"
+            elif subscription_type == "PRIOHYBRID":
+                decoy_name = "prio-balance"
             
-            response = requests.get(url, timeout=30)
-            if response.status_code != 200:
-                print("Gagal mengambil data decoy package.")
-                pause()
-                return None
+            decoy = DecoyInstance.get_decoy(decoy_name)
             
-            decoy_data = response.json()
-            decoy_package_detail = get_package_details(
+            decoy_package_detail = get_package(
                 api_key,
                 tokens,
-                decoy_data["family_code"],
-                decoy_data["variant_code"],
-                decoy_data["order"],
-                decoy_data["is_enterprise"],
-                decoy_data["migration_type"],
+                decoy["option_code"],
             )
-            
-            if decoy_package_detail is None:
-                print("Gagal mengambil detail paket decoy.")
-                pause()
-                return None
 
             payment_items.append(
                 PaymentItem(
@@ -286,30 +277,20 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             pause()
             return True
         elif choice == '5':
-            # Balance; Decoy B V2: Use token confirmation from decoy package
-            url = "https://me.mashu.lol/pg-decoy-b.json"
+            # Balance with Decoy v2 (use token confirmation from decoy)
+            decoy_name = "default-balance"
+            if subscription_type == "PRIO":
+                decoy_name = "prio-balance"
+            elif subscription_type == "PRIOHYBRID":
+                decoy_name = "prio-balance"
             
-            response = requests.get(url, timeout=30)
-            if response.status_code != 200:
-                print("Gagal mengambil data decoy package.")
-                pause()
-                return None
+            decoy = DecoyInstance.get_decoy(decoy_name)
             
-            decoy_data = response.json()
-            decoy_package_detail = get_package_details(
+            decoy_package_detail = get_package(
                 api_key,
                 tokens,
-                decoy_data["family_code"],
-                decoy_data["variant_code"],
-                decoy_data["order"],
-                decoy_data["is_enterprise"],
-                decoy_data["migration_type"],
+                decoy["option_code"],
             )
-            
-            if decoy_package_detail is None:
-                print("Gagal mengambil detail paket decoy.")
-                pause()
-                return None
 
             payment_items.append(
                 PaymentItem(
@@ -356,30 +337,20 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             pause()
             return True
         elif choice == '6':
-            # QRIS; Decoy Edu
-            url = "https://me.mashu.lol/pg-decoy-edu.json"
+            # QRIS decoy + Rpx
+            decoy_name = "default-qris"
+            if subscription_type == "PRIO":
+                decoy_name = "prio-qris"
+            elif subscription_type == "PRIOHYBRID":
+                decoy_name = "prio-qris"
             
-            response = requests.get(url, timeout=30)
-            if response.status_code != 200:
-                print("Gagal mengambil data decoy package.")
-                pause()
-                return None
+            decoy = DecoyInstance.get_decoy(decoy_name)
             
-            decoy_data = response.json()
-            decoy_package_detail = get_package_details(
+            decoy_package_detail = get_package(
                 api_key,
                 tokens,
-                decoy_data["family_code"],
-                decoy_data["variant_code"],
-                decoy_data["order"],
-                decoy_data["is_enterprise"],
-                decoy_data["migration_type"],
+                decoy["option_code"],
             )
-            
-            if decoy_package_detail is None:
-                print("Gagal mengambil detail paket decoy.")
-                pause()
-                return None
 
             payment_items.append(
                 PaymentItem(
@@ -410,30 +381,20 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '7':
-            # QRIS; Decoy 0
-            url = "https://me.mashu.lol/pg-decoy-q0.json"
+            # QRIS decoy + Rp0
+            decoy_name = "default-qris0"
+            if subscription_type == "PRIO":
+                decoy_name = "prio-qris0"
+            elif subscription_type == "PRIOHYBRID":
+                decoy_name = "prio-qris0"
             
-            response = requests.get(url, timeout=30)
-            if response.status_code != 200:
-                print("Gagal mengambil data decoy package.")
-                pause()
-                return None
+            decoy = DecoyInstance.get_decoy(decoy_name)
             
-            decoy_data = response.json()
-            decoy_package_detail = get_package_details(
+            decoy_package_detail = get_package(
                 api_key,
                 tokens,
-                decoy_data["family_code"],
-                decoy_data["variant_code"],
-                decoy_data["order"],
-                decoy_data["is_enterprise"],
-                decoy_data["migration_type"],
+                decoy["option_code"],
             )
-            
-            if decoy_package_detail is None:
-                print("Gagal mengambil detail paket decoy.")
-                pause()
-                return None
 
             payment_items.append(
                 PaymentItem(
