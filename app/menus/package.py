@@ -237,6 +237,11 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 decoy_data["is_enterprise"],
                 decoy_data["migration_type"],
             )
+            
+            if decoy_package_detail is None:
+                print("Gagal mengambil detail paket decoy.")
+                pause()
+                return None
 
             payment_items.append(
                 PaymentItem(
@@ -300,6 +305,11 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 decoy_data["is_enterprise"],
                 decoy_data["migration_type"],
             )
+            
+            if decoy_package_detail is None:
+                print("Gagal mengambil detail paket decoy.")
+                pause()
+                return None
 
             payment_items.append(
                 PaymentItem(
@@ -365,6 +375,11 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 decoy_data["is_enterprise"],
                 decoy_data["migration_type"],
             )
+            
+            if decoy_package_detail is None:
+                print("Gagal mengambil detail paket decoy.")
+                pause()
+                return None
 
             payment_items.append(
                 PaymentItem(
@@ -414,6 +429,11 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
                 decoy_data["is_enterprise"],
                 decoy_data["migration_type"],
             )
+            
+            if decoy_package_detail is None:
+                print("Gagal mengambil detail paket decoy.")
+                pause()
+                return None
 
             payment_items.append(
                 PaymentItem(
