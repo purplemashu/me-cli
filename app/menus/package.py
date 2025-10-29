@@ -219,20 +219,19 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             input("Silahkan lakukan pembayaran & cek hasil pembelian di aplikasi MyXL. Tekan Enter untuk kembali.")
             return True
         elif choice == '4':
-            # Balance with Decoy
-            decoy_name = "default-balance"
-            if subscription_type == "PRIO":
-                decoy_name = "prio-balance"
-            elif subscription_type == "PRIOHYBRID":
-                decoy_name = "prio-balance"
-            
-            decoy = DecoyInstance.get_decoy(decoy_name)
+            # Balance with Decoy            
+            decoy = DecoyInstance.get_decoy("balance")
             
             decoy_package_detail = get_package(
                 api_key,
                 tokens,
                 decoy["option_code"],
             )
+            
+            if not decoy_package_detail:
+                print("Failed to load decoy package details.")
+                pause()
+                return False
 
             payment_items.append(
                 PaymentItem(
@@ -278,19 +277,18 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             return True
         elif choice == '5':
             # Balance with Decoy v2 (use token confirmation from decoy)
-            decoy_name = "default-balance"
-            if subscription_type == "PRIO":
-                decoy_name = "prio-balance"
-            elif subscription_type == "PRIOHYBRID":
-                decoy_name = "prio-balance"
-            
-            decoy = DecoyInstance.get_decoy(decoy_name)
+            decoy = DecoyInstance.get_decoy("balance")
             
             decoy_package_detail = get_package(
                 api_key,
                 tokens,
                 decoy["option_code"],
             )
+            
+            if not decoy_package_detail:
+                print("Failed to load decoy package details.")
+                pause()
+                return False
 
             payment_items.append(
                 PaymentItem(
@@ -338,19 +336,18 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             return True
         elif choice == '6':
             # QRIS decoy + Rpx
-            decoy_name = "default-qris"
-            if subscription_type == "PRIO":
-                decoy_name = "prio-qris"
-            elif subscription_type == "PRIOHYBRID":
-                decoy_name = "prio-qris"
-            
-            decoy = DecoyInstance.get_decoy(decoy_name)
+            decoy = DecoyInstance.get_decoy("qris")
             
             decoy_package_detail = get_package(
                 api_key,
                 tokens,
                 decoy["option_code"],
             )
+            
+            if not decoy_package_detail:
+                print("Failed to load decoy package details.")
+                pause()
+                return False
 
             payment_items.append(
                 PaymentItem(
@@ -382,19 +379,18 @@ def show_package_details(api_key, tokens, package_option_code, is_enterprise, op
             return True
         elif choice == '7':
             # QRIS decoy + Rp0
-            decoy_name = "default-qris0"
-            if subscription_type == "PRIO":
-                decoy_name = "prio-qris0"
-            elif subscription_type == "PRIOHYBRID":
-                decoy_name = "prio-qris0"
-            
-            decoy = DecoyInstance.get_decoy(decoy_name)
+            decoy = DecoyInstance.get_decoy("qris0")
             
             decoy_package_detail = get_package(
                 api_key,
                 tokens,
                 decoy["option_code"],
             )
+            
+            if not decoy_package_detail:
+                print("Failed to load decoy package details.")
+                pause()
+                return False
 
             payment_items.append(
                 PaymentItem(
