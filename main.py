@@ -1,4 +1,6 @@
 from dotenv import load_dotenv
+
+from app.service.git import check_for_updates
 load_dotenv()
 
 import sys, json
@@ -198,6 +200,11 @@ def main():
 
 if __name__ == "__main__":
     try:
+        print("Checking for updates...")
+        need_update = check_for_updates()
+        if need_update:
+            pause()
+
         main()
     except KeyboardInterrupt:
         print("\nExiting the application.")
