@@ -23,19 +23,18 @@ def purchase_by_family(
     
     if use_decoy:
         # Balance with Decoy
-        decoy_name = "default-balance"
-        if subscription_type == "PRIO":
-            decoy_name = "prio-balance"
-        elif subscription_type == "PRIOHYBRID":
-            decoy_name = "prio-balance"
-        
-        decoy = DecoyInstance.get_decoy(decoy_name)
+        decoy = DecoyInstance.get_decoy("balance")
         
         decoy_package_detail = get_package(
             api_key,
             tokens,
             decoy["option_code"],
         )
+        
+        if not decoy_package_detail:
+            print("Failed to load decoy package details.")
+            pause()
+            return False
         
         balance_treshold = decoy_package_detail["package_option"]["price"]
         print(f"Pastikan sisa balance KURANG DARI Rp{balance_treshold}!!!")
@@ -86,20 +85,19 @@ def purchase_by_family(
             payment_items = []
             
             try:
-                if use_decoy:
-                    decoy_name = "default-balance"
-                    if subscription_type == "PRIO":
-                        decoy_name = "prio-balance"
-                    elif subscription_type == "PRIOHYBRID":
-                        decoy_name = "prio-balance"
-                    
-                    decoy = DecoyInstance.get_decoy(decoy_name)
+                if use_decoy:                
+                    decoy = DecoyInstance.get_decoy("balance")
                     
                     decoy_package_detail = get_package(
                         api_key,
                         tokens,
                         decoy["option_code"],
                     )
+                    
+                    if not decoy_package_detail:
+                        print("Failed to load decoy package details.")
+                        pause()
+                        return False
                 
                 target_package_detail = get_package_details(
                     api_key,
@@ -232,19 +230,18 @@ def purchase_n_times(
     
     if use_decoy:
         # Balance with Decoy
-        decoy_name = "default-balance"
-        if subscription_type == "PRIO":
-            decoy_name = "prio-balance"
-        elif subscription_type == "PRIOHYBRID":
-            decoy_name = "prio-balance"
-        
-        decoy = DecoyInstance.get_decoy(decoy_name)
+        decoy = DecoyInstance.get_decoy("balance")
         
         decoy_package_detail = get_package(
             api_key,
             tokens,
             decoy["option_code"],
         )
+        
+        if not decoy_package_detail:
+            print("Failed to load decoy package details.")
+            pause()
+            return False
         
         balance_treshold = decoy_package_detail["package_option"]["price"]
         print(f"Pastikan sisa balance KURANG DARI Rp{balance_treshold}!!!")
@@ -295,19 +292,18 @@ def purchase_n_times(
         
         try:
             if use_decoy:
-                decoy_name = "default-balance"
-                if subscription_type == "PRIO":
-                    decoy_name = "prio-balance"
-                elif subscription_type == "PRIOHYBRID":
-                    decoy_name = "prio-balance"
-                
-                decoy = DecoyInstance.get_decoy(decoy_name)
+                decoy = DecoyInstance.get_decoy("balance")
                 
                 decoy_package_detail = get_package(
                     api_key,
                     tokens,
                     decoy["option_code"],
                 )
+                
+                if not decoy_package_detail:
+                    print("Failed to load decoy package details.")
+                    pause()
+                    return False
             
             target_package_detail = get_package_details(
                 api_key,
@@ -432,19 +428,18 @@ def purchase_n_times_by_option_code(
     tokens: dict = AuthInstance.get_active_tokens() or {}
     
     if use_decoy:
-        decoy_name = "default-balance"
-        if subscription_type == "PRIO":
-            decoy_name = "prio-balance"
-        elif subscription_type == "PRIOHYBRID":
-            decoy_name = "prio-balance"
-        
-        decoy = DecoyInstance.get_decoy(decoy_name)
+        decoy = DecoyInstance.get_decoy("balance")
         
         decoy_package_detail = get_package(
             api_key,
             tokens,
             decoy["option_code"],
         )
+        
+        if not decoy_package_detail:
+            print("Failed to load decoy package details.")
+            pause()
+            return False
         
         balance_treshold = decoy_package_detail["package_option"]["price"]
         print(f"Pastikan sisa balance KURANG DARI Rp{balance_treshold}!!!")
@@ -467,19 +462,18 @@ def purchase_n_times_by_option_code(
         
         try:
             if use_decoy:
-                decoy_name = "default-balance"
-                if subscription_type == "PRIO":
-                    decoy_name = "prio-balance"
-                elif subscription_type == "PRIOHYBRID":
-                    decoy_name = "prio-balance"
-                
-                decoy = DecoyInstance.get_decoy(decoy_name)
+                decoy = DecoyInstance.get_decoy("balance")
                 
                 decoy_package_detail = get_package(
                     api_key,
                     tokens,
                     decoy["option_code"],
                 )
+                
+                if not decoy_package_detail:
+                    print("Failed to load decoy package details.")
+                    pause()
+                    return False
             
             target_package_detail = get_package(
                 api_key,

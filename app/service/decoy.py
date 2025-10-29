@@ -14,7 +14,13 @@ class DecoyPackage:
     _initialized_ = False
     
     decoy_base_url = "https://me.mashu.lol/pg-decoy-"
-    last_subscriber_id = None
+    subscriber_id = None
+    subscription_type = None
+    
+    need_prio_decoys = ["PRIO", "PRIOHYBRID", "GO"]
+    prefix = "default-"
+    
+    supported_payment_types = ["balance", "qris", "qris0"]
     
     decoys = {}
     initial_decoys = {
@@ -66,10 +72,17 @@ class DecoyPackage:
             return
         
         current_subscriber_id = active_user.get("subscriber_id", "")
-        if self.last_subscriber_id != current_subscriber_id:
-            print(f"Subscriber ID changed from {self.last_subscriber_id} to {current_subscriber_id}. Resetting decoy data.")
+        current_subscription_type = active_user.get("subscription_type", "")
+        if self.subscriber_id != current_subscriber_id:
+            print(f"Subscriber ID changed from {self.subscriber_id} to {current_subscriber_id}. Resetting decoy data.")
             self.reset_decoys()
-            self.last_subscriber_id = current_subscriber_id
+            self.subscriber_id = current_subscriber_id
+            self.subscription_type = current_subscription_type
+            
+            if current_subscription_type in self.need_prio_decoys:
+                self.prefix = "prio-"
+            else:
+                self.prefix = "default-"
     
     def fetch_decoy_data(self, decoy_name):
         active_user = AuthInstance.get_active_user()
@@ -110,8 +123,14 @@ class DecoyPackage:
         except Exception as e:
             print(f"Error fetching decoy data: {e}")
     
-    def get_decoy(self, decoy_name):
+    def get_decoy(self, payment_type: str):
         self.check_subscriber_change()
+        
+        if payment_type not in self.supported_payment_types:
+            print(f"Unsupported payment type: {payment_type}")
+            return None
+        
+        decoy_name = self.prefix + payment_type
         
         selected_decoy = self.decoys.get(decoy_name)
         if selected_decoy is None:
