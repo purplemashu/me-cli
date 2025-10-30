@@ -2,6 +2,7 @@ import json
 import sys
 
 import requests
+from datetime import datetime
 from app.service.auth import AuthInstance
 from app.client.engsel import get_auth_code, get_family, get_package, get_addons, get_package_details, send_api_request
 from app.client.engsel2 import unsubscribe
@@ -717,6 +718,7 @@ def fetch_my_packages():
             group_code = quota["group_code"]
             group_name = quota["group_name"]
             quota_name = quota["name"]
+            quota_expired = datetime.fromtimestamp(quota["expired_at"])
             family_code = "N/A"
             
             product_subscription_type = quota.get("product_subscription_type", "")
@@ -761,6 +763,7 @@ def fetch_my_packages():
             print("=======================================================")
             print(f"Package {num}")
             print(f"Name: {quota_name}")
+            print(f"Expired: {quota_expired}")
             print("Benefits:")
             if len(benefit_infos) > 0:
                 for bi in benefit_infos:
