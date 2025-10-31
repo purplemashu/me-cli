@@ -1,12 +1,44 @@
 from datetime import datetime
 import json
 from app.menus.util import pause, clear_screen, format_quota_byte
-from app.client.engsel3 import get_group_data, get_group_members, validate_circle_member, invite_circle_member, remove_circle_member, accept_circle_invitation
+from app.client.engsel3 import (
+    get_group_data,
+    get_group_members,
+    create_circle,
+    validate_circle_member,
+    invite_circle_member,
+    remove_circle_member,
+    accept_circle_invitation
+)
 
 from app.service.auth import AuthInstance
 from app.client.encrypt import decrypt_circle_msisdn
 
 WIDTH = 55
+
+def show_circle_creation(api_key: str, tokens: dict):
+    clear_screen()
+    print("Create a new Circle")
+    print("-" * WIDTH)
+    
+    parent_name = input("Enter your name (Parent): ")
+    group_name = input("Enter Circle name: ")
+    member_msisdn = input("Enter initial member's MSISDN (e.g., 6281234567890): ")
+    member_name = input("Enter initial member's name: ")
+    
+    create_res = create_circle(
+        api_key,
+        tokens,
+        parent_name,
+        group_name,
+        member_msisdn,
+        member_name
+    )
+    
+    print("Server Response:")
+    print(json.dumps(create_res, indent=2))
+    
+    pause()
 
 def show_circle_info(api_key: str, tokens: dict):
     in_circle_menu = True
@@ -26,8 +58,14 @@ def show_circle_info(api_key: str, tokens: dict):
 
         if group_id == "":
             print("You are not part of any Circle.")
-            pause()
-            return
+            
+            create_new = input("Do you want to create a new Circle? (y/n): ")
+            if create_new.lower() == "y":
+                show_circle_creation(api_key, tokens)
+                continue
+            else:
+                pause()
+                return
         
         group_status = group_data.get("group_status", "N/A")
         if group_status == "BLOCKED":
@@ -234,5 +272,4 @@ def show_circle_info(api_key: str, tokens: dict):
             except ValueError:
                 print("Invalid input format for acceptance.")
             pause()
-        
-            
+
