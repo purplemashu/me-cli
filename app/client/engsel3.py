@@ -67,6 +67,7 @@ def invite_circle_member(
     path = "family-hub/api/v8/members/invite"
     
     encrypted_msisdn = encrypt_circle_msisdn(api_key, msisdn)
+    print(f"Encrypted MSISDN: {encrypted_msisdn}")
 
     raw_payload = {
         "access_token": tokens["access_token"],
@@ -129,4 +130,33 @@ def accept_circle_invitation(
     print(f"Accepting invitation to Circle {group_id}...")
     res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
 
+    return res
+
+def create_circle(
+    api_key: str,
+    tokens: dict,
+    parent_name: str,
+    group_name: str,
+    member_msisdn: str,
+    member_name: str,
+) -> dict:
+    path = "family-hub/api/v8/groups/create"
+
+    raw_payload = {
+        "access_token": tokens["access_token"],
+        "parent_name": parent_name,
+        "group_name": group_name,
+        "is_enterprise": False,
+        "members": [
+            {
+                "msisdn": encrypt_circle_msisdn(api_key, member_msisdn),
+                "name": member_name
+            }
+        ],
+        "lang": "en",
+    }
+    
+    print(f"Creating Circle with member {member_msisdn}...")
+    res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
+    
     return res
