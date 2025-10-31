@@ -17,6 +17,18 @@ from app.menus.purchase import purchase_n_times, purchase_n_times_by_option_code
 from app.menus.util import format_quota_byte
 from app.service.decoy import DecoyInstance
 
+def progress_bar(used, total, length=20):
+    if total <= 0:
+        return '▱' * length
+    
+    percentage = min(100, (used / total) * 100)
+    filled = round((percentage / 100) * length)
+    empty = length - filled
+    
+    bar = '▰' * filled + '▱' * empty
+    
+    return f"{bar} {percentage:.1f}%"
+
 def show_package_details(api_key, tokens, package_option_code, is_enterprise, option_order = -1):
     active_user = AuthInstance.active_user
     subscription_type = active_user.get("subscription_type", "")
@@ -745,12 +757,16 @@ def fetch_my_packages():
                         total_str = format_quota_byte(total)
                         
                         benefit_info += f"  Kuota : {remaining_str} / {total_str}"
+                        benefit_info += f"\n  " + progress_bar(remaining, total)
                     elif data_type == "VOICE":
                         benefit_info += f"  Kuota : {remaining/60:.2f} / {total/60:.2f} menit"
+                        benefit_info += f"\n  " + progress_bar(remaining, total)
                     elif data_type == "TEXT":
                         benefit_info += f"  Kuota : {remaining} / {total} SMS"
+                        benefit_info += f"\n  " + progress_bar(remaining, total)
                     else:
                         benefit_info += f"  Kuota : {remaining} / {total}"
+                        benefit_info += f"\n  " + progress_bar(remaining, total)
 
                     benefit_infos.append(benefit_info)
                 
