@@ -11,7 +11,15 @@ class Auth:
     api_key = ""
 
     refresh_tokens = []
-    # Format of refresh_tokens: [{"number": int, "refresh_token": str}]
+    # Format of refresh_tokens:
+    # [
+        # {
+            # "number": int,
+            # "subscriber_id": str,
+            # "subscription_type": str,
+            # "refresh_token": str
+        # }
+    # ]
 
     active_user = None
     # {
@@ -69,8 +77,15 @@ class Auth:
         if existing:
             existing["refresh_token"] = refresh_token
         else:
+            tokens = get_new_token(refresh_token)
+            profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
+            sub_id = profile_data["profile"]["subscriber_id"]
+            sub_type = profile_data["profile"]["subscription_type"]
+
             self.refresh_tokens.append({
                 "number": int(number),
+                "subscriber_id": sub_id,
+                "subscription_type": sub_type,
                 "refresh_token": refresh_token
             })
         
@@ -113,16 +128,30 @@ class Auth:
             input("Press Enter to continue...")
             return False
         
-        profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
-        sub_id = profile_data["profile"]["subscriber_id"]
-        sub_type = profile_data["profile"]["subscription_type"]
+        # Get subscriber_id and subscription_type if not already stored
+        subscriber_id = rt_entry.get("subscriber_id", "")
+        subscription_type = rt_entry.get("subscription_type", "")
+        if not subscriber_id or not subscription_type:
+            profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
+            subscriber_id = profile_data["profile"]["subscriber_id"]
+            subscription_type = profile_data["profile"]["subscription_type"]
 
         self.active_user = {
             "number": int(number),
-            "subscriber_id": sub_id,
-            "subscription_type": sub_type,
+            "subscriber_id": subscriber_id,
+            "subscription_type": subscription_type,
             "tokens": tokens
         }
+        
+        # Update refresh token entry with subscriber_id and subscription_type
+        rt_entry["subscriber_id"] = subscriber_id
+        rt_entry["subscription_type"] = subscription_type
+        
+        # Update refresh token. The real client app do this, not sure why cz refresh token should still be valid
+        rt_entry["refresh_token"] = tokens["refresh_token"]
+        self.write_tokens_to_file()
+        
+        self.last_refresh_time = int(time.time())
         
         # Save active number to file
         self.write_active_number()
