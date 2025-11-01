@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+from app.menus.package import get_packages_by_family, show_package_details
 from app.menus.util import pause, clear_screen, format_quota_byte
 from app.client.engsel3 import (
     get_group_data,
@@ -8,7 +9,9 @@ from app.client.engsel3 import (
     validate_circle_member,
     invite_circle_member,
     remove_circle_member,
-    accept_circle_invitation
+    accept_circle_invitation,
+    spending_tracker,
+    get_bonus_data,
 )
 
 from app.service.auth import AuthInstance
@@ -40,6 +43,84 @@ def show_circle_creation(api_key: str, tokens: dict):
     
     pause()
 
+def show_bonus_list(
+    api_key: str,
+    tokens: dict,
+    parent_subs_id: str,
+    family_id: str,
+):
+    in_circle_bonus_menu = True
+    
+    while in_circle_bonus_menu:
+        clear_screen()
+        
+        print("Fetching bonus data...")
+        bonus_data = get_bonus_data(
+            api_key,
+            tokens,
+            parent_subs_id,
+            family_id
+        )
+        if bonus_data.get("status") != "SUCCESS":
+            print("Failed to fetch bonus data.")
+            pause()
+            return
+        
+        bonus_list = bonus_data.get("data", {}).get("bonuses", [])
+        if not bonus_list:
+            print("No bonus data available.")
+            pause()
+            return
+        
+        print("=" * WIDTH)
+        print("Circle Bonus List".center(WIDTH))
+        print("=" * WIDTH)
+        
+        for idx, bonus in enumerate(bonus_list, start=1):
+            bonus_name = bonus.get("name", "N/A")
+            bonus_type = bonus.get("bonus_type", "N/A")
+            action_type = bonus.get("action_type", "N/A")
+            action_param = bonus.get("action_param", "N/A")
+            
+            print(f"{idx}. {bonus_name} | Type: {bonus_type}")
+            print(f"   Action: {action_type} | Param: {action_param}")
+            
+        print("-" * WIDTH)
+        print("Options:")
+        print("-" * WIDTH)
+        print("Enter the number of the bonus to view detail.")
+        print("00. Back")
+        
+        choice = input("Pilih opsi: ")
+        if choice == "00":
+            in_circle_bonus_menu = False
+        else:
+            bonus_number = int(choice)
+            if bonus_number < 1 or bonus_number > len(bonus_list):
+                print("Invalid bonus number.")
+                pause()
+                continue
+            
+            selected_bonus = bonus_list[bonus_number - 1]
+            action_type = selected_bonus.get("action_type", "N/A")
+            action_param = selected_bonus.get("action_param", "N/A")
+            
+            if action_type == "PLP":
+                get_packages_by_family(action_param)
+            elif action_type == "PDP":
+                show_package_details(
+                    api_key,
+                    tokens,
+                    action_param,
+                    False,
+                )
+            else:
+                print("=" * WIDTH)
+                print("Unhandled Action Type")
+                print(f"Action type: {action_type}\nParam: {action_param}")
+                pause()
+        
+
 def show_circle_info(api_key: str, tokens: dict):
     in_circle_menu = True
     user: dict = AuthInstance.get_active_user()
@@ -54,7 +135,7 @@ def show_circle_info(api_key: str, tokens: dict):
             return
         
         group_data = group_res.get("data", {})        
-        group_id = group_data.get("group_id", "")
+        group_id = group_data.get("group_id", "") # or family_id
 
         if group_id == "":
             print("You are not part of any Circle.")
@@ -109,7 +190,24 @@ def show_circle_info(api_key: str, tokens: dict):
         formatted_allocation = format_quota_byte(allocation_byte)
         formatted_consumption = format_quota_byte(consumption_byte)
         formatted_remaining = format_quota_byte(remaining_byte)
-                
+        
+        # Spending Tracker
+        spending_res = spending_tracker(
+            api_key,
+            tokens,
+            parent_subs_id,
+            group_id
+        )
+        if spending_res.get("status") != "SUCCESS":
+            print("Failed to fetch spending tracker data.")
+            print(spending_res)
+            pause()
+            return
+        
+        spending_data = spending_res.get("data", {})
+        spend = spending_data.get("spend", 0)
+        target = spending_data.get("target", 0)
+        
         clear_screen()
         
         print("=" * WIDTH)
@@ -117,6 +215,8 @@ def show_circle_info(api_key: str, tokens: dict):
         print(f"Owner: {owner_name} {parrent_msisdn}".center(WIDTH))
         print("-" * WIDTH)
         print(f"Package: {package_name} | {formatted_remaining} / {formatted_allocation}".center(WIDTH))
+        print("-" * WIDTH)
+        print(f"Spending: Rp{spend:,} / Rp{target:,}".center(WIDTH))
         print("=" * WIDTH)
         
         print("Members:")
@@ -158,6 +258,7 @@ def show_circle_info(api_key: str, tokens: dict):
         print("1. Invite Member to Circle")
         print("del <number> - Remove Member from Circle (e.g., del 1)")
         print("acc <number> - Accept Invitation / Force Accept Member")
+        print("2. View Circle Bonus List")
         print("00. Kembali ke menu utama")
         choice = input("Pilih opsi: ")
         if choice == "00":
@@ -272,4 +373,11 @@ def show_circle_info(api_key: str, tokens: dict):
             except ValueError:
                 print("Invalid input format for acceptance.")
             pause()
+        elif choice == "2":
+            show_bonus_list(
+                api_key,
+                tokens,
+                parent_subs_id,
+                group_id
+            )
 
