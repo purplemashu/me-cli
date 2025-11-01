@@ -166,14 +166,14 @@ def validate_msisdn(
     path = "api/v8/auth/validate-msisdn"
 
     raw_payload = {
-        "with_bizon": False,
+        "with_bizon": True,
         "with_family_plan": True,
         "is_enterprise": False,
-        "with_optimus": False,
+        "with_optimus": True,
         "lang": "en",
         "msisdn": msisdn,
-        "with_regist_status": False,
-        "with_enterprise": False
+        "with_regist_status": True,
+        "with_enterprise": True
     }
 
     print(f"Validating msisdn {msisdn}...")

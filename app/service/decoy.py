@@ -17,7 +17,7 @@ class DecoyPackage:
     subscriber_id = None
     subscription_type = None
     
-    need_prio_decoys = ["PRIO", "PRIOHYBRID", "GO"]
+    need_prio_decoys = ["PRIORITAS", "PRIOHYBRID", "GO"]
     prefix = "default-"
     
     supported_payment_types = ["balance", "qris", "qris0"]

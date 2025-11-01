@@ -10,7 +10,7 @@ from app.client.engsel import (
     get_balance,
     get_package,
 )
-from app.client.engsel2 import get_tiering_info
+from app.client.engsel2 import get_tiering_info, validate_msisdn
 from app.menus.payment import show_transaction_history
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
@@ -52,6 +52,7 @@ def show_main_menu(profile):
     print("13. Store Packages")
     print("14. Redemables")
     print("N. Notifikasi")
+    print("V. Validate msisdn")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -175,14 +176,15 @@ def main():
             elif choice == "99":
                 print("Exiting the application.")
                 sys.exit(0)
-            elif choice == "t":
-                res = get_package(
+            elif choice.lower() == "v":
+                msisdn = input("Enter the msisdn to validate (628xxxx): ")
+                res = validate_msisdn(
                     AuthInstance.api_key,
                     active_user["tokens"],
-                    ""
+                    msisdn,
                 )
                 print(json.dumps(res, indent=2))
-                input("Press Enter to continue...")
+                pause()
             elif choice.lower() == "n":
                 show_notification_menu()
             elif choice == "s":
