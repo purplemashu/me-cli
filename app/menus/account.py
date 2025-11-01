@@ -57,9 +57,7 @@ def show_account_menu():
     AuthInstance.load_tokens()
     users = AuthInstance.refresh_tokens
     active_user = AuthInstance.get_active_user()
-    
-    # print(f"users: {users}")
-    
+        
     in_account_menu = True
     add_user = False
     while in_account_menu:
@@ -88,8 +86,13 @@ def show_account_menu():
 
         for idx, user in enumerate(users):
             is_active = active_user and user["number"] == active_user["number"]
-            active_marker = " (Aktif)" if is_active else ""
-            print(f"{idx + 1}. {user['number']}{active_marker}")
+            active_marker = "✅" if is_active else ""
+            
+            number = str(user.get("number", ""))
+            number = number + " " * (14 - len(number))
+            
+            sub_type = user.get("subscription_type", "").center(12)
+            print(f"{idx + 1}. {number} [{sub_type}] {active_marker}")
         
         print("-" * 55)
         print("Command:")
