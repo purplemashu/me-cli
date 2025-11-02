@@ -25,6 +25,7 @@ from app.menus.notification import show_notification_menu
 from app.menus.store.segments import show_store_segments_menu
 from app.menus.store.search import show_family_list_menu, show_store_packages_menu
 from app.menus.store.redemables import show_redeemables_menu
+from app.client.registration import dukcapil
 
 WIDTH = 55
 
@@ -51,6 +52,7 @@ def show_main_menu(profile):
     print("12. Store Family List")
     print("13. Store Packages")
     print("14. Redemables")
+    print("R. Register")
     print("N. Notifikasi")
     print("V. Validate msisdn")
     print("00. Bookmark Paket")
@@ -91,7 +93,7 @@ def main():
             choice = input("Pilih menu: ")
             # If T
             if choice.lower() == "t":
-                pass
+                pause()
             elif choice == "1":
                 selected_user_number = show_account_menu()
                 if selected_user_number:
@@ -159,7 +161,6 @@ def main():
             elif choice == "12":
                 input_12_1 = input("Is enterprise? (y/n): ").lower()
                 is_enterprise = input_12_1 == 'y'
-                
                 show_family_list_menu(profile['subscription_type'], is_enterprise)
             elif choice == "13":
                 input_13_1 = input("Is enterprise? (y/n): ").lower()
@@ -176,6 +177,19 @@ def main():
             elif choice == "99":
                 print("Exiting the application.")
                 sys.exit(0)
+            elif choice.lower() == "r":
+                msisdn = input("Enter msisdn (628xxxx): ")
+                nik = input("Enter NIK: ")
+                kk = input("Enter KK: ")
+                
+                res = dukcapil(
+                    AuthInstance.api_key,
+                    msisdn,
+                    kk,
+                    nik,
+                )
+                print(json.dumps(res, indent=2))
+                pause()
             elif choice.lower() == "v":
                 msisdn = input("Enter the msisdn to validate (628xxxx): ")
                 res = validate_msisdn(
