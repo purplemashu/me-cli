@@ -111,8 +111,8 @@ def show_family_info(api_key: str, tokens: dict):
                 
                 # Checking MSISDN
                 validation_res = validate_msisdn(api_key, tokens, target_msisdn)
-                if validation_res.get("status") != "SUCCESS":
-                    print(f"MSISDN validation failed: {validation_res.get('message', 'Unknown error')}")
+                if validation_res.get("status").lower() != "success":
+                    print(f"MSISDN validation failed: {json.dumps(validation_res, indent=2)}")
                     pause()
                     return
                 print("MSISDN validation successful.")
