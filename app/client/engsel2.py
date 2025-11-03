@@ -163,7 +163,8 @@ def validate_msisdn(
     tokens: dict,
     msisdn: str,
 ) -> dict:
-    path = "api/v8/auth/validate-msisdn"
+    # path = "api/v8/auth/validate-msisdn"
+    path = "api/v8/auth/check-dukcapil"
 
     raw_payload = {
         "with_bizon": True,
