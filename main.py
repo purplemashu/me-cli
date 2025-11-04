@@ -8,7 +8,6 @@ from datetime import datetime
 from app.menus.util import clear_screen, pause
 from app.client.engsel import (
     get_balance,
-    get_package,
 )
 from app.client.engsel2 import get_tiering_info, validate_msisdn
 from app.menus.payment import show_transaction_history
@@ -47,7 +46,7 @@ def show_main_menu(profile):
     print("7. Beli Semua Paket di Family Code (loop)")
     print("8. Riwayat Transaksi")
     print("9. Family Plan/Akrab Organizer")
-    print("10. [WIP] Circle")
+    print("10. Circle")
     print("11. Store Segments")
     print("12. Store Family List")
     print("13. Store Packages")
