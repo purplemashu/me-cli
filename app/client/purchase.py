@@ -18,7 +18,6 @@ from app.client.encrypt import (
 )
 
 BASE_API_URL = os.getenv("BASE_API_URL")
-AX_DEVICE_ID = os.getenv("AX_DEVICE_ID")
 AX_FP = os.getenv("AX_FP")
 UA = os.getenv("UA")
 
@@ -162,7 +161,7 @@ def settlement_bounty(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.8.0",
+        "x-version-app": "8.9.0",
     }
     
     url = f"{BASE_API_URL}/{path}"
@@ -239,7 +238,7 @@ def settlement_loyalty(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.8.0",
+        "x-version-app": "8.9.0",
     }
 
     url = f"{BASE_API_URL}/{path}"
@@ -316,7 +315,7 @@ def bounty_allotment(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.8.0",
+        "x-version-app": "8.9.0",
     }
     
     url = f"{BASE_API_URL}/{path}"
