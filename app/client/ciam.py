@@ -214,27 +214,24 @@ def get_new_token(api_key: str, refresh_token: str, subscriber_id: str) -> str:
     print("Refreshing token...")
     resp = requests.post(url, headers=headers, data=data, timeout=30)
     if resp.status_code == 400:
-        if resp.json().get("error_description") == "Session not active":
-            if subscriber_id == "":
-                raise ValueError("Subscriber ID is required to extend session")
-            
-            exchange_code = extend_session(subscriber_id)
-            if exchange_code is None:
-                raise ValueError("Failed to extend session")
-            
-            extend_result = submit_otp(
-                api_key,
-                "DEVICEID",
-                subscriber_id,
-                exchange_code
-            )
-            
-            if extend_result is None:
-                raise ValueError("Failed to submit OTP after extending session")
-            
-            return extend_result
-        else:
-            raise ValueError(f"Failed to refresh token: {resp.json().get('error_description')}")
+        if subscriber_id == "":
+            raise ValueError("Subscriber ID is required to extend session")
+        
+        exchange_code = extend_session(subscriber_id)
+        if exchange_code is None:
+            raise ValueError("Failed to extend session")
+        
+        extend_result = submit_otp(
+            api_key,
+            "DEVICEID",
+            subscriber_id,
+            exchange_code
+        )
+        
+        if extend_result is None:
+            raise ValueError("Failed to submit OTP after extending session")
+        
+        return extend_result
 
     resp.raise_for_status()
 
