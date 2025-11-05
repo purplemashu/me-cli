@@ -113,7 +113,6 @@ def extend_session(subscriber_id: str) -> str:
             return None
         
         data = response.json()
-        print(json.dumps(data, indent=4))
         exchange_code = data.get("data", {}).get("exchange_code")
         
         return exchange_code
