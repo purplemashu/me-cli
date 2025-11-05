@@ -5,7 +5,7 @@ from app.menus.util import pause
 from app.service.auth import AuthInstance
 from app.service.decoy import DecoyInstance
 from app.type_dict import PaymentItem
-from app.client.balance import settlement_balance
+from app.client.purchase.balance import settlement_balance
 
 # Purchase
 def purchase_by_family(

@@ -4,9 +4,9 @@ from app.client.engsel import get_family, get_package_details
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
 from app.menus.util import clear_screen, pause
-from app.client.ewallet import show_multipayment
-from app.client.qris import show_qris_payment
-from app.client.balance import settlement_balance
+from app.client.purchase.ewallet import show_multipayment
+from app.client.purchase.qris import show_qris_payment
+from app.client.purchase.balance import settlement_balance
 from app.type_dict import PaymentItem
 
 def show_hot_menu():

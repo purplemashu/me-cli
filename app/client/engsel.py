@@ -54,8 +54,6 @@ def send_api_request(
         "x-request-at": java_like_timestamp(now),
         "x-version-app": "8.9.0",
     }
-    
-    
 
     url = f"{BASE_API_URL}/{path}"
     resp = requests.post(url, headers=headers, data=json.dumps(body), timeout=30)
@@ -96,7 +94,6 @@ def get_balance(api_key: str, id_token: str) -> dict:
     
     print("Fetching balance...")
     res = send_api_request(api_key, path, raw_payload, id_token, "POST")
-    # print(f"[GB-256]:\n{json.dumps(res, indent=2)}")
     
     if "data" in res:
         if "balance" in res["data"]:
@@ -162,7 +159,7 @@ def get_family(
             }
         
             res = send_api_request(api_key, path, payload_dict, id_token, "POST")
-            # print(f"[get fam 320]:\n{json.dumps(res, indent=2)}")
+
             if res.get("status") != "SUCCESS":
                 continue
             
@@ -194,8 +191,7 @@ def get_families(api_key: str, tokens: dict, package_category_code: str) -> dict
     res = send_api_request(api_key, path, payload_dict, tokens["id_token"], "POST")
     if res.get("status") != "SUCCESS":
         print(f"Failed to get families for category {package_category_code}")
-        print(f"Res:{res}")
-        # print(json.dumps(res, indent=2))
+        print(f"Res:{json.dumps(res, indent=2)}")
         input("Press Enter to continue...")
         return None
     return res["data"]
@@ -225,7 +221,6 @@ def get_package(
     }
     
     print("Fetching package...")
-    # print(f"Payload: {json.dumps(raw_payload, indent=2)}")
     res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
     
     if "data" not in res:
@@ -287,7 +282,7 @@ def login_info(
         "is_enterprise": is_enterprise,
         "lang": "en"
     }
-    
+
     res = send_api_request(api_key, path, raw_payload, tokens["id_token"], "POST")
     
     if "data" not in res:

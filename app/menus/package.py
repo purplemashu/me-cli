@@ -5,13 +5,13 @@ import requests
 from app.service.auth import AuthInstance
 from app.client.engsel import get_family, get_package, get_addons, get_package_details, send_api_request
 from app.client.ciam import get_auth_code
-from app.client.engsel2 import unsubscribe
+from app.client.famplan import unsubscribe
 from app.service.bookmark import BookmarkInstance
-from app.client.purchase import settlement_bounty, settlement_loyalty, bounty_allotment
+from app.client.purchase.redeem import settlement_bounty, settlement_loyalty, bounty_allotment
 from app.menus.util import clear_screen, pause, display_html
-from app.client.qris import show_qris_payment
-from app.client.ewallet import show_multipayment
-from app.client.balance import settlement_balance
+from app.client.purchase.qris import show_qris_payment
+from app.client.purchase.ewallet import show_multipayment
+from app.client.purchase.balance import settlement_balance
 from app.type_dict import PaymentItem
 from app.menus.purchase import purchase_n_times, purchase_n_times_by_option_code
 from app.menus.util import format_quota_byte
