@@ -3,11 +3,13 @@ import requests
 from app.client.engsel import get_family, get_package_details
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
-from app.menus.util import clear_screen, pause
+from app.menus.util import clear_screen, format_quota_byte, pause, display_html
 from app.client.purchase.ewallet import show_multipayment
 from app.client.purchase.qris import show_qris_payment
 from app.client.purchase.balance import settlement_balance
 from app.type_dict import PaymentItem
+
+WIDTH = 55
 
 def show_hot_menu():
     api_key = AuthInstance.api_key
@@ -16,9 +18,9 @@ def show_hot_menu():
     in_bookmark_menu = True
     while in_bookmark_menu:
         clear_screen()
-        print("=======================================================")
-        print("====================🔥 Paket  Hot 🔥===================")
-        print("=======================================================")
+        print("=" * WIDTH)
+        print("🔥 Paket  Hot 🔥".center(WIDTH))
+        print("=" * WIDTH)
         
         url = "https://me.mashu.lol/pg-hot.json"
         response = requests.get(url, timeout=30)
@@ -31,10 +33,10 @@ def show_hot_menu():
 
         for idx, p in enumerate(hot_packages):
             print(f"{idx + 1}. {p['family_name']} - {p['variant_name']} - {p['option_name']}")
-            print("-------------------------------------------------------")
+            print("-" * WIDTH)
         
         print("00. Kembali ke menu utama")
-        print("-------------------------------------------------------")
+        print("-" * WIDTH)
         choice = input("Pilih paket (nomor): ")
         if choice == "00":
             in_bookmark_menu = False
@@ -79,9 +81,10 @@ def show_hot_menu2():
     in_bookmark_menu = True
     while in_bookmark_menu:
         clear_screen()
-        print("=======================================================")
-        print("===================🔥 Paket  Hot 2 🔥==================")
-        print("=======================================================")
+        main_package_detail = {}
+        print("=" * WIDTH)
+        print("🔥 Paket  Hot 2 🔥".center(WIDTH))
+        print("=" * WIDTH)
         
         url = "https://me.mashu.lol/pg-hot2.json"
         response = requests.get(url, timeout=30)
@@ -94,10 +97,10 @@ def show_hot_menu2():
 
         for idx, p in enumerate(hot_packages):
             print(f"{idx + 1}. {p['name']}\n   Harga: {p['price']}")
-            print("-------------------------------------------------------")
+            print("-" * WIDTH)
         
         print("00. Kembali ke menu utama")
-        print("-------------------------------------------------------")
+        print("-" * WIDTH)
         choice = input("Pilih paket (nomor): ")
         if choice == "00":
             in_bookmark_menu = False
@@ -122,6 +125,9 @@ def show_hot_menu2():
                     package["migration_type"],
                 )
                 
+                if package == packages[0]:
+                    main_package_detail = package_detail
+                
                 # Force failed when one of the package detail is None
                 if not package_detail:
                     print(f"Gagal mengambil detail paket untuk {package['family_code']}.")
@@ -139,11 +145,71 @@ def show_hot_menu2():
                 )
             
             clear_screen()
-            print("=======================================================")
+            print("=" * WIDTH)
             print(f"Name: {selected_package['name']}")
             print(f"Price: {selected_package['price']}")
             print(f"Detail: {selected_package['detail']}")
-            print("=======================================================")
+            print("=" * WIDTH)
+            print("Main Package Details:".center(WIDTH))
+            print("-" * WIDTH)
+            # Show package 0 details
+            
+            price = main_package_detail["package_option"]["price"]
+            detail = display_html(main_package_detail["package_option"]["tnc"])
+            validity = main_package_detail["package_option"]["validity"]
+
+            option_name = main_package_detail.get("package_option", {}).get("name","") #Vidio
+            family_name = main_package_detail.get("package_family", {}).get("name","") #Unlimited Turbo
+            variant_name = main_package_detail.get("package_detail_variant", "").get("name","") #For Xtra Combo
+            option_name = main_package_detail.get("package_option", {}).get("name","") #Vidio
+            
+            title = f"{family_name} - {variant_name} - {option_name}".strip()
+            
+            family_code = main_package_detail.get("package_family", {}).get("package_family_code","")
+            parent_code = main_package_detail.get("package_addon", {}).get("parent_code","")
+            if parent_code == "":
+                parent_code = "N/A"
+            
+            payment_for = main_package_detail["package_family"]["payment_for"]
+                
+            print(f"Nama: {title}")
+            print(f"Harga: Rp {price}")
+            print(f"Payment For: {payment_for}")
+            print(f"Masa Aktif: {validity}")
+            print(f"Point: {main_package_detail['package_option']['point']}")
+            print(f"Plan Type: {main_package_detail['package_family']['plan_type']}")
+            print("-" * WIDTH)
+            print(f"Family Code: {family_code}")
+            print(f"Parent Code (for addon/dummy): {parent_code}")
+            print("-" * WIDTH)
+            benefits = main_package_detail["package_option"]["benefits"]
+            if benefits and isinstance(benefits, list):
+                print("Benefits:")
+                for benefit in benefits:
+                    print("-" * WIDTH)
+                    print(f" Name: {benefit['name']}")
+                    print(f"  Item id: {benefit['item_id']}")
+                    data_type = benefit['data_type']
+                    if data_type == "VOICE" and benefit['total'] > 0:
+                        print(f"  Total: {benefit['total']/60} menit")
+                    elif data_type == "TEXT" and benefit['total'] > 0:
+                        print(f"  Total: {benefit['total']} SMS")
+                    elif data_type == "DATA" and benefit['total'] > 0:
+                        if benefit['total'] > 0:
+                            quota = int(benefit['total'])
+                            quota_formatted = format_quota_byte(quota)
+                            print(f"  Total: {quota_formatted} ({data_type})")
+                    elif data_type not in ["DATA", "VOICE", "TEXT"]:
+                        print(f"  Total: {benefit['total']} ({data_type})")
+                    
+                    if benefit["is_unlimited"]:
+                        print("  Unlimited: Yes")
+
+            print("-" * WIDTH)
+            print(f"SnK MyXL:\n{detail}")
+            print("-" * WIDTH)
+                
+            print("=" * WIDTH)
             
             payment_for = selected_package.get("payment_for", "BUY_PACKAGE")
             ask_overwrite = selected_package.get("ask_overwrite", False)
