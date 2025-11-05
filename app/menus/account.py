@@ -1,4 +1,4 @@
-from app.client.engsel import get_otp, submit_otp
+from app.client.ciam import get_otp, submit_otp
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
 
@@ -38,7 +38,7 @@ def login_prompt(api_key: str):
                 print("OTP tidak valid. Pastikan OTP terdiri dari 6 digit angka.")
                 continue
             
-            tokens = submit_otp(api_key, phone_number, otp)
+            tokens = submit_otp(api_key, "SMS", phone_number, otp)
             if not tokens:
                 print("OTP salah. Silahkan coba lagi.")
                 try_count -= 1

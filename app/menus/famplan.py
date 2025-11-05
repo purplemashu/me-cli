@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from app.menus.util import pause, clear_screen, format_quota_byte
-from app.client.engsel2 import get_family_data, change_member, remove_member, set_quota_limit, validate_msisdn
+from app.client.famplan import get_family_data, change_member, remove_member, set_quota_limit, validate_msisdn
 
 WIDTH = 55
 

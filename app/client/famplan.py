@@ -2,7 +2,6 @@ import json
 from app.client.engsel import send_api_request
 from app.menus.util import format_quota_byte
 
-
 def get_pending_transaction(api_key: str, tokens: dict) -> dict:
     # @TODO: implement this function properly
     path = "api/v8/profile"

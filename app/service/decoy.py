@@ -1,12 +1,8 @@
 # Decoy package management
-
-import os
-import json
 import time
 
 import requests
-from app.client.engsel import get_new_token, get_profile, get_package_details
-from app.util import ensure_api_key
+from app.client.engsel import get_package_details
 from app.service.auth import AuthInstance
 
 class DecoyPackage:

@@ -9,7 +9,7 @@ from app.menus.util import clear_screen, pause
 from app.client.engsel import (
     get_balance,
 )
-from app.client.engsel2 import get_tiering_info, validate_msisdn
+from app.client.famplan import get_tiering_info, validate_msisdn
 from app.menus.payment import show_transaction_history
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
@@ -90,7 +90,7 @@ def main():
             show_main_menu(profile)
 
             choice = input("Pilih menu: ")
-            # If T
+            # Testing shortcuts
             if choice.lower() == "t":
                 pause()
             elif choice == "1":
