@@ -25,6 +25,7 @@ from app.menus.store.segments import show_store_segments_menu
 from app.menus.store.search import show_family_list_menu, show_store_packages_menu
 from app.menus.store.redemables import show_redeemables_menu
 from app.client.registration import dukcapil
+from app.client.ciam import extend_session, submit_otp
 
 WIDTH = 55
 
@@ -92,6 +93,18 @@ def main():
             choice = input("Pilih menu: ")
             # If T
             if choice.lower() == "t":
+                subscriber_id = active_user["subscriber_id"]
+                exchange_code = extend_session(subscriber_id)
+                print(f"Exchange Code: {exchange_code}")
+                
+                res = submit_otp(
+                    AuthInstance.api_key,
+                    "DEVICEID",
+                    subscriber_id,
+                    exchange_code
+                )
+                
+                print(json.dumps(res, indent=2))
                 pause()
             elif choice == "1":
                 selected_user_number = show_account_menu()

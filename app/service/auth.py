@@ -1,7 +1,8 @@
 import os
 import json
 import time
-from app.client.engsel import get_new_token, get_profile
+from app.client.ciam import get_new_token
+from app.client.engsel import get_profile
 from app.util import ensure_api_key
 
 class Auth:
@@ -77,7 +78,7 @@ class Auth:
         if existing:
             existing["refresh_token"] = refresh_token
         else:
-            tokens = get_new_token(refresh_token)
+            tokens = get_new_token(self.api_key, refresh_token, "")
             profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
             sub_id = profile_data["profile"]["subscriber_id"]
             sub_type = profile_data["profile"]["subscription_type"]
@@ -107,7 +108,7 @@ class Auth:
             # Select the first user as active user by default
             if len(self.refresh_tokens) != 0:
                 first_rt = self.refresh_tokens[0]
-                tokens = get_new_token(first_rt["refresh_token"])
+                tokens = get_new_token(self.api_key, first_rt["refresh_token"], first_rt.get("subscriber_id", ""))
                 if tokens:
                     self.set_active_user(first_rt["number"])
             else:
@@ -122,7 +123,7 @@ class Auth:
             input("Press Enter to continue...")
             return False
 
-        tokens = get_new_token(rt_entry["refresh_token"])
+        tokens = get_new_token(self.api_key, rt_entry["refresh_token"], rt_entry.get("subscriber_id", ""))
         if not tokens:
             print(f"Failed to get tokens for number: {number}. The refresh token might be invalid or expired.")
             input("Press Enter to continue...")
@@ -158,7 +159,7 @@ class Auth:
 
     def renew_active_user_token(self):
         if self.active_user:
-            tokens = get_new_token(self.active_user["tokens"]["refresh_token"])
+            tokens = get_new_token(self.api_key, self.active_user["tokens"]["refresh_token"], self.active_user["subscriber_id"])
             if tokens:
                 self.active_user["tokens"] = tokens
                 self.last_refresh_time = int(time.time())
@@ -179,7 +180,7 @@ class Auth:
             # Choose the first user if available
             if len(self.refresh_tokens) != 0:
                 first_rt = self.refresh_tokens[0]
-                tokens = get_new_token(first_rt["refresh_token"])
+                tokens = get_new_token(self.api_key, first_rt["refresh_token"], first_rt.get("subscriber_id", ""))
                 if tokens:
                     self.set_active_user(first_rt["number"])
             return None
