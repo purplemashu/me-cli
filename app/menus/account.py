@@ -50,6 +50,7 @@ def login_prompt(api_key: str):
         print("Gagal login setelah beberapa percobaan. Silahkan coba lagi nanti.")
         return None, None
     except Exception as e:
+        print(f"Gagal login: {e}")
         return None, None
 
 def show_account_menu():
