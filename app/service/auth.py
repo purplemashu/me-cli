@@ -128,14 +128,10 @@ class Auth:
             print(f"Failed to get tokens for number: {number}. The refresh token might be invalid or expired.")
             input("Press Enter to continue...")
             return False
-        
-        # Get subscriber_id and subscription_type if not already stored
-        subscriber_id = rt_entry.get("subscriber_id", "")
-        subscription_type = rt_entry.get("subscription_type", "")
-        if not subscriber_id or not subscription_type:
-            profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
-            subscriber_id = profile_data["profile"]["subscriber_id"]
-            subscription_type = profile_data["profile"]["subscription_type"]
+
+        profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
+        subscriber_id = profile_data["profile"]["subscriber_id"]
+        subscription_type = profile_data["profile"]["subscription_type"]
 
         self.active_user = {
             "number": int(number),
