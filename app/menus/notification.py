@@ -1,5 +1,5 @@
 from app.menus.util import clear_screen
-from app.client.engsel import get_notifications, get_notification_detail
+from app.client.engsel import get_notification_detail, dashboard_segments
 from app.service.auth import AuthInstance
 
 WIDTH = 55
@@ -7,18 +7,18 @@ WIDTH = 55
 def show_notification_menu():
     in_notification_menu = True
     while in_notification_menu:
-        print("Fetching notifications...")
         clear_screen()
+        print("Fetching notifications...")
         
         api_key = AuthInstance.api_key
         tokens = AuthInstance.get_active_tokens()
         
-        notifications_res = get_notifications(api_key, tokens)
+        notifications_res = dashboard_segments(api_key, tokens)
         if not notifications_res:
             print("No notifications found.")
             return
         
-        notifications = notifications_res.get("data", {}).get("inbox", [])
+        notifications = notifications_res.get("data", {}).get("notification", {}).get("data", [])
         
         if not notifications:
             print("No notifications available.")
