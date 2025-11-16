@@ -72,29 +72,20 @@ def get_user_info(api_key: str, *, timeout: float = 10.0) -> dict:
 
 def ensure_api_key() -> str:
     """
-    Load api.key if present; otherwise prompt the user.
-    Always verifies the key. Saves only if valid.
-    Exits the program if invalid or empty.
+    Load api.key if present; otherwise use a dummy key.
+    No verification required - authentication removed.
     """
     # Try to load an existing key
     current = load_api_key()
     if current:
-        if verify_api_key(current):
-            return current
-        else:
-            print("Existing API key is invalid. Please enter a new one.")
+        print("API key loaded from file.")
+        return current
 
-    # Prompt user if missing or invalid
-    print("Dapatkan API key di Bot Telegram @fyxt_bot")
-    api_key = input("Masukkan API key: ").strip()
-    if not api_key:
-        print("API key tidak boleh kosong. Menutup aplikasi.")
-        sys.exit(1)
+    # Use dummy key if no key file exists
+    print("No API key file found. Using default configuration.")
+    print("Note: Some features may require a valid crypto service endpoint.")
 
-    if not verify_api_key(api_key):
-        print("API key tidak valid. Menutup aplikasi.")
-        delete_api_key()
-        sys.exit(1)
-
-    save_api_key(api_key)
-    return api_key
+    # Create a dummy API key
+    dummy_key = "no-auth-required"
+    save_api_key(dummy_key)
+    return dummy_key
