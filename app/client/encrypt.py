@@ -14,7 +14,7 @@ API_KEY = os.getenv("API_KEY")
 AES_KEY_ASCII = os.getenv("AES_KEY_ASCII")
 AX_FP_KEY = os.getenv("AX_FP_KEY")
 
-BASE_CRYPTO_URL = "https://crypto.mashu.lol/api/890"
+BASE_CRYPTO_URL = "https://me-crypto.mashu.lol/api/890"
 # BASE_CRYPTO_URL = "http://127.0.0.1:5000/api/890"  # For local testing
 
 XDATA_DECRYPT_URL = f"{BASE_CRYPTO_URL}/decrypt"
